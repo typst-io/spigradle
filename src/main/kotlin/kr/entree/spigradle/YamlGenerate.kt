@@ -16,10 +16,6 @@
 
 package kr.entree.spigradle
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.fasterxml.jackson.module.kotlin.convertValue
 import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -27,10 +23,12 @@ import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.get
+import org.snakeyaml.engine.v2.api.Dump
+import org.snakeyaml.engine.v2.api.DumpSettings
+import org.snakeyaml.engine.v2.common.FlowStyle
+import org.snakeyaml.engine.v2.common.ScalarStyle
 import java.io.File
 import java.nio.charset.Charset
 
@@ -87,70 +85,34 @@ open class YamlGenerate : DefaultTask() {
     val encoding: Property<String> = project.objects.property<String>().convention("UTF-8")
 
     /**
-     * The yaml options. the key is Enum#name() of [YAMLGenerator.Feature].
-     */
-    @Input
-    val yamlOptions: MapProperty<String, Boolean> = project.objects.mapProperty()
-
-    /**
      * The files that will be output.
      */
     @OutputFiles
     val outputFiles: ConfigurableFileCollection = project.objects.fileCollection()
 
-    /**
-     * Sets the value that will be serialized.
-     *
-     * @param provider The lazy provider of the value, pass to using `[Project.provider] { value }`
-     */
-    fun serialize(provider: Provider<Any>) = properties.set(provider.map {
-        Jackson.JSON.convertValue<Map<String, Any>>(it)
-    })
-
-    /**
-     * Sets the value that will be serialized. it simply calls `serialize([Project.provider] { [any] }`
-     *
-     * @param any The value that will be serialized.
-     */
-    fun serialize(any: Any) = serialize(project.provider { any })
-
     @TaskAction
     fun generate() {
-        val yaml = YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-            .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-            .enable(YAMLGenerator.Feature.INDENT_ARRAYS)
-            .applyUserOptions()
-        val mapper = ObjectMapper(yaml)
-        val encoding = Charset.forName(encoding.get())
-        val contents = properties.orNull?.run { mapper.writeValueAsString(this) } ?: ""
+        val dumpSettings = DumpSettings.builder()
+            .setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED)
+            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .build()
+        val dump = Dump(dumpSettings)
+        val yaml = dump.dumpToString(properties)
         outputFiles.forEach { file ->
-            file.bufferedWriter(encoding).use {
-                it.write(contents)
-            }
-        }
-    }
-
-    private fun YAMLFactory.applyUserOptions() = apply {
-        yamlOptions.orNull?.forEach { (featureEnumKey, turnOn) ->
-            runCatching {
-                YAMLGenerator.Feature.valueOf(featureEnumKey.uppercase())
-            }.onSuccess {
-                if (turnOn) enable(it)
-                else disable(it)
-            }.onFailure {
-                logger.warn("The given name '$featureEnumKey' on yamlOptions is invalid key.", it)
+            file.bufferedWriter(Charset.forName(encoding.get())).use {
+                it.write(yaml)
             }
         }
     }
 }
 
 // TODO: Too complex! Should whole refactor in 3.0
-internal inline fun <reified T : StandardDescription> Project.registerDescGenTask(
-    type: PluginConvention, crossinline mapDesc: (T) -> T = { it }
+internal fun <T : StandardDescription> Project.registerDescGenTask(
+    type: PluginConvention, extensionClass: Class<T>, serializer: (T) -> Map<String, Any?>,
 ) {
     val detectResultFile = getPluginMainPathFile(type.mainType)
     val generalResultFile = getPluginMainPathFile(PluginType.GENERAL)
-    val description = extensions.create<T>(type.descExtension, this)
+    val description = extensions.create(type.descExtension, extensionClass, this)
     val detectionTask = SubclassDetection.register(this, type.mainDetectTask, type.mainType).applyToConfigure {
         group = type.taskGroup
         superClassName.set(type.mainSuperClass)
@@ -159,14 +121,20 @@ internal inline fun <reified T : StandardDescription> Project.registerDescGenTas
     val generationTask = registerYamlGenTask(type).applyToConfigure {
         inputs.files(detectResultFile, generalResultFile)
         group = type.taskGroup
-        serialize(provider {
-            mapDesc(description.apply {
-                main = main ?: runCatching {
+        properties.set(provider {
+            val ret = serializer(description)
+                .filterValues { it != null }
+            if (!ret.containsKey("main")) {
+                val detectResult = runCatching {
                     detectResultFile.readText()
-                }.getOrNull() ?: runCatching {
+                }.getOrNull()
+                val result = detectResult ?: runCatching {
                     generalResultFile.readText()
                 }.getOrNull()
-            })
+                ret + ("main" to result)
+            } else {
+                ret
+            }
         })
         doFirst {
             notNull(description.main) {

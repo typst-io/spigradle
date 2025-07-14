@@ -20,7 +20,6 @@ import kr.entree.spigradle.Dependency
 import kr.entree.spigradle.Repositories
 import kr.entree.spigradle.VersionModifier
 import kr.entree.spigradle.CommonDebug
-import kr.entree.spigradle.SerialName
 import java.io.File
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ object BungeeRepositories {
 }
 
 object BungeeDependencies {
-    @SerialName("bungeecord")
+//    @SerialName("bungeecord")
     val BUNGEE_CORD = Dependency(
         "net.md-5",
         "bungeecord-api",

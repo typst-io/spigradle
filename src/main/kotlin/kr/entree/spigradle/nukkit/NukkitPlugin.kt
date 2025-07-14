@@ -16,20 +16,13 @@
 
 package kr.entree.spigradle.nukkit
 
+import kr.entree.spigradle.*
 import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.spigot.Load
-import kr.entree.spigradle.applyToConfigure
-import kr.entree.spigradle.groovyExtension
-import kr.entree.spigradle.PluginConvention
-import kr.entree.spigradle.applySpigradlePlugin
-import kr.entree.spigradle.createRunConfigurations
-import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.provideDelegate
 
 /**
  * The Nukkit plugin that adds:
@@ -40,10 +33,10 @@ import org.gradle.kotlin.dsl.provideDelegate
 class NukkitPlugin : Plugin<Project> {
     companion object {
         val NUKKIT_TYPE = PluginConvention(
-                serverName = "nukkit",
-                descFile = "plugin.yml",
-                mainSuperClass = "cn/nukkit/plugin/PluginBase",
-                mainType = PluginType.NUKKIT
+            serverName = "nukkit",
+            descFile = "plugin.yml",
+            mainSuperClass = "cn/nukkit/plugin/PluginBase",
+            mainType = PluginType.NUKKIT
         )
     }
 
@@ -53,9 +46,29 @@ class NukkitPlugin : Plugin<Project> {
         with(project) {
             applySpigradlePlugin()
             setupDefaultRepositories()
-            registerDescGenTask<NukkitExtension>(NUKKIT_TYPE)
+            registerDescGenTask(NUKKIT_TYPE, NukkitExtension::class.java) { desc ->
+                mapOf(
+                    "main" to desc.main,
+                    "name" to desc.name,
+                    "version" to desc.version,
+                    "description" to desc.description,
+                    "website" to desc.website,
+                    "authors" to desc.authors,
+                    "api" to desc.api,
+                    "load" to desc.load?.name,
+                    "prefix" to desc.prefix,
+                    "depend" to desc.depends,
+                    "softdepend" to desc.softDepends,
+                    "loadbefore" to desc.loadBefore,
+                    "commands" to desc.commands.map {
+                        it.serialize()
+                    },
+                    "permissions" to desc.permissions.map {
+                        it.serialize()
+                    },
+                )
+            }
             setupGroovyExtensions()
-            setupNukkitDebugTasks()
             createRunConfigurations("Nukkit", nukkit.debug)
         }
     }
@@ -69,27 +82,6 @@ class NukkitPlugin : Plugin<Project> {
             set("POST_WORLD", Load.POST_WORLD)
             set("POSTWORLD", Load.POST_WORLD)
             set("STARTUP", Load.STARTUP)
-        }
-    }
-
-    private fun Project.setupNukkitDebugTasks() {
-        val nukkit: NukkitExtension by extensions
-        val debug = nukkit.debug
-        val assemble by tasks
-        with(NukkitDebugTask) {
-            val downloadNukkit = registerDownloadNukkit(debug)
-            val prepareNukkit = registerPrepareNukkit().applyToConfigure {
-                dependsOn(downloadNukkit)
-            }
-            val runNukkit = registerRunNukkit(debug).applyToConfigure {
-                mustRunAfter(prepareNukkit)
-            }
-            val preparePlugin = registerPrepareNukkitPlugins(nukkit).applyToConfigure {
-                dependsOn(assemble)
-            }
-            registerDebugNukkit().applyToConfigure {
-                dependsOn(preparePlugin, prepareNukkit, runNukkit)
-            }
         }
     }
 }

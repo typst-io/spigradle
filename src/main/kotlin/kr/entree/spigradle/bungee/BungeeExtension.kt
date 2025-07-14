@@ -17,7 +17,6 @@
 package kr.entree.spigradle.bungee
 
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.Transient
 import kr.entree.spigradle.debugDir
 import org.gradle.api.Action
 import org.gradle.api.Project

@@ -16,19 +16,12 @@
 
 package kr.entree.spigradle.bungee
 
+import kr.entree.spigradle.*
 import kr.entree.spigradle.annotations.PluginType
-import kr.entree.spigradle.Repositories
-import kr.entree.spigradle.applyToConfigure
-import kr.entree.spigradle.PluginConvention
-import kr.entree.spigradle.applySpigradlePlugin
-import kr.entree.spigradle.createRunConfigurations
-import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.provideDelegate
 
 /**
  * The Bungeecord plugin that adds:
@@ -39,10 +32,10 @@ import org.gradle.kotlin.dsl.provideDelegate
 class BungeePlugin : Plugin<Project> {
     companion object {
         val BUNGEE_TYPE = PluginConvention(
-                serverName = "bungee",
-                descFile = "bungee.yml",
-                mainSuperClass = "net/md_5/bungee/api/plugin/Plugin",
-                mainType = PluginType.BUNGEE
+            serverName = "bungee",
+            descFile = "bungee.yml",
+            mainSuperClass = "net/md_5/bungee/api/plugin/Plugin",
+            mainType = PluginType.BUNGEE
         )
     }
 
@@ -52,34 +45,21 @@ class BungeePlugin : Plugin<Project> {
         with(project) {
             applySpigradlePlugin()
             setupDefaultRepositories()
-            registerDescGenTask<BungeeExtension>(BUNGEE_TYPE)
-            setupBungeeDebugTasks()
+            registerDescGenTask(BUNGEE_TYPE, BungeeExtension::class.java) { desc ->
+                mapOf(
+                    "main" to desc.main,
+                    "name" to desc.name,
+                    "version" to desc.description,
+                    "author" to desc.author,
+                    "depend" to desc.depends,
+                    "softdepend" to desc.softDepends
+                )
+            }
             createRunConfigurations("Bungee", bungee.debug)
         }
     }
 
     private fun Project.setupDefaultRepositories() {
         repositories.maven(Repositories.SONATYPE)
-    }
-
-    private fun Project.setupBungeeDebugTasks() {
-        val bungee: BungeeExtension by extensions
-        val debugOption = bungee.debug
-        val assemble by tasks
-        with(BungeeDebugTask) {
-            val bungeeDownload = registerDownloadBungee(debugOption)
-            val prepareBungee = registerPrepareBungee().applyToConfigure {
-                dependsOn(bungeeDownload)
-            }
-            val runBungee = registerRunBungee(debugOption).applyToConfigure {
-                mustRunAfter(prepareBungee)
-            }
-            val preparePlugin = registerPrepareBungeePlugins(bungee).applyToConfigure {
-                dependsOn(assemble)
-            }
-            registerDebugBungee().applyToConfigure {
-                dependsOn(preparePlugin, prepareBungee, runBungee)
-            }
-        }
     }
 }

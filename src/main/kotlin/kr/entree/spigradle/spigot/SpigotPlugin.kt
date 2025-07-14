@@ -55,31 +55,32 @@ class SpigotPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             applySpigradlePlugin()
-            setupDefaultRepositories()
             setupDefaultDependencies()
-            registerDescGenTask<SpigotExtension>(SPIGOT_TYPE) { desc ->
-                val excludes = desc.excludeLibraries
-                if (desc.libraries.isEmpty() && "*" !in excludes) {
-                    desc.libraries =
-                        findRuntimeDependencyNotations(project)
-                            .filter { notation ->
-                                excludes.none { key -> notation.contains(key) }
-                            }
-                }
-                desc
+            // TODO: auto libraries
+            registerDescGenTask(SPIGOT_TYPE, SpigotExtension::class.java) { desc ->
+                mapOf(
+                    "main" to desc.main,
+                    "name" to desc.name,
+                    "version" to desc.version,
+                    "description" to desc.description,
+                    "website" to desc.website,
+                    "authors" to desc.authors,
+                    "api-version" to desc.apiVersion,
+                    "load" to desc.load?.name,
+                    "prefix" to desc.prefix,
+                    "depend" to desc.depends,
+                    "softdepend" to desc.softDepends,
+                    "loadbefore" to desc.loadBefore,
+                    "libraries" to desc.libraries,
+                    "commands" to desc.commands.toList().map {
+                        TODO(it.toString())
+                    },
+                    "permissions" to desc.permissions.toList().map {
+                        TODO(it.toString())
+                    },
+                )
             }
             setupGroovyExtensions()
-            setupSpigotDebugTasks()
-            createSpigotRunConfiguration(spigot.debug)
-            createPaperRunConfiguration(spigot.debug)
-        }
-    }
-
-    private fun Project.setupDefaultRepositories() {
-        SpigotRepositories.run {
-            listOf(SPIGOT_MC, PAPER_MC)
-        }.forEach {
-            repositories.maven(it)
         }
     }
 
@@ -96,85 +97,6 @@ class SpigotPlugin : Plugin<Project> {
             set("POST_WORLD", Load.POST_WORLD)
             set("POSTWORLD", Load.POST_WORLD)
             set("STARTUP", Load.STARTUP)
-        }
-    }
-
-    private fun Project.setupSpigotDebugTasks() {
-        val debugOption = spigot.debug
-        // prepareSpigot: downloadBuildTools -> buildSpigot -> copySpigot
-        // preparePlugin: copyArtifactJar -> copyClasspathPlugins
-        // debugSpigot: preparePlugin -> prepareSpigot -> runSpigot
-        // debugPaper: preparePlugin -> downloadPaperclip -> runSpigot(runPaper)
-        with(SpigotDebugTask) {
-            // Spigot
-            val buildToolDownload = registerDownloadBuildTool(debugOption)
-            val buildSpigot = registerBuildSpigot(debugOption).applyToConfigure {
-                mustRunAfter(buildToolDownload)
-            }
-            val prepareSpigot = registerPrepareSpigot(debugOption).applyToConfigure {
-                dependsOn(buildToolDownload, buildSpigot)
-            }
-            val assemble by tasks
-            val preparePlugin = registerPrepareSpigotPlugin(spigot).applyToConfigure {
-                dependsOn(assemble)
-            }
-            val acceptsEula = registerAcceptEula(debugOption)
-            val configSpigot = registerSpigotConfiguration(debugOption.serverDirectory)
-            val runSpigot = registerRunSpigot(debugOption).applyToConfigure {
-                mustRunAfter(preparePlugin, prepareSpigot)
-                dependsOn(acceptsEula, configSpigot)
-            }
-            registerDebugRun("Spigot").applyToConfigure { // debugSpigot
-                dependsOn(preparePlugin, prepareSpigot, runSpigot)
-            }
-            registerCleanSpigotBuild(debugOption)
-            // Paper
-            val paperClipDownload = registerDownloadPaper(debugOption)
-            registerDebugRun("Paper").applyToConfigure { // debugPaper
-                dependsOn(preparePlugin, paperClipDownload, runSpigot)
-                runSpigot.get().mustRunAfter(paperClipDownload)
-            }
-        }
-    }
-
-    private fun Project.createSpigotRunConfiguration(debug: SpigotDebug) {
-        createRunConfigurations("Spigot", debug)
-        val idea: IdeaModel by extensions
-        idea.project?.settings {
-            runConfigurations {
-                named("RunSpigot", JarApplication::class).configure {
-                    beforeRun {
-                        register("acceptEula", GradleTask::class) {
-                            task = tasks.getByName("acceptSpigotEula")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun Project.createPaperRunConfiguration(debug: SpigotDebug) {
-        val idea: IdeaModel by extensions
-        idea.project?.settings {
-            runConfigurations {
-                register("RunPaper", JarApplication::class) {
-                    jarPath = debug.serverJar.absolutePath
-                    workingDirectory = debug.serverDirectory.absolutePath
-                    programParameters = debug.args.joinToString(" ")
-                    jvmArgs = debug.jvmArgs.joinToString(" ")
-                    beforeRun {
-                        register("downloadPaper", GradleTask::class) {
-                            task = tasks.getByName("downloadPaper")
-                        }
-                        register("preparePlugins", GradleTask::class) {
-                            task = tasks.getByName("prepareSpigotPlugins")
-                        }
-                        register("acceptsEula", GradleTask::class) {
-                            task = tasks.getByName("acceptSpigotEula")
-                        }
-                    }
-                }
-            }
         }
     }
 }

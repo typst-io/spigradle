@@ -16,13 +16,11 @@
 
 package kr.entree.spigradle
 
-import de.undercouch.gradle.tasks.download.DownloadTaskPlugin
 import groovy.lang.Closure
-import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.Repositories.SONATYPE
+import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.Delete
@@ -65,31 +63,8 @@ class SpigradlePlugin : Plugin<Project> {
 
     @Suppress("UnstableApiUsage")
     private fun Project.setupPlugins() {
-        pluginManager.apply(JavaPlugin::class)
         rootProject.pluginManager.apply(IdeaPlugin::class)
         pluginManager.apply(IdeaExtPlugin::class)
-        pluginManager.apply(DownloadTaskPlugin::class)
-        if (plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
-            plugins.apply("org.jetbrains.kotlin.kapt")
-            // Give annotation processor arguments for Kotlin
-            val kapt = extensions.getByName("kapt")
-            val kaptArgs = PluginType.values()
-                .map { type -> type.pathKey to getPluginMainPathFile(type) }
-            kapt.withGroovyBuilder {
-                "arguments" {
-                    kaptArgs.forEach { (k, v) ->
-                        "arg"(k, v)
-                    }
-                }
-            }
-            afterEvaluate {
-                // Task ordering
-                val kaptKotlin: Task by tasks
-                tasks.withType(YamlGenerate::class) {
-                    kaptKotlin.finalizedBy(this)
-                }
-            }
-        }
     }
 
     private fun Project.setupDefaultDependencies() {
@@ -117,9 +92,9 @@ class SpigradlePlugin : Plugin<Project> {
 
     private fun Project.setupRepositoryExtensions() {
         val ext = repositories.groovyExtension
-        Repositories.ALL.forEach { (name, url) ->
-            ext.set(name, object : Closure<Any>(this, this) {
-                fun doCall() = repositories.maven(url)
+        for (repo in Repositories.values()) {
+            ext.set(repo.name.lowercase(), object : Closure<Any>(this, this) {
+                fun doCall() = repositories.maven(repo.address)
             })
         }
     }

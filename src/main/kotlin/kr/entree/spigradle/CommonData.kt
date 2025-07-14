@@ -16,32 +16,27 @@
 
 package kr.entree.spigradle
 
-import kr.entree.spigradle.bungee.BungeeDependencies
-import kr.entree.spigradle.bungee.BungeeRepositories
-import kr.entree.spigradle.nukkit.NukkitDependencies
-import kr.entree.spigradle.nukkit.NukkitRepositories
-import kr.entree.spigradle.spigot.SpigotDependencies
-import kr.entree.spigradle.spigot.SpigotRepositories
-
 object Dependencies {
     val LOMBOK = Dependency("org.projectlombok", "lombok", "1.18.36")
     val SPIGRADLE = Dependency("kr.entree", "spigradle", SpigradleMeta.VERSION)
     val SPIGRADLE_ANNOTATIONS = Dependency(SPIGRADLE, name = "spigradle-annotations", version = "2.2.0")
-    val ALL: List<Pair<String, Dependency>>
-        get() = listOf(
-            Dependencies, SpigotDependencies,
-            BungeeDependencies, NukkitDependencies
-        ).flatMap { it.toFieldEntries() }
+    val ALL: List<Dependency> =
+        listOf(LOMBOK, SPIGRADLE, SPIGRADLE_ANNOTATIONS)
+//    val ALL: List<Pair<String, Dependency>>
+//        get() = listOf(
+//            Dependencies, SpigotDependencies,
+//            BungeeDependencies, NukkitDependencies
+//        ).flatMap { it.toFieldEntries() }
 }
 
-object Repositories {
-    val SONATYPE = "https://oss.sonatype.org/content/repositories/snapshots/"
-    val JITPACK = "https://jitpack.io"
-    val ALL: List<Pair<String, String>>
-        get() = listOf(
-            Repositories, SpigotRepositories,
-            BungeeRepositories, NukkitRepositories
-        ).flatMap { it.toFieldEntries() }
+enum class Repositories(val address: String) {
+    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/"),
+    JITPACK("https://jitpack.io"),
+//    val ALL: List<Pair<String, String>>
+//        get() = listOf(
+//            Repositories, SpigotRepositories,
+//            BungeeRepositories, NukkitRepositories
+//        ).flatMap { it.toFieldEntries() }
 }
 
 data class Dependency(
@@ -49,7 +44,7 @@ data class Dependency(
     val name: String,
     val version: String,
     var isLocal: Boolean = false,
-    val versionModifier: (String) -> String = { it }
+    val versionModifier: (String) -> String = { it },
 ) {
     fun adjustVersion(inputVersion: String?) = inputVersion?.run(versionModifier) ?: version
 
@@ -65,7 +60,7 @@ internal inline fun Dependency(
     version: String = dependency.version,
     noinline versionModifier: (String) -> String = dependency.versionModifier,
     isLocal: Boolean = dependency.isLocal,
-    configure: Dependency.() -> Unit = {}
+    configure: Dependency.() -> Unit = {},
 ) = Dependency(group, name, version, isLocal, versionModifier).apply(configure)
 
 object VersionModifier {

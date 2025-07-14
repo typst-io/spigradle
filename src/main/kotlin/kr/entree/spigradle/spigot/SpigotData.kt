@@ -16,105 +16,80 @@
 
 package kr.entree.spigradle.spigot
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import kr.entree.spigradle.CommonDebug
-import kr.entree.spigradle.SerialName
-import kr.entree.spigradle.Transient
 import kr.entree.spigradle.Dependency
-import kr.entree.spigradle.Repositories
 import kr.entree.spigradle.VersionModifier
-import java.io.File
 import javax.inject.Inject
 
-open class SpigotDebug(
-        override var serverJar: File,
-        var buildToolJar: File,
-        override var serverDirectory: File,
-        var buildToolDirectory: File,
-        var buildToolOutputDirectory: File,
-        override var agentPort: Int,
-        var eula: Boolean,
-        var buildVersion: String
-) : CommonDebug {
-    override var args: List<Any> = listOf("nogui")
-    override var jvmArgs: List<Any> = emptyList()
-    var serverPort: Int = -1
-
-    @Inject
-    constructor(serverJar: File, buildToolJar: File) : this(
-            serverJar, buildToolJar,
-            serverJar.parentFile, buildToolJar.parentFile,
-            File(buildToolJar.parentFile, "outputs"),
-            5005, false, ""
-    )
-
-    /**
-     * Groovy DSL helper for the [serverPort] configuration.
-     */
-    fun serverPort(serverPort: Any) {
-        this.serverPort = if (serverPort is Number) {
-            serverPort.toInt()
-        } else serverPort.toString().toIntOrNull() ?: -1
-    }
-
-    fun getBuildVersionOrDefault(): String = buildVersion.ifEmpty { SpigotDebugTask.DEFAULT_SPIGOT_BUILD_VERSION }
-}
-
 enum class Load {
-    @SerialName("POSTWORLD")
+    // @SerialName("POSTWORLD")
     POST_WORLD,
     STARTUP
 }
 
-@JsonPropertyOrder("description", "usage", "permission", "permission-message")
+// @JsonPropertyOrder("description", "usage", "permission", "permission-message")
 open class Command @Inject constructor(@Transient val name: String) {
     var description: String? = null
     var usage: String? = null
     var permission: String? = null
 
-    @SerialName("permission-message")
+    // @SerialName("permission-message")
     var permissionMessage: String? = null
     var aliases = emptyList<String>()
 
     fun aliases(vararg aliases: String) {
         this.aliases = aliases.toList()
     }
+
+    fun serialize(): Map<String, Any?> {
+        return mapOf(
+            "description" to description,
+            "usage" to usage,
+            "permisison" to permission,
+            "permission-message" to permission,
+            "aliases" to aliases
+        ).filterValues { it != null }
+    }
 }
 
-@JsonPropertyOrder("description", "default", "children")
+// @JsonPropertyOrder("description", "default", "children")
 open class Permission @Inject constructor(@Transient val name: String) {
     var description: String? = null
 
-    @SerialName("default")
+    // @SerialName("default")
     var defaults: String? = null
     var children = emptyMap<String, Boolean>()
+
+    fun serialize(): Map<String, Any?> {
+        return mapOf(
+            "description" to description,
+            "default" to defaults,
+            "children" to children
+        ).filterValues { it != null }
+    }
 }
 
-object SpigotRepositories {
-    @SerialName("purpurmc")
-    val PURPUR_MC = "https://repo.purpurmc.org/snapshots"
-    val PURPUR = PURPUR_MC
+enum class SpigotRepositories(val address: String) {
+    // @SerialName("purpurmc"), purpur
+    PURPUR_MC("https://repo.purpurmc.org/snapshots"),
 
-    @SerialName("spigotmc")
-    val SPIGOT_MC = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    val SPIGOT = SPIGOT_MC
+    // @SerialName("spigotmc"), spigot
+    SPIGOT_MC("https://hub.spigotmc.org/nexus/content/repositories/snapshots/"),
 
-    @SerialName("papermc")
-    val PAPER_MC = "https://repo.papermc.io/repository/maven-public/"
-    val PAPER = PAPER_MC
-    val PROTOCOL_LIB = "https://repo.dmulloy2.net/nexus/repository/public/"
-    val VAULT = Repositories.JITPACK
+    // @SerialName("papermc"), paper
+    PAPER_MC("https://repo.papermc.io/repository/maven-public/"),
+    PROTOCOL_LIB("https://repo.dmulloy2.net/nexus/repository/public/"),
 
-    @SerialName("enginehub")
-    val ENGINE_HUB = "https://maven.enginehub.org/repo/"
+    // @SerialName("enginehub")
+    ENGINE_HUB("https://maven.enginehub.org/repo/"),
 
-    @SerialName("codemc")
-    val CODE_MC = "https://repo.codemc.org/repository/maven-public/"
-    val B_STATS = CODE_MC
-    val ENDER_ZONE = "https://ci.ender.zone/plugin/repository/everything/"
-    val ESSENTIALS_X = ENDER_ZONE
-    val FROSTCAST = "https://ci.frostcast.net/plugin/repository/everything"
-    val BAN_MANAGER = FROSTCAST
+    // @SerialName("codemc"), bstats
+    CODE_MC("https://repo.codemc.org/repository/maven-public/"),
+
+    // essentialsX
+    ENDER_ZONE("https://ci.ender.zone/plugin/repository/everything/"),
+
+    // banManager
+    FROSTCAST("https://ci.frostcast.net/plugin/repository/everything")
 }
 
 object SpigotDependencies {
@@ -144,7 +119,7 @@ object SpigotDependencies {
     val PAPER_ALL = Dependency(PAPER, name = "paper", isLocal = true)
     val BUKKIT = Dependency(SPIGOT, group = "org.bukkit", name = "bukkit", isLocal = true)
 
-    @SerialName("craftbukkit")
+    // @SerialName("craftbukkit")
     val CRAFT_BUKKIT = Dependency(BUKKIT, name = "craftbukkit", isLocal = true)
     val PROTOCOL_LIB = Dependency(
         "com.comphenix.protocol",
@@ -163,14 +138,14 @@ object SpigotDependencies {
         "5.1"
     )
 
-    @SerialName("worldedit")
+    // @SerialName("worldedit")
     val WORLD_EDIT = Dependency(
         "com.sk89q.worldedit",
         "worldedit-bukkit",
         "7.1.0"
     )
 
-    @SerialName("worldguard")
+    // @SerialName("worldguard")
     val WORLD_GUARD = Dependency(
         "com.sk89q.worldguard",
         "worldguard-bukkit",
@@ -187,7 +162,7 @@ object SpigotDependencies {
         "7.3.0-SNAPSHOT"
     )
 
-    @SerialName("commandhelper")
+    // @SerialName("commandhelper")
     val COMMAND_HELPER = Dependency(
         "com.sk89q",
         "commandhelper",

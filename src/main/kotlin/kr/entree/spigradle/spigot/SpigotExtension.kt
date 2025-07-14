@@ -16,10 +16,7 @@
 
 package kr.entree.spigradle.spigot
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import kr.entree.spigradle.SerialName
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.Transient
 import kr.entree.spigradle.debugDir
 import kr.entree.spigradle.spigotBuildToolDir
 import org.gradle.api.Action
@@ -101,12 +98,12 @@ import java.io.File
  *
  * See: [https://www.spigotmc.org/wiki/plugin-yml/]
  */
-@JsonPropertyOrder(
-    "main", "name", "version", "description", "website",
-    "authors", "api-version", "load", "prefix", "depend",
-    "softdepend", "loadbefore", "libraries", "commands",
-    "permissions"
-)
+//@JsonPropertyOrder(
+//    "main", "name", "version", "description", "website",
+//    "authors", "api-version", "load", "prefix", "depend",
+//    "softdepend", "loadbefore", "libraries", "commands",
+//    "permissions"
+//)
 open class SpigotExtension(project: Project) : StandardDescription {
     /**
      * The name of main class that extends [org.bukkit.plugin.java.JavaPlugin].
@@ -138,7 +135,7 @@ open class SpigotExtension(project: Project) : StandardDescription {
     var website: String? = null
     var authors: List<String> = emptyList()
 
-    @SerialName("api-version")
+    // @SerialName("api-version")
     var apiVersion: String? = null
 
     /**
@@ -166,13 +163,13 @@ open class SpigotExtension(project: Project) : StandardDescription {
     var load: Load? = null
     var prefix: String? = null
 
-    @SerialName("depend")
+//    @SerialName("depend")
     var depends: List<String> = emptyList()
 
-    @SerialName("softdepend")
+//    @SerialName("softdepend")
     var softDepends: List<String> = emptyList()
 
-    @SerialName("loadbefore")
+//    @SerialName("loadbefore")
     var loadBefore: List<String> = emptyList()
 
     /**
@@ -256,23 +253,6 @@ open class SpigotExtension(project: Project) : StandardDescription {
     val permissions: NamedDomainObjectContainer<Permission> = project.run { container { objects.newInstance(it) } }
 
     /**
-     * Configuration for the debug tasks like 'debugSpigot', 'buildSpigot'
-     *
-     * Example:
-     * ```groovy
-     * debug {
-     *   eula true
-     *   buildVersion '1.15.2'
-     * }
-     * ```
-     */
-    @Transient
-    val debug: SpigotDebug = project.objects.newInstance(
-        File(project.debugDir, "spigot/server.jar"),
-        File(project.gradle.spigotBuildToolDir, "BuildTools.jar")
-    )
-
-    /**
      * DSL helper for [commands] configuration.
      */
     fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
@@ -284,13 +264,6 @@ open class SpigotExtension(project: Project) : StandardDescription {
      */
     fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
         configure.execute(permissions)
-    }
-
-    /**
-     * DSL helper for [debug] configuration.
-     */
-    fun debug(configure: Action<SpigotDebug>) {
-        configure.execute(debug)
     }
 
     /**

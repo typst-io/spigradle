@@ -16,10 +16,7 @@
 
 package kr.entree.spigradle.nukkit
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import kr.entree.spigradle.SerialName
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.Transient
 import kr.entree.spigradle.debugDir
 import kr.entree.spigradle.spigot.Command
 import kr.entree.spigradle.spigot.Load
@@ -101,11 +98,11 @@ import java.io.File
  *
  * See: [https://github.com/NukkitX/ExamplePlugin/blob/master/src/main/resources/plugin.yml#L1]
  */
-@JsonPropertyOrder(
-        "main", "name", "version", "description", "website",
-        "authors", "api", "load", "prefix", "depend",
-        "softdepend", "loadbefore", "commands", "permissions"
-)
+//@JsonPropertyOrder(
+//        "main", "name", "version", "description", "website",
+//        "authors", "api", "load", "prefix", "depend",
+//        "softdepend", "loadbefore", "commands", "permissions"
+//)
 open class NukkitExtension(project: Project) : StandardDescription {
     override var main: String? = null
     override var name: String? = null
@@ -117,13 +114,13 @@ open class NukkitExtension(project: Project) : StandardDescription {
     var load: Load? = null
     var prefix: String? = null
 
-    @SerialName("depend")
+//    @SerialName("depend")
     var depends: List<String> = emptyList()
 
-    @SerialName("softdepend")
+//    @SerialName("softdepend")
     var softDepends: List<String> = emptyList()
 
-    @SerialName("loadbefore")
+//    @SerialName("loadbefore")
     var loadBefore: List<String> = emptyList()
 
     val commands: NamedDomainObjectContainer<Command> = project.container { project.objects.newInstance(it) }
