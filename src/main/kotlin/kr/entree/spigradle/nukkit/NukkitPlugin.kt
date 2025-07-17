@@ -47,7 +47,7 @@ class NukkitPlugin : Plugin<Project> {
             applySpigradlePlugin()
             setupDefaultRepositories()
             registerDescGenTask(NUKKIT_TYPE, NukkitExtension::class.java) { desc ->
-                mapOf(
+                linkedMapOf(
                     "main" to desc.main,
                     "name" to desc.name,
                     "version" to desc.version,

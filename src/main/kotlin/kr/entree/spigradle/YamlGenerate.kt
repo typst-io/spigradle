@@ -76,7 +76,7 @@ open class YamlGenerate : DefaultTask() {
      * The property map of yaml.
      */
     @Input
-    val properties: MapProperty<String, Any> = project.objects.mapProperty()
+    val properties: MapProperty<String, Any> = project.objects.mapProperty(String::class, Any::class)
 
     /**
      * The encoding of the file.
@@ -93,11 +93,14 @@ open class YamlGenerate : DefaultTask() {
     @TaskAction
     fun generate() {
         val dumpSettings = DumpSettings.builder()
-            .setDefaultScalarStyle(ScalarStyle.SINGLE_QUOTED)
-            .setDefaultFlowStyle(FlowStyle.FLOW)
+            .setDefaultScalarStyle(ScalarStyle.PLAIN)
+            .setDefaultFlowStyle(FlowStyle.BLOCK)
+            .setIndent(2)
+            .setBestLineBreak("\n")
+            .setDereferenceAliases(true)
             .build()
         val dump = Dump(dumpSettings)
-        val yaml = dump.dumpToString(properties)
+        val yaml = dump.dumpToString(properties.get())
         outputFiles.forEach { file ->
             file.bufferedWriter(Charset.forName(encoding.get())).use {
                 it.write(yaml)
@@ -122,22 +125,27 @@ internal fun <T : StandardDescription> Project.registerDescGenTask(
         inputs.files(detectResultFile, generalResultFile)
         group = type.taskGroup
         properties.set(provider {
-            val ret = serializer(description)
+            val map = serializer(description)
                 .filterValues { it != null }
-            if (!ret.containsKey("main")) {
+            if (!map.containsKey("main")) {
                 val detectResult = runCatching {
                     detectResultFile.readText()
                 }.getOrNull()
                 val result = detectResult ?: runCatching {
                     generalResultFile.readText()
                 }.getOrNull()
-                ret + ("main" to result)
+                val newMap = LinkedHashMap<String, Any?>()
+                if (result != null) {
+                    newMap.put("main", result)
+                }
+                newMap.putAll(map)
+                newMap
             } else {
-                ret
+                map
             }
         })
         doFirst {
-            notNull(description.main) {
+            notNull(properties.get()["main"]) {
                 Messages.noMainFound(type.descExtension, type.descGenTask)
             }
         }

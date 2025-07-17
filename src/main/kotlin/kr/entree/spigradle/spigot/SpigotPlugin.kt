@@ -17,22 +17,17 @@
 package kr.entree.spigradle.spigot
 
 import groovy.lang.Closure
-import kr.entree.spigradle.annotations.PluginType
-import kr.entree.spigradle.applyToConfigure
-import kr.entree.spigradle.groovyExtension
-import kr.entree.spigradle.runConfigurations
-import kr.entree.spigradle.settings
-import kr.entree.spigradle.kotlin.mockBukkit
 import kr.entree.spigradle.PluginConvention
+import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.applySpigradlePlugin
-import kr.entree.spigradle.createRunConfigurations
+import kr.entree.spigradle.groovyExtension
+import kr.entree.spigradle.kotlin.mockBukkit
+import kr.entree.spigradle.kotlin.spigot
+import kr.entree.spigradle.kotlin.spigotmc
 import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
-import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.gradle.ext.GradleTask
-import org.jetbrains.gradle.ext.JarApplication
+import org.gradle.kotlin.dsl.getByName
 
 /**
  * The Spigot plugin that adds:
@@ -58,45 +53,58 @@ class SpigotPlugin : Plugin<Project> {
             setupDefaultDependencies()
             // TODO: auto libraries
             registerDescGenTask(SPIGOT_TYPE, SpigotExtension::class.java) { desc ->
-                mapOf(
+                linkedMapOf(
                     "main" to desc.main,
                     "name" to desc.name,
                     "version" to desc.version,
                     "description" to desc.description,
                     "website" to desc.website,
-                    "authors" to desc.authors,
+                    "authors" to desc.authors.ifEmpty { null },
                     "api-version" to desc.apiVersion,
                     "load" to desc.load?.name,
                     "prefix" to desc.prefix,
-                    "depend" to desc.depends,
-                    "softdepend" to desc.softDepends,
-                    "loadbefore" to desc.loadBefore,
-                    "libraries" to desc.libraries,
-                    "commands" to desc.commands.toList().map {
-                        TODO(it.toString())
-                    },
-                    "permissions" to desc.permissions.toList().map {
-                        TODO(it.toString())
-                    },
-                )
+                    "depend" to desc.depends.ifEmpty { null },
+                    "softdepend" to desc.softDepends.ifEmpty { null },
+                    "loadbefore" to desc.loadBefore.ifEmpty { null },
+                    "libraries" to desc.libraries.ifEmpty { null },
+                    "commands" to desc.commands.toList().associate {
+                        it.name to it.serialize()
+                    }.ifEmpty { null },
+                    "permissions" to desc.permissions.toList().associate {
+                        it.name to it.serialize()
+                    }.ifEmpty { null },
+                ).filterValues {
+                    it != null
+                }
             }
             setupGroovyExtensions()
         }
     }
 
     private fun Project.setupDefaultDependencies() {
-        val ext = dependencies.groovyExtension
-        ext.set("mockBukkit", object : Closure<Any>(this, this) {
-            fun doCall(vararg arguments: String) =
-                dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
-        }) // Can be replaced by reflection to SpigotExtensionsKt
     }
 
     private fun Project.setupGroovyExtensions() {
-        spigot.groovyExtension.apply {
-            set("POST_WORLD", Load.POST_WORLD)
-            set("POSTWORLD", Load.POST_WORLD)
-            set("STARTUP", Load.STARTUP)
-        }
+        val depExt = dependencies.groovyExtension
+        val repExp = repositories.groovyExtension
+        // dependencies
+        // Can be replaced by reflection to SpigotExtensionsKt
+        depExt.set("mockBukkit", object : Closure<Any>(this, this) {
+            fun doCall(vararg arguments: String) =
+                dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
+        })
+        depExt.set("spigot", object : Closure<Any>(this, this) {
+            fun doCall(vararg arguments: String) =
+                dependencies.spigot(arguments.getOrNull(0))
+        })
+        // repositories
+        repExp.set("spigotmc", object : Closure<Any>(this, this) {
+            fun doCall() =
+                repositories.spigotmc()
+        })
+        // literal
+        depExt.set("POST_WORLD", Load.POST_WORLD)
+        depExt.set("POSTWORLD", Load.POST_WORLD)
+        depExt.set("STARTUP", Load.STARTUP)
     }
 }

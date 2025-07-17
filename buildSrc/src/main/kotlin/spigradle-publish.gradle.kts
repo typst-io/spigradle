@@ -34,28 +34,28 @@ gradlePlugin {
             displayName = "Spigradle Base Plugin"
             description = "The base plugin of Spigradle"
             id = "kr.entree.spigradle.base"
-            implementationClass = "kr.entree.spigradle.module.common.SpigradlePlugin"
+            implementationClass = "kr.entree.spigradle.SpigradlePlugin"
             tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
         }
         create("spigot") {
             displayName = "Spigradle Spigot Plugin"
             description = formatDesc("Spigot")
             id = "kr.entree.spigradle"
-            implementationClass = "kr.entree.spigradle.module.spigot.SpigotPlugin"
+            implementationClass = "kr.entree.spigradle.spigot.SpigotPlugin"
             tags = listOf("minecraft", "paper", "spigot", "bukkit")
         }
         create("bungee") {
             displayName = "Spigradle Bungeecord Plugin"
             description = formatDesc("Bungeecord")
             id = "kr.entree.spigradle.bungee"
-            implementationClass = "kr.entree.spigradle.module.bungee.BungeePlugin"
+            implementationClass = "kr.entree.spigradle.bungee.BungeePlugin"
             tags = listOf("minecraft", "bungeecord")
         }
         create("nukkit") {
             displayName = "Spigradle NukkitX Plugin"
             description = formatDesc("NukkitX")
             id = "kr.entree.spigradle.nukkit"
-            implementationClass = "kr.entree.spigradle.module.nukkit.NukkitPlugin"
+            implementationClass = "kr.entree.spigradle.nukkit.NukkitPlugin"
             tags = listOf("minecraft", "nukkit", "nukkitX")
         }
     }

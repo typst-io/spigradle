@@ -46,14 +46,16 @@ class BungeePlugin : Plugin<Project> {
             applySpigradlePlugin()
             setupDefaultRepositories()
             registerDescGenTask(BUNGEE_TYPE, BungeeExtension::class.java) { desc ->
-                mapOf(
+                linkedMapOf(
                     "main" to desc.main,
                     "name" to desc.name,
                     "version" to desc.description,
                     "author" to desc.author,
                     "depend" to desc.depends,
                     "softdepend" to desc.softDepends
-                )
+                ).filterValues {
+                    it != null
+                }
             }
             createRunConfigurations("Bungee", bungee.debug)
         }

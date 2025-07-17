@@ -17,14 +17,11 @@
 package kr.entree.spigradle
 
 import groovy.lang.Closure
-import kr.entree.spigradle.Repositories.SONATYPE
 import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
-import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.ide.idea.IdeaPlugin
 import org.gradle.plugins.ide.idea.model.IdeaModel
@@ -52,37 +49,15 @@ class SpigradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             setupPlugins()
-            setupDefaultDependencies()
-            setupDefaultRepositories()
             setupGroovyExtensions()
-            setupAnnotationProcessorOptions()
             markExcludeDirectories()
             setupTasks()
         }
     }
 
-    @Suppress("UnstableApiUsage")
     private fun Project.setupPlugins() {
         rootProject.pluginManager.apply(IdeaPlugin::class)
         pluginManager.apply(IdeaExtPlugin::class)
-    }
-
-    private fun Project.setupDefaultDependencies() {
-        dependencies.apply {
-            val notation = Dependencies.SPIGRADLE_ANNOTATIONS.format()
-            add(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME, notation)
-            if (project.configurations.findByName("kapt") != null) {
-                add("kapt", notation)
-            } else {
-                add(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME, notation)
-            }
-        }
-    }
-
-    private fun Project.setupDefaultRepositories() {
-        repositories.gradlePluginPortal() // For avoid APT errors
-        repositories.mavenCentral()
-        repositories.maven(SONATYPE)
     }
 
     private fun Project.setupGroovyExtensions() {
@@ -106,14 +81,6 @@ class SpigradlePlugin : Plugin<Project> {
                 fun doCall(version: String?) = dependency.format(version)
             })
         }
-    }
-
-    private fun Project.setupAnnotationProcessorOptions() {
-        val compileJava: JavaCompile by tasks
-        val aptArgs = PluginType.values().map { type ->
-            "-A${type.pathKey}=${getPluginMainPathFile(type)}"
-        }
-        compileJava.options.compilerArgs.addAll(aptArgs)
     }
 
     private fun Project.markExcludeDirectories() {

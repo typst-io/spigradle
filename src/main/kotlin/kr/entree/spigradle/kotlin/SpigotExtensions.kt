@@ -27,17 +27,17 @@ import org.gradle.kotlin.dsl.maven
 /**
  * The repo shortcut for SpigotMC, related with Spigot, MockBukkit...
  */
-fun RepositoryHandler.spigotmc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.SPIGOT_MC, configure)
+fun RepositoryHandler.spigotmc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.SPIGOT_MC.address, configure)
 
 /**
  * The repo shortcut for PaperMC, related with Paper.
  */
-fun RepositoryHandler.papermc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.PAPER_MC, configure)
+fun RepositoryHandler.papermc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.PAPER_MC.address, configure)
 
 /**
  * The repo shortcut for ProtocolLib(dumolly2), related with ProtocolLib.
  */
-fun RepositoryHandler.protocolLib(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.PROTOCOL_LIB, configure)
+fun RepositoryHandler.protocolLib(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.PROTOCOL_LIB.address, configure)
 
 /**
  * The repo shortcut for Jitpack same as jitpack(), related with Vault.
@@ -47,12 +47,12 @@ fun RepositoryHandler.vault(configure: MavenArtifactRepository.() -> Unit = {}) 
 /**
  * The repo shortcut for EngineHub, related with worldedit, worldguard, commandhelper...
  */
-fun RepositoryHandler.enginehub(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.ENGINE_HUB, configure)
+fun RepositoryHandler.enginehub(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.ENGINE_HUB.address, configure)
 
 /**
  * The repo shortcut for CodeMC, related with bStats, bStatsLite.
  */
-fun RepositoryHandler.codemc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.CODE_MC, configure)
+fun RepositoryHandler.codemc(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.CODE_MC.address, configure)
 
 /**
  * The repo shortcut for BStats same as codemc(), related with bStats and bStatsLite,
@@ -62,7 +62,7 @@ fun RepositoryHandler.bStats(configure: MavenArtifactRepository.() -> Unit = {})
 /**
  * The repo shortcut for Ender.Zone, related with EssentialsX.
  */
-fun RepositoryHandler.enderZone(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.ENDER_ZONE, configure)
+fun RepositoryHandler.enderZone(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.ENDER_ZONE.address, configure)
 
 /**
  * The repo shortcut for Ender.Zone same as enderZone(), related with EssentialsX.
@@ -73,7 +73,7 @@ fun RepositoryHandler.essentialsX(configure: MavenArtifactRepository.() -> Unit 
 /**
  * The repo shortcut for frostcast, related with BanManager.
  */
-fun RepositoryHandler.frostcast(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.FROSTCAST, configure)
+fun RepositoryHandler.frostcast(configure: MavenArtifactRepository.() -> Unit = {}) = maven(SpigotRepositories.FROSTCAST.address, configure)
 
 /**
  * The repo shortcut for frostcast same as frostcast(), related with BanManager.
@@ -92,14 +92,14 @@ fun DependencyHandler.spigotmc(artifactId: String, version: String? = null) =
  *
  * @param version Defaults to [SpigotDependencies.SPIGOT].version
  */
-fun DependencyHandler.spigot(version: String? = null) = SpigotDependencies.SPIGOT.format(version)
+fun DependencyHandler.spigot(version: String? = null) = SpigotDependencies.SPIGOT_API.format(version)
 
 /**
  * The dependency shortcut for Spigot, requires repository mavenLocal() published by BuildTools.
  *
  * @param version Defaults to [SpigotDependencies.SPIGOT_ALL].version
  */
-fun DependencyHandler.spigotAll(version: String? = null) = SpigotDependencies.SPIGOT_ALL.format(version)
+fun DependencyHandler.spigotAll(version: String? = null) = SpigotDependencies.SPIGOT.format(version)
 
 /**
  * The dependency shortcut for the NMS, requires repository mavenLocal() published by BuildTools.
@@ -113,14 +113,7 @@ fun DependencyHandler.minecraftServer(version: String? = null) = SpigotDependenc
  *
  * @param version Defaults to [SpigotDependencies.PAPER].version
  */
-fun DependencyHandler.paper(version: String? = null) = SpigotDependencies.PAPER.format(version)
-
-/**
- * The dependency shortcut for Paper, requires repository mavenLocal() published by paperclip install.
- *
- * @param version Defaults to [SpigotDependencies.PAPER_ALL].version
- */
-fun DependencyHandler.paperAll(version: String? = null) = SpigotDependencies.PAPER_ALL.format(version)
+fun DependencyHandler.paper(version: String? = null) = SpigotDependencies.PAPER_API.format(version)
 
 /**
  * The dependency shortcut for Bukkit, requires repository mavenLocal() published by BuildTools.
@@ -134,7 +127,7 @@ fun DependencyHandler.bukkit(version: String? = null) = SpigotDependencies.BUKKI
  *
  * @param version Defaults to [SpigotDependencies.CRAFT_BUKKIT].version
  */
-fun DependencyHandler.craftbukkit(version: String? = null) = SpigotDependencies.CRAFT_BUKKIT.format(version)
+fun DependencyHandler.craftbukkit(version: String? = null) = SpigotDependencies.CRAFTBUKKIT.format(version)
 
 /**
  * The dependency shortcut for ProtocolLib, requires repository protocolLib()
@@ -148,22 +141,7 @@ fun DependencyHandler.protocolLib(version: String? = null) = SpigotDependencies.
  *
  * @param version Defaults to [SpigotDependencies.VAULT].version
  */
-fun DependencyHandler.vault(version: String? = null) = SpigotDependencies.VAULT.format(version)
-
-/**
- * The dependency shortcut for Vault, requires repository jitpack() or vault()
- *
- * Maybe need to disable the option `transitive` for the imports you don't want:
- *
- * ```groovy
- * compileOnly(vaultAll()) { // or vaultAll("specificVersion")
- *   transitive = false
- * }
- * ```
- *
- * @param version Defaults to [SpigotDependencies.VAULT_ALL].version
- */
-fun DependencyHandler.vaultAll(version: String? = null) = SpigotDependencies.VAULT_ALL.format(version)
+fun DependencyHandler.vault(version: String? = null) = SpigotDependencies.VAULT_API.format(version)
 
 /**
  * The dependency shortcut for LuckPerms, requires repository mavenCentral().
@@ -177,14 +155,14 @@ fun DependencyHandler.luckPerms(version: String? = null) = SpigotDependencies.LU
  *
  * @param version Defaults to [SpigotDependencies.WORLD_EDIT].version
  */
-fun DependencyHandler.worldedit(version: String? = null) = SpigotDependencies.WORLD_EDIT.format(version)
+fun DependencyHandler.worldedit(version: String? = null) = SpigotDependencies.WORLDEDIT.format(version)
 
 /**
  * The dependency shortcut for WorldGuard, requires repository enginehub().
  *
  * @param version Defaults to [SpigotDependencies.WORLD_GUARD].version
  */
-fun DependencyHandler.worldguard(version: String? = null) = SpigotDependencies.WORLD_GUARD.format(version)
+fun DependencyHandler.worldguard(version: String? = null) = SpigotDependencies.WORLDGUARD.format(version)
 
 /**
  * The dependency shortcut for EssentialsX, requires repository enderZone() or essentialsX().
@@ -205,7 +183,7 @@ fun DependencyHandler.banManager(version: String? = null) = SpigotDependencies.B
  *
  * @param version Defaults to [SpigotDependencies.COMMAND_HELPER].version
  */
-fun DependencyHandler.commandhelper(version: String? = null) = SpigotDependencies.COMMAND_HELPER.format(version)
+fun DependencyHandler.commandhelper(version: String? = null) = SpigotDependencies.COMMANDHELPER.format(version)
 
 /**
  * The dependency shortcut for BStats, requires repository codemc() or bStats().
@@ -213,13 +191,6 @@ fun DependencyHandler.commandhelper(version: String? = null) = SpigotDependencie
  * @param version Defaults to [SpigotDependencies.B_STATS].version
  */
 fun DependencyHandler.bStats(version: String? = null) = SpigotDependencies.B_STATS.format(version)
-
-/**
- * The dependency shortcut for BStats-Lite, requires repository codemc() or bStats().
- *
- * @param version Defaults to [SpigotDependencies.B_STATS_LITE].version
- */
-fun DependencyHandler.bStatsLite(version: String? = null) = SpigotDependencies.B_STATS_LITE.format(version)
 
 /**
  * The notation shortcut for MockBukkit, requires repository spigotmc() or spigot().

@@ -46,7 +46,7 @@ open class Command @Inject constructor(@Transient val name: String) {
             "usage" to usage,
             "permisison" to permission,
             "permission-message" to permission,
-            "aliases" to aliases
+            "aliases" to aliases.ifEmpty { null }
         ).filterValues { it != null }
     }
 }
@@ -63,7 +63,7 @@ open class Permission @Inject constructor(@Transient val name: String) {
         return mapOf(
             "description" to description,
             "default" to defaults,
-            "children" to children
+            "children" to children.ifEmpty { null }
         ).filterValues { it != null }
     }
 }
@@ -92,86 +92,113 @@ enum class SpigotRepositories(val address: String) {
     FROSTCAST("https://ci.frostcast.net/plugin/repository/everything")
 }
 
-object SpigotDependencies {
-    val PURPUR = Dependency(
+enum class SpigotDependencies(
+    val group: String,
+    val publicName: String,
+    val version: String,
+    val local: Boolean = false,
+    val versionModifier: (String) -> String = { it },
+) {
+    PURPUR(
         "org.purpurmc.purpur",
         "purpur-api",
         "1.18.1-R0.1-SNAPSHOT",
         false,
         VersionModifier.SPIGOT_ADJUSTER
-    )
-    val SPIGOT = Dependency(
+    ),
+    SPIGOT_API(
         "org.spigotmc",
         "spigot-api",
         "1.18.1-R0.1-SNAPSHOT",
         false,
         VersionModifier.SPIGOT_ADJUSTER
-    )
-    val SPIGOT_ALL = Dependency(SPIGOT, name = "spigot", isLocal = true)
-    val MINECRAFT_SERVER = Dependency(
+    ),
+    SPIGOT(
+        "org.spigotmc",
+        "spigot",
+        "1.18.1-R0.1-SNAPSHOT",
+        true,
+        VersionModifier.SPIGOT_ADJUSTER
+    ),
+    MINECRAFT_SERVER(
         SPIGOT.group,
         "minecraft-server",
         "1.18.1-SNAPSHOT",
         true,
         VersionModifier.SNAPSHOT_APPENDER
-    )
-    val PAPER = Dependency(SPIGOT, "io.papermc.paper", "paper-api")
-    val PAPER_ALL = Dependency(PAPER, name = "paper", isLocal = true)
-    val BUKKIT = Dependency(SPIGOT, group = "org.bukkit", name = "bukkit", isLocal = true)
-
-    // @SerialName("craftbukkit")
-    val CRAFT_BUKKIT = Dependency(BUKKIT, name = "craftbukkit", isLocal = true)
-    val PROTOCOL_LIB = Dependency(
+    ),
+    PAPER_API(
+        "io.papermc.paper",
+        "paper-api",
+        "1.18.1-R0.1-SNAPSHOT",
+        versionModifier = VersionModifier.SPIGOT_ADJUSTER
+    ),
+    BUKKIT(
+        "org.bukkit",
+        "bukkit",
+        "1.18.1-R0.1-SNAPSHOT",
+        true,
+        VersionModifier.SPIGOT_ADJUSTER
+    ),
+    CRAFTBUKKIT(
+        "org.bukkit",
+        "craftbukkit",
+        "1.18.1-R0.1-SNAPSHOT",
+        true,
+        VersionModifier.SPIGOT_ADJUSTER
+    ),
+    PROTOCOL_LIB(
         "com.comphenix.protocol",
         "ProtocolLib",
         "4.5.1"
-    )
-    val VAULT = Dependency(
+    ),
+    VAULT_API(
         "com.github.MilkBowl",
         "VaultAPI",
         "1.7"
-    )
-    val VAULT_ALL = Dependency(VAULT, name = "Vault", version = "1.7.3")
-    val LUCK_PERMS = Dependency(
+    ),
+    LUCK_PERMS(
         "net.luckperms",
         "api",
         "5.1"
-    )
-
-    // @SerialName("worldedit")
-    val WORLD_EDIT = Dependency(
+    ),
+    WORLDEDIT(
         "com.sk89q.worldedit",
         "worldedit-bukkit",
         "7.1.0"
-    )
-
-    // @SerialName("worldguard")
-    val WORLD_GUARD = Dependency(
+    ),
+    WORLDGUARD(
         "com.sk89q.worldguard",
         "worldguard-bukkit",
         "7.0.3"
-    )
-    val ESSENTIALS_X = Dependency(
+    ),
+    ESSENTIALS_X(
         "net.ess3",
         "EssentialsX",
         "2.17.2"
-    )
-    val BAN_MANAGER = Dependency(
+    ),
+    BAN_MANAGER(
         "me.confuser.banmanager",
         "BanManagerBukkit",
         "7.3.0-SNAPSHOT"
-    )
-
-    // @SerialName("commandhelper")
-    val COMMAND_HELPER = Dependency(
+    ),
+    COMMANDHELPER(
         "com.sk89q",
         "commandhelper",
         "3.3.4-SNAPSHOT"
-    )
-    val B_STATS = Dependency(
+    ),
+    B_STATS(
         "org.bstats",
         "bstats-bukkit",
         "1.7"
-    )
-    val B_STATS_LITE = Dependency(B_STATS, name = "bstats-bukkit-lite")
+    ),
+    ;
+
+    fun toDependency(): Dependency {
+        return Dependency(group, publicName, version, local, versionModifier)
+    }
+
+    fun format(version: String?): String {
+        return toDependency().format(version)
+    }
 }
