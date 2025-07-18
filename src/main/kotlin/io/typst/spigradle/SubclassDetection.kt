@@ -16,7 +16,6 @@
 
 package io.typst.spigradle
 
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
@@ -113,7 +112,7 @@ open class SubclassDetection : DefaultTask() {
     }
 
     companion object {
-        fun register(project: Project, taskName: String, type: PluginType): TaskProvider<SubclassDetection> {
+        fun register(project: Project, taskName: String, type: String): TaskProvider<SubclassDetection> {
             val sourceSets = project.extensions.getByType(SourceSetContainer::class)
             return project.tasks.register(taskName, SubclassDetection::class) {
                 val pathFile = project.getPluginMainPathFile(type)

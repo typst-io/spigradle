@@ -20,7 +20,6 @@ import io.typst.spigradle.PluginConvention
 import io.typst.spigradle.Repositories
 import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.registerDescGenTask
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
@@ -37,8 +36,7 @@ class BungeePlugin : Plugin<Project> {
         val BUNGEE_TYPE = PluginConvention(
             serverName = "bungee",
             descFile = "bungee.yml",
-            mainSuperClass = "net/md_5/bungee/api/plugin/Plugin",
-            mainType = PluginType.BUNGEE
+            mainSuperClass = "net/md_5/bungee/api/plugin/Plugin"
         )
     }
 

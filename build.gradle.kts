@@ -1,4 +1,4 @@
-import kr.entree.spigradle.build.VersionTask
+import io.typst.spigradle.build.VersionTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
@@ -25,7 +25,6 @@ dependencies {
     implementation(libs.asm)
     implementation(libs.ideaExt)
     implementation(libs.downloadTask)
-    implementation(libs.spigradleAnnotations)
     implementation(libs.snakeyamlEngine)
     compileOnly(libs.spigotApi)
     testImplementation(libs.junit.jupiter.api)

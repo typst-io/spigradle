@@ -16,7 +16,6 @@
 
 package io.typst.spigradle
 
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -113,16 +112,15 @@ open class YamlGenerate : DefaultTask() {
 internal fun <T> Project.registerDescGenTask(
     type: PluginConvention, extensionClass: Class<T>, serializer: (T) -> Map<String, Any?>,
 ) {
-    val detectResultFile = getPluginMainPathFile(type.mainType)
-    val generalResultFile = getPluginMainPathFile(PluginType.GENERAL)
+    val detectResultFile = getPluginMainPathFile(type.serverName)
     val description = extensions.create(type.descExtension, extensionClass, this)
-    val detectionTask = SubclassDetection.register(this, type.mainDetectTask, type.mainType).applyToConfigure {
+    val detectionTask = SubclassDetection.register(this, type.mainDetectTask, type.serverName).applyToConfigure {
         group = type.taskGroup
         superClassName.set(type.mainSuperClass)
         outputFile.set(detectResultFile)
     }
     val generationTask = registerYamlGenTask(type).applyToConfigure {
-        inputs.files(detectResultFile, generalResultFile)
+        inputs.files(detectResultFile)
         group = type.taskGroup
         properties.set(provider {
             val map = serializer(description)
@@ -131,12 +129,9 @@ internal fun <T> Project.registerDescGenTask(
                 val detectResult = runCatching {
                     detectResultFile.readText()
                 }.getOrNull()
-                val result = detectResult ?: runCatching {
-                    generalResultFile.readText()
-                }.getOrNull()
                 val newMap = LinkedHashMap<String, Any?>()
-                if (result != null) {
-                    newMap.put("main", result)
+                if (detectResult != null) {
+                    newMap.put("main", detectResult)
                 }
                 newMap.putAll(map)
                 newMap

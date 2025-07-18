@@ -21,7 +21,6 @@ import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
 import io.typst.spigradle.spigot.Load
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
@@ -38,8 +37,7 @@ class NukkitPlugin : Plugin<Project> {
         val NUKKIT_TYPE = PluginConvention(
             serverName = "nukkit",
             descFile = "plugin.yml",
-            mainSuperClass = "cn/nukkit/plugin/PluginBase",
-            mainType = PluginType.NUKKIT
+            mainSuperClass = "cn/nukkit/plugin/PluginBase"
         )
     }
 

@@ -16,15 +16,12 @@
 
 package io.typst.spigradle
 
-import kr.entree.spigradle.annotations.PluginType
-
 /**
  * Created by JunHyung Im on 2020-08-25
  */
 data class PluginConvention(
         val serverName: String,
         val descFile: String,
-        val mainType: PluginType,
         val mainSuperClass: String = "",
         val descGenTask: String = "generate${serverName.capitalized()}Description",
         val mainDetectTask: String = "detect${serverName.capitalized()}Main",

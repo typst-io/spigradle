@@ -1,4 +1,4 @@
-import kr.entree.spigradle.build.VersionTask
+import io.typst.spigradle.build.VersionTask
 
 plugins {
     id("com.gradle.plugin-publish")
@@ -33,29 +33,29 @@ gradlePlugin {
         create("spigradle") {
             displayName = "Spigradle Base Plugin"
             description = "The base plugin of Spigradle"
-            id = "kr.entree.spigradle.base"
-            implementationClass = "kr.entree.spigradle.SpigradlePlugin"
+            id = "io.typst.spigradle.base"
+            implementationClass = "io.typst.spigradle.SpigradlePlugin"
             tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
         }
         create("spigot") {
             displayName = "Spigradle Spigot Plugin"
             description = formatDesc("Spigot")
-            id = "kr.entree.spigradle"
-            implementationClass = "kr.entree.spigradle.spigot.SpigotPlugin"
+            id = "io.typst.spigradle"
+            implementationClass = "io.typst.spigradle.spigot.SpigotPlugin"
             tags = listOf("minecraft", "paper", "spigot", "bukkit")
         }
         create("bungee") {
             displayName = "Spigradle Bungeecord Plugin"
             description = formatDesc("Bungeecord")
-            id = "kr.entree.spigradle.bungee"
-            implementationClass = "kr.entree.spigradle.bungee.BungeePlugin"
+            id = "io.typst.spigradle.bungee"
+            implementationClass = "io.typst.spigradle.bungee.BungeePlugin"
             tags = listOf("minecraft", "bungeecord")
         }
         create("nukkit") {
             displayName = "Spigradle NukkitX Plugin"
             description = formatDesc("NukkitX")
-            id = "kr.entree.spigradle.nukkit"
-            implementationClass = "kr.entree.spigradle.nukkit.NukkitPlugin"
+            id = "io.typst.spigradle.nukkit"
+            implementationClass = "io.typst.spigradle.nukkit.NukkitPlugin"
             tags = listOf("minecraft", "nukkit", "nukkitX")
         }
     }

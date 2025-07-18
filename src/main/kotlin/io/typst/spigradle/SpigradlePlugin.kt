@@ -17,7 +17,6 @@
 package io.typst.spigradle
 
 import groovy.lang.Closure
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
@@ -34,11 +33,8 @@ val Gradle.spigotBuildToolDir get() = File(gradleUserHomeDir, SpigradlePlugin.SP
 
 val Project.debugDir get() = File(projectDir, SpigradlePlugin.DEBUG_DIR)
 
-// TODO: Remove in Spigradle 3.0
-private val PluginType.internalName get() = if (this == PluginType.GENERAL) "plugin" else name.lowercase()
-
-fun Project.getPluginMainPathFile(type: PluginType) =
-    layout.buildDirectory.file("spigradle/${type.internalName}_main").get().asFile
+fun Project.getPluginMainPathFile(type: String) =
+    layout.buildDirectory.file("spigradle/${type}_main").get().asFile
 
 class SpigradlePlugin : Plugin<Project> {
     companion object {

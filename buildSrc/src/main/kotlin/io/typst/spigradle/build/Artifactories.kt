@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle.build
+package io.typst.spigradle.build
 
 import groovy.lang.GroovyObject
 

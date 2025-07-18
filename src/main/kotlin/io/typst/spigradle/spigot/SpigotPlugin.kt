@@ -22,7 +22,6 @@ import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.bungee.BungeeDependencies
 import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
-import kr.entree.spigradle.annotations.PluginType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
@@ -38,8 +37,7 @@ class SpigotPlugin : Plugin<Project> {
         val SPIGOT_TYPE = PluginConvention(
             serverName = "spigot",
             descFile = "plugin.yml",
-            mainSuperClass = "org/bukkit/plugin/java/JavaPlugin",
-            mainType = PluginType.SPIGOT
+            mainSuperClass = "org/bukkit/plugin/java/JavaPlugin"
         )
     }
 
