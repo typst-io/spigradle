@@ -6,8 +6,6 @@ The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin provide
 
 - Shortcuts for dependency and repository.
 
-- Tasks for run server with your plugins for debug.
-
 ## Table of contents
 
 - [Requirements](#requirements)
@@ -17,8 +15,6 @@ The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin provide
 - [Description file generation](#description-file-generation)
 
 - [Main class detection](#main-class-detection)
-
-- [Debug your plugin](#debug-your-plugin)
 
 - [Configuration](#configuration)
 
@@ -109,29 +105,6 @@ import io.typst.spigradle.annotations.BungeePlugin;
 @BungeePlugin
 public class SamplePlugin extends Plugin { }
 ```  
-
-## Debug your plugin
-
-Run your plugin with just execute single gradle task.
-
-The `debugBungee` performs to download Bungeecord, copy it with your plugins into the default path `debug/bungee`, and run Bungeecord.
-
-> These tasks copy your plugin and its dependency plugins.
-
-You can pass (jvm)arguments:
-
-```groovy
-bungeecord {
-    debug {
-        args '--nojline', '--max-players', '100'
-        jvmArgs '-Xmx16G'
-    }
-}
-```
-
-This affects to `debugBungee`, also `RunBungee` [IDEA RunConfiguration](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html).
-
-More information: [Tasks](#tasks)
 
 ## Configuration
 
@@ -234,32 +207,6 @@ Finds the main class extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5
 *Depends on: `detectBungeeMain`*
 
 Generates the description file 'bungee.yml'.
-
-### debugBungee
-
-*Depends on: `prepareBungeePlugins`, `downloadBungee`, `runBungee`*
-
-Downloads Bungeecord and runs it with your plugin and dependency plugins.
-
-### prepareBungeePlugins - [Copy](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html)
-
-*Depends on: `build`*
-
-Copies project plugin jar and its dependency plugins into the server plugins directory.
-
-### downloadBungee - [Download](https://github.com/michel-kraemer/gradle-download-task#usage)
-
-Downloads Bungeecord.
-
-### runBungee - [JavaExec](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html)
-
-Just runs the Bungeecord jar at configured path even there's no executable file.
-
-NOTE: Use `debugBungee` instead of `runBungee` if you need prepare process like download Bungeecord jar, copy plugins.
-
-### cleanDebug
-
-Deletes all server files.
 
 ## See also
 

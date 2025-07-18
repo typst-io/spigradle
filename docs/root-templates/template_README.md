@@ -72,6 +72,11 @@ plugins {
     id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
 dependencies {
     compileOnly spigot('1.21.8')
 }
@@ -93,11 +98,16 @@ spigot {
 <summary>Kotlin DSL</summary>
 
 ```kotlin
-import io.typst.spigradle.kotlin.*
+import io.typst.spigradle.spigot.*
 
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
+    spigotmc()
 }
 
 dependencies {
@@ -172,6 +182,10 @@ plugins {
     id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compileOnly bungeecord('1.15')
 }
@@ -184,6 +198,10 @@ dependencies {
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -247,6 +265,10 @@ plugins {
     id 'io.typst.spigradle.nukkit' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compileOnly nukkit('1.0')
 }
@@ -259,6 +281,10 @@ dependencies {
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle.nukkit") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -385,7 +411,7 @@ dependencies {
 ### Kotlin usage
 
 ```kotlin
-import io.typst.spigradle.kotlin.*
+import io.typst.spigradle.spigot.*
 
 dependencies {
     compileOnly(spigot("1.21.8")) // or just spigot()
