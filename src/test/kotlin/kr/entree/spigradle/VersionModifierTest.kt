@@ -1,5 +1,6 @@
 package kr.entree.spigradle
 
+import io.typst.spigradle.VersionModifier
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

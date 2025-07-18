@@ -1,13 +1,13 @@
 # Spigradle
 [![License](https://img.shields.io/github/license/typst-io/spigradle.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/kr.entree.spigradle)](https://plugins.gradle.org/plugin/kr.entree.spigradle)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle)](https://plugins.gradle.org/plugin/io.typst.spigradle)
 [![TeamCity CI](https://ci.entree.dev/app/rest/builds/buildType(id:Spigradle_Build)/statusIcon)](https://ci.entree.dev/buildConfiguration/Spigradle_Build?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds&guest=1)
 
 An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and NukkitX.
 
 # Benefits
 
-- [Description file](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.spigot/-spigot-extension/index.html) generation: `plugin.yml` and/or `bungee.yml`
+- [Description file](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html) generation: `plugin.yml` and/or `bungee.yml`
 
 - Main class detection
 
@@ -18,7 +18,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
 }
 
 group 'org.sample'
@@ -71,7 +71,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
 }
 
 dependencies {
@@ -95,11 +95,11 @@ spigot {
 <summary>Kotlin DSL</summary>
 
 ```kotlin
-import kr.entree.spigradle.kotlin.*
+import io.typst.spigradle.kotlin.*
 
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
-    id("kr.entree.spigradle") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
 }
 
 dependencies {
@@ -135,7 +135,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle'
+apply plugin: 'io.typst.spigradle'
 ```
 
 </details>
@@ -153,7 +153,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle")
+apply(plugin = "io.typst.spigradle")
 ```
 
 </details>
@@ -171,7 +171,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle.bungee' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
 }
 
 dependencies {
@@ -185,7 +185,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
-    id("kr.entree.spigradle.bungee") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
 }
 
 dependencies {
@@ -209,7 +209,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle.bungee'
+apply plugin: 'io.typst.spigradle.bungee'
 ```
 
 </details>
@@ -227,7 +227,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle.bungee")
+apply(plugin = "io.typst.spigradle.bungee")
 ```
 
 </details>
@@ -246,7 +246,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle.nukkit' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle.nukkit' version '$SPIGRADLE_VERSION'
 }
 
 dependencies {
@@ -260,7 +260,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
-    id("kr.entree.spigradle.nukkit") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle.nukkit") version "$SPIGRADLE_VERSION"
 }
 
 dependencies {
@@ -284,7 +284,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle.nukkit'
+apply plugin: 'io.typst.spigradle.nukkit'
 ```
 
 </details>
@@ -302,7 +302,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle.nukkit")
+apply(plugin = "io.typst.spigradle.nukkit")
 ```
 
 </details>
@@ -343,7 +343,7 @@ repositories {
 ### Kotiln usage
 
 ```kotlin
-import kr.entree.spigradle.kotlin.*
+import io.typst.spigradle.kotlin.*
 
 repositories {
     enginehub()
@@ -387,7 +387,7 @@ dependencies {
 ### Kotlin usage
 
 ```kotlin
-import kr.entree.spigradle.kotlin.*
+import io.typst.spigradle.kotlin.*
 
 dependencies {
     compileOnly(spigot("1.21.8")) // or just spigot()

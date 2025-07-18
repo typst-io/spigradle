@@ -16,9 +16,10 @@
 
 package kr.entree.spigradle
 
+import io.typst.spigradle.applySpigradlePlugin
 import kr.entree.spigradle.spigot.SpigotDebug
-import kr.entree.spigradle.spigot.SpigotDependencies
-import kr.entree.spigradle.spigot.spigot
+import io.typst.spigradle.spigot.SpigotDependencies
+import io.typst.spigradle.spigot.spigot
 import kr.entree.spigradle.spigot.SpigotDebugTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

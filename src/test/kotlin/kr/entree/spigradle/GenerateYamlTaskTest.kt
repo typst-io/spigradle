@@ -1,7 +1,8 @@
 package kr.entree.spigradle
 
-import kr.entree.spigradle.spigot.Load
-import kr.entree.spigradle.spigot.SpigotExtension
+import io.typst.spigradle.YamlGenerate
+import io.typst.spigradle.spigot.Load
+import io.typst.spigradle.spigot.SpigotExtension
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.normaliseLineSeparators

@@ -20,7 +20,7 @@ val generateSpigradleMeta by tasks.registering {
 
         outputDir.resolve("SpigradleMeta.kt").writeText(
             """
-            package kr.entree.spigradle
+            package io.typst.spigradle
 
             object SpigradleMeta {
                 const val VERSION = "$version"

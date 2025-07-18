@@ -17,7 +17,7 @@
 package kr.entree.spigradle
 
 import kr.entree.spigradle.annotations.PluginType
-import kr.entree.spigradle.SpigradlePlugin.Companion.DEBUG_DIR
+import io.typst.spigradle.SpigradlePlugin.Companion.DEBUG_DIR
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
