@@ -57,7 +57,6 @@ class BungeePlugin : Plugin<Project> {
                     it != null
                 }
             }
-            createRunConfigurations("Bungee", bungee.debug)
         }
     }
 

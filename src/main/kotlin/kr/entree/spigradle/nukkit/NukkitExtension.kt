@@ -17,16 +17,13 @@
 package kr.entree.spigradle.nukkit
 
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.debugDir
 import kr.entree.spigradle.spigot.Command
 import kr.entree.spigradle.spigot.Load
 import kr.entree.spigradle.spigot.Permission
-import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.container
 import org.gradle.kotlin.dsl.newInstance
-import java.io.File
 
 /**
  * Nukkit configuration for the 'plugin.yml' description, and debug settings.
@@ -114,24 +111,17 @@ open class NukkitExtension(project: Project) : StandardDescription {
     var load: Load? = null
     var prefix: String? = null
 
-//    @SerialName("depend")
+    //    @SerialName("depend")
     var depends: List<String> = emptyList()
 
-//    @SerialName("softdepend")
+    //    @SerialName("softdepend")
     var softDepends: List<String> = emptyList()
 
-//    @SerialName("loadbefore")
+    //    @SerialName("loadbefore")
     var loadBefore: List<String> = emptyList()
 
     val commands: NamedDomainObjectContainer<Command> = project.container { project.objects.newInstance(it) }
     val permissions: NamedDomainObjectContainer<Permission> = project.container { project.objects.newInstance(it) }
-
-    @Transient
-    val debug: NukkitDebug = project.objects.newInstance(File(project.debugDir, "nukkit/nukkit.jar"))
-
-    fun debug(configure: Action<NukkitDebug>) {
-        configure.execute(debug)
-    }
 
     fun authors(authors: Array<String>) {
         this.authors = authors.toList()

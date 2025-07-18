@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package kr.entree.spigradle.spigot
 
-import kr.entree.spigradle.annotations.PluginType
+import javax.inject.Inject
 
-/**
- * Created by JunHyung Im on 2020-08-25
- */
-data class PluginConvention(
-        val serverName: String,
-        val descFile: String,
-        val mainType: PluginType,
-        val mainSuperClass: String = "",
-        val descGenTask: String = "generate${serverName.capitalized()}Description",
-        val mainDetectTask: String = "detect${serverName.capitalized()}Main",
-        val descExtension: String = serverName,
-        val taskGroup: String = serverName
-)
+// @JsonPropertyOrder("description", "default", "children")
+open class Permission @Inject constructor(@Transient val name: String) {
+    var description: String? = null
+
+    // @SerialName("default")
+    var defaults: String? = null
+    var children = emptyMap<String, Boolean>()
+
+    fun serialize(): Map<String, Any?> {
+        return mapOf(
+            "description" to description,
+            "default" to defaults,
+            "children" to children.ifEmpty { null }
+        ).filterValues { it != null }
+    }
+}

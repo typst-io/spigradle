@@ -14,37 +14,18 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle.nukkit
+package kr.entree.spigradle.bungee
 
-import kr.entree.spigradle.CommonDebug
 import kr.entree.spigradle.Dependency
 import kr.entree.spigradle.VersionModifier
-import java.io.File
-import javax.inject.Inject
 
-object NukkitRepositories {
-    val NUKKIT_X = "https://repo.nukkitx.com/maven-snapshots"
-}
-
-object NukkitDependencies {
-    val NUKKIT = Dependency(
-        "cn.nukkit",
-        "nukkit",
-        "2.0.0-SNAPSHOT",
+object BungeeDependencies {
+    //    @SerialName("bungeecord")
+    val BUNGEE_CORD = Dependency(
+        "net.md-5",
+        "bungeecord-api",
+        "1.15-SNAPSHOT",
         false,
         VersionModifier.SNAPSHOT_APPENDER
     )
-    val NUKKIT_X = NUKKIT
-}
-
-open class NukkitDebug(
-        override var serverJar: File,
-        override var serverDirectory: File,
-        override var agentPort: Int
-) : CommonDebug {
-    override var args: List<Any> = listOf("nogui")
-    override var jvmArgs: List<Any> = emptyList()
-
-    @Inject
-    constructor(serverJar: File) : this(serverJar, serverJar.parentFile, 5005)
 }

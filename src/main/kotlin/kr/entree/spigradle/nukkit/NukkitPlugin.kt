@@ -69,7 +69,6 @@ class NukkitPlugin : Plugin<Project> {
                 )
             }
             setupGroovyExtensions()
-            createRunConfigurations("Nukkit", nukkit.debug)
         }
     }
 

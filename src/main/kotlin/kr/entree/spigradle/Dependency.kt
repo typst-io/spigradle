@@ -16,29 +16,6 @@
 
 package kr.entree.spigradle
 
-object Dependencies {
-    val LOMBOK = Dependency("org.projectlombok", "lombok", "1.18.36")
-    val SPIGRADLE = Dependency("kr.entree", "spigradle", SpigradleMeta.VERSION)
-    val SPIGRADLE_ANNOTATIONS = Dependency(SPIGRADLE, name = "spigradle-annotations", version = "2.2.0")
-    val ALL: List<Dependency> =
-        listOf(LOMBOK, SPIGRADLE, SPIGRADLE_ANNOTATIONS)
-//    val ALL: List<Pair<String, Dependency>>
-//        get() = listOf(
-//            Dependencies, SpigotDependencies,
-//            BungeeDependencies, NukkitDependencies
-//        ).flatMap { it.toFieldEntries() }
-}
-
-enum class Repositories(val address: String) {
-    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/"),
-    JITPACK("https://jitpack.io"),
-//    val ALL: List<Pair<String, String>>
-//        get() = listOf(
-//            Repositories, SpigotRepositories,
-//            BungeeRepositories, NukkitRepositories
-//        ).flatMap { it.toFieldEntries() }
-}
-
 data class Dependency(
     val group: String,
     val name: String,
@@ -53,12 +30,12 @@ data class Dependency(
     }
 }
 
-internal inline fun Dependency(
+internal fun Dependency(
     dependency: Dependency,
     group: String = dependency.group,
     name: String = dependency.name,
     version: String = dependency.version,
-    noinline versionModifier: (String) -> String = dependency.versionModifier,
+    versionModifier: (String) -> String = dependency.versionModifier,
     isLocal: Boolean = dependency.isLocal,
     configure: Dependency.() -> Unit = {},
 ) = Dependency(group, name, version, isLocal, versionModifier).apply(configure)

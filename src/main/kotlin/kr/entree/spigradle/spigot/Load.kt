@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Spigradle contributors.
+ * Copyright (c) 2025 Spigradle contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package kr.entree.spigradle.spigot
 
-import org.gradle.api.Project
-import java.io.File
-
-interface MainProvider {
-    var main: String?
-}
-
-interface StandardDescription : MainProvider {
-    var name: String?
-    var version: String?
-    var description: String?
-
-    fun setDefault(project: Project) {
-        name = name ?: project.name
-        version = version ?: project.version.toString()
-        description = description ?: project.description
-    }
+enum class Load {
+    // @SerialName("POSTWORLD")
+    POST_WORLD,
+    STARTUP
 }

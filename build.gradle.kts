@@ -39,16 +39,11 @@ configurations {
 }
 
 kotlin {
-    // 1.16.5 requires 11
-    jvmToolchain(11)
-
     compilerOptions {
         // Set lower API and language version to make the plugins compatible with Gradle 8.0+
         // See: https://docs.gradle.org/current/userguide/compatibility.html#kotlin
         apiVersion = KotlinVersion.KOTLIN_1_8
         languageVersion = KotlinVersion.KOTLIN_1_8
-
-        allWarningsAsErrors = true
     }
 }
 

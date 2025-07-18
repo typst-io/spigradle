@@ -16,18 +16,15 @@
 
 package kr.entree.spigradle
 
-import kr.entree.spigradle.annotations.PluginType
-
-/**
- * Created by JunHyung Im on 2020-08-25
- */
-data class PluginConvention(
-        val serverName: String,
-        val descFile: String,
-        val mainType: PluginType,
-        val mainSuperClass: String = "",
-        val descGenTask: String = "generate${serverName.capitalized()}Description",
-        val mainDetectTask: String = "detect${serverName.capitalized()}Main",
-        val descExtension: String = serverName,
-        val taskGroup: String = serverName
-)
+object Dependencies {
+    val LOMBOK = Dependency("org.projectlombok", "lombok", "1.18.36")
+    val SPIGRADLE = Dependency("kr.entree", "spigradle", SpigradleMeta.VERSION)
+    val SPIGRADLE_ANNOTATIONS = Dependency(SPIGRADLE, name = "spigradle-annotations", version = "2.2.0")
+    val ALL: List<Dependency> =
+        listOf(LOMBOK, SPIGRADLE, SPIGRADLE_ANNOTATIONS)
+//    val ALL: List<Pair<String, Dependency>>
+//        get() = listOf(
+//            Dependencies, SpigotDependencies,
+//            BungeeDependencies, NukkitDependencies
+//        ).flatMap { it.toFieldEntries() }
+}

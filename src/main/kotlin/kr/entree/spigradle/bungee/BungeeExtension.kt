@@ -17,11 +17,7 @@
 package kr.entree.spigradle.bungee
 
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.debugDir
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.newInstance
-import java.io.File
 
 /**
  * Bungeecord configuration for the 'plugin.yml' description, and debug settings.
@@ -60,13 +56,6 @@ open class BungeeExtension(project: Project) : StandardDescription {
     var author: String? = null
     var depends: List<String> = emptyList()
     var softDepends: List<String> = emptyList()
-
-    @Transient
-    val debug: BungeeDebug = project.objects.newInstance(File(project.debugDir, "bungee/bungee.jar"))
-
-    fun debug(configure: Action<BungeeDebug>) {
-        configure.execute(debug)
-    }
 
     fun depends(vararg depends: String) {
         this.depends = depends.toList()

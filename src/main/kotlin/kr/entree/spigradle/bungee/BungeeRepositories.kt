@@ -16,36 +16,8 @@
 
 package kr.entree.spigradle.bungee
 
-import kr.entree.spigradle.Dependency
 import kr.entree.spigradle.Repositories
-import kr.entree.spigradle.VersionModifier
-import kr.entree.spigradle.CommonDebug
-import java.io.File
-import javax.inject.Inject
 
 object BungeeRepositories {
     val BUNGEECORD = Repositories.SONATYPE
-}
-
-object BungeeDependencies {
-//    @SerialName("bungeecord")
-    val BUNGEE_CORD = Dependency(
-        "net.md-5",
-        "bungeecord-api",
-        "1.15-SNAPSHOT",
-        false,
-        VersionModifier.SNAPSHOT_APPENDER
-    )
-}
-
-open class BungeeDebug(
-        override var serverJar: File,
-        override var serverDirectory: File,
-        override var agentPort: Int
-) : CommonDebug {
-    override var args: List<Any> = listOf("nogui")
-    override var jvmArgs: List<Any> = emptyList()
-
-    @Inject
-    constructor(serverJar: File) : this(serverJar, serverJar.parentFile, 5005)
 }

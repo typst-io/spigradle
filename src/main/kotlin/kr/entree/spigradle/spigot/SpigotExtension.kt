@@ -17,14 +17,11 @@
 package kr.entree.spigradle.spigot
 
 import kr.entree.spigradle.StandardDescription
-import kr.entree.spigradle.debugDir
-import kr.entree.spigradle.spigotBuildToolDir
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.container
 import org.gradle.kotlin.dsl.newInstance
-import java.io.File
 
 /**
  * Spigot configuration for the 'plugin.yml' description, and debug settings.
