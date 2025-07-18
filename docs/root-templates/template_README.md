@@ -11,8 +11,6 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 
 - Main class detection
 
-- Debug tasks
-
 - Shortcuts for [repository](#repositories) and [dependency](#dependencies)
 
 ```groovy

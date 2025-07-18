@@ -19,41 +19,19 @@ package io.typst.spigradle
 import groovy.lang.Closure
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.invocation.Gradle
-import org.gradle.api.tasks.Delete
-import org.gradle.kotlin.dsl.*
-import org.gradle.plugins.ide.idea.IdeaPlugin
-import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.gradle.ext.IdeaExtPlugin
-import java.io.File
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.maven
 
 fun Project.applySpigradlePlugin() = pluginManager.apply(SpigradlePlugin::class)
-
-val Gradle.spigotBuildToolDir get() = File(gradleUserHomeDir, SpigradlePlugin.SPIGOT_BUILD_TOOLS_DIR)
-
-val Project.debugDir get() = File(projectDir, SpigradlePlugin.DEBUG_DIR)
 
 fun Project.getPluginMainPathFile(type: String) =
     layout.buildDirectory.file("spigradle/${type}_main").get().asFile
 
 class SpigradlePlugin : Plugin<Project> {
-    companion object {
-        const val DEBUG_DIR = "debug"
-        const val SPIGOT_BUILD_TOOLS_DIR = "spigot-buildtools"
-    }
-
     override fun apply(project: Project) {
         with(project) {
-            setupPlugins()
             setupGroovyExtensions()
-            markExcludeDirectories()
-            setupTasks()
         }
-    }
-
-    private fun Project.setupPlugins() {
-        rootProject.pluginManager.apply(IdeaPlugin::class)
-        pluginManager.apply(IdeaExtPlugin::class)
     }
 
     private fun Project.setupGroovyExtensions() {
@@ -76,22 +54,6 @@ class SpigradlePlugin : Plugin<Project> {
             ext.set(name, object : Closure<Any>(this, this) {
                 fun doCall(version: String?) = dependency.format(version)
             })
-        }
-    }
-
-    private fun Project.markExcludeDirectories() {
-        val idea: IdeaModel by extensions
-        // Mark exclude directories
-        idea.module {
-            excludeDirs = setOf(debugDir) + excludeDirs
-        }
-    }
-
-    private fun Project.setupTasks() {
-        tasks.register("cleanDebug", Delete::class) {
-            group = "spigradle"
-            description = "Delete the debug directory."
-            delete(debugDir)
         }
     }
 }
