@@ -19,13 +19,30 @@ package kr.entree.spigradle.bungee
 import kr.entree.spigradle.Dependency
 import kr.entree.spigradle.VersionModifier
 
-object BungeeDependencies {
+enum class BungeeDependencies(
+    val group: String,
+    val publicName: String,
+    val version: String,
+    val alias: String,
+    val local: Boolean = false,
+    val versionModifier: (String) -> String = { it },
+) {
     //    @SerialName("bungeecord")
-    val BUNGEE_CORD = Dependency(
+    BUNGEE_CORD(
         "net.md-5",
         "bungeecord-api",
-        "1.15-SNAPSHOT",
+        "1.21-SNAPSHOT",
+        "bungeecord",
         false,
         VersionModifier.SNAPSHOT_APPENDER
-    )
+    ),
+    ;
+
+    fun toDependency(): Dependency {
+        return Dependency(group, publicName, version, local, versionModifier)
+    }
+
+    fun format(version: String?): String {
+        return toDependency().format(version)
+    }
 }

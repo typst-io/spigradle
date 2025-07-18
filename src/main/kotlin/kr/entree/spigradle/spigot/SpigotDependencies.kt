@@ -30,7 +30,7 @@ enum class SpigotDependencies(
     PURPUR(
         "org.purpurmc.purpur",
         "purpur-api",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "purpur",
         false,
         VersionModifier.SPIGOT_ADJUSTER
@@ -38,7 +38,7 @@ enum class SpigotDependencies(
     SPIGOT_API(
         "org.spigotmc",
         "spigot-api",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "spigot",
         false,
         VersionModifier.SPIGOT_ADJUSTER
@@ -46,7 +46,7 @@ enum class SpigotDependencies(
     SPIGOT(
         "org.spigotmc",
         "spigot",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "spigotAll",
         true,
         VersionModifier.SPIGOT_ADJUSTER
@@ -54,7 +54,7 @@ enum class SpigotDependencies(
     MINECRAFT_SERVER(
         SPIGOT.group,
         "minecraft-server",
-        "1.18.1-SNAPSHOT",
+        "1.21.8-SNAPSHOT",
         "minecraftServer",
         true,
         VersionModifier.SNAPSHOT_APPENDER
@@ -62,14 +62,14 @@ enum class SpigotDependencies(
     PAPER_API(
         "io.papermc.paper",
         "paper-api",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "paper",
         versionModifier = VersionModifier.SPIGOT_ADJUSTER
     ),
     BUKKIT(
         "org.bukkit",
         "bukkit",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "bukkit",
         true,
         VersionModifier.SPIGOT_ADJUSTER
@@ -77,7 +77,7 @@ enum class SpigotDependencies(
     CRAFTBUKKIT(
         "org.bukkit",
         "craftbukkit",
-        "1.18.1-R0.1-SNAPSHOT",
+        "1.21.8-R0.1-SNAPSHOT",
         "craftbukkit",
         true,
         VersionModifier.SPIGOT_ADJUSTER
@@ -85,7 +85,7 @@ enum class SpigotDependencies(
     PROTOCOL_LIB(
         "com.comphenix.protocol",
         "ProtocolLib",
-        "4.5.1",
+        "5.3.0",
         "protocolLib"
     ),
     VAULT_API(
@@ -97,43 +97,43 @@ enum class SpigotDependencies(
     LUCK_PERMS(
         "net.luckperms",
         "api",
-        "5.1",
+        "5.5.9",
         "luckperms",
     ),
     WORLDEDIT(
         "com.sk89q.worldedit",
         "worldedit-bukkit",
-        "7.1.0",
+        "7.3.15",
         "worldedit",
     ),
     WORLDGUARD(
         "com.sk89q.worldguard",
         "worldguard-bukkit",
-        "7.0.3",
+        "7.0.14",
         "worldguard",
     ),
     ESSENTIALS_X(
         "net.ess3",
         "EssentialsX",
-        "2.17.2",
+        "2.21.1",
         "essentialsX",
     ),
     BAN_MANAGER(
         "me.confuser.banmanager",
         "BanManagerBukkit",
-        "7.3.0-SNAPSHOT",
+        "7.9.0-SNAPSHOT",
         "banManager",
     ),
     COMMANDHELPER(
         "com.sk89q",
         "commandhelper",
-        "3.3.4-SNAPSHOT",
+        "3.3.5-SNAPSHOT",
         "commandHelper",
     ),
     B_STATS(
         "org.bstats",
         "bstats-bukkit",
-        "1.7",
+        "3.0.2",
         "bStats",
     ),
     ;

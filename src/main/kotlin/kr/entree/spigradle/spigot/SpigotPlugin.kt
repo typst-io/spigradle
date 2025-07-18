@@ -20,6 +20,7 @@ import groovy.lang.Closure
 import kr.entree.spigradle.PluginConvention
 import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.applySpigradlePlugin
+import kr.entree.spigradle.bungee.BungeeDependencies
 import kr.entree.spigradle.groovyExtension
 import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
@@ -81,12 +82,17 @@ class SpigotPlugin : Plugin<Project> {
         val depExt = dependencies.groovyExtension
         val repExp = repositories.groovyExtension
         // dependencies
-        // Can be replaced by reflection to SpigotExtensionsKt
         depExt.set("mockBukkit", object : Closure<Any>(this, this) {
             fun doCall(vararg arguments: String) =
                 dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
         })
         for (dep in SpigotDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
+            })
+        }
+        for (dep in BungeeDependencies.values()) {
             depExt.set(dep.alias, object : Closure<Any>(this, this) {
                 fun doCall(vararg arguments: String) =
                     dep.format(arguments.getOrNull(0))

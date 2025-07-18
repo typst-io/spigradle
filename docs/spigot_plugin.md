@@ -47,7 +47,7 @@ The plugin requires Gradle 8.0+, the latest version is recommended.
 To update your gradle wrapper:
 
 ```
-gradlew wrapper --gradle-version 8.13 --distribution-type all
+gradlew wrapper --gradle-version 8.14.3 --distribution-type all
 ```
 
 ## Usage
@@ -60,14 +60,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'kr.entree.spigradle' version '2.4.6'
+    id 'kr.entree.spigradle' version '3.0.0'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("kr.entree.spigradle") version "2.4.6"
+    id("kr.entree.spigradle") version "3.0.0"
 }
 ```
 
@@ -80,7 +80,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:2.4.6'
+        classpath 'kr.entree:spigradle:3.0.0'
     }
 }
 
@@ -98,7 +98,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:2.4.6")
+        classpath("kr.entree:spigradle:3.0.0")
     }
 }
 

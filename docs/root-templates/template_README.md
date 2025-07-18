@@ -1,5 +1,5 @@
 # Spigradle
-[![License](https://img.shields.io/github/license/EntryPointKR/Spigradle.svg)](https://github.com/EntryPointKR/Spigradle/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/typst-io/spigradle.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/kr.entree.spigradle)](https://plugins.gradle.org/plugin/kr.entree.spigradle)
 [![TeamCity CI](https://ci.entree.dev/app/rest/builds/buildType(id:Spigradle_Build)/statusIcon)](https://ci.entree.dev/buildConfiguration/Spigradle_Build?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds&guest=1)
 
@@ -25,7 +25,7 @@ group 'org.sample'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compileOnly spigot('1.16.5')
+    compileOnly spigot('1.21.8')
 }
 
 spigot {
@@ -75,7 +75,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly spigot('1.16.5')
+    compileOnly spigot('1.21.8')
 }
 
 spigot {
@@ -104,7 +104,7 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    compileOnly(spigot("1.16.5"))
+    compileOnly(spigot("1.21.8"))
 }
 
 spigot {
@@ -352,35 +352,35 @@ repositories {
 
 # Dependencies
 
-|  Name             |  Signature                                       | Default version          | Official repository      |
-|-------------------|--------------------------------------------------|--------------------------|--------------------------|
-| spigot(version)   | org.spigotmc:spigot-api:$version                 | 1.16.1-R0.1-SNAPSHOT     | spigotmc()               |
-| spigotAll()       | org.spigotmc:spigot:$version                     | 1.16.1-R0.1-SNAPSHOT     | spigotmc()               |
-| bungeecord()      | net.md-5:bungeecord-api:$version                 | 1.16-R0.4-SNAPSHOT       | spigotmc()               |
-| minecraftServer() | org.spigotmc:minecraft-server:$version           | 1.16.1-SNAPSHOT          | mavenLocal(), BuildTools |
-| paper()           | com.destroystokyo.paper:paper-api:$version       | 1.16.1-R0.1-SNAPSHOT     | papermc()                |
-| bukkit()          | org.bukkit:bukkit:$version                       | 1.16.1-R0.1-SNAPSHOT     | mavenLocal(), BuildTools |
-| craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.16.1-R0.1-SNAPSHOT     | mavenLocal(), BuildTools |
-| lombok()          | org.projectlombok:lombok:$version                | 1.18.36                  | mavenCentral()           |
-| spigradle()       | kr.entree:spigradle:$version                     | $SPIGRADLE_VERSION       | mavenCentral()           |
-| protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 4.5.1                    | protocolLib()            |
-| vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                      | jitpack()                |
-| vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                    | jitpack()                |
-| luckPerms()       | me.lucko.luckperms:luckperms-api:$version        | 5.1                      | mavenCentral()           |
-| worldedit()       | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.1.0                    | enginehub()              |
-| worldguard()      | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.3                    | enginehub()              |
-| essentialsX()     | net.ess3:EssentialsX:$version                    | 2.17.2                   | enderZone()              |
-| banManager()      | me.confuser.banmanager:BanManagerBukkit:$version | 7.3.0-SNAPSHOT           | frostcast()              |
-| commandhelper()   | com.sk89q:commandhelper:$version                 | 3.3.4-SNAPSHOT           | enginehub()              |
-| bStats()          | org.bstats:bstats-bukkit:$version                | 1.7                      | codemc()                 |
-| bStatsLite()      | org.bstats:bstats-bukkit-lite:$version           | 1.7                      | codemc()                 |
-| nukkit            | cn.nukkit:nukkit:$version                        | 2.0.0-SNAPSHOT           | nukkitX()                |
+|  Name             |  Signature                                       | Default version      | Official repository      |
+|-------------------|--------------------------------------------------|----------------------|--------------------------|
+| spigot(version)   | org.spigotmc:spigot-api:$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
+| spigotAll()       | org.spigotmc:spigot:$version                     | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
+| bungeecord()      | net.md-5:bungeecord-api:$version                 | 1.21-R0.4-SNAPSHOT   | spigotmc()               |
+| minecraftServer() | org.spigotmc:minecraft-server:$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools |
+| paper()           | com.destroystokyo.paper:paper-api:$version       | 1.21.8-R0.1-SNAPSHOT | papermc()                |
+| bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
+| craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
+| lombok()          | org.projectlombok:lombok:$version                | 1.18.36              | mavenCentral()           |
+| spigradle()       | kr.entree:spigradle:$version                     | $SPIGRADLE_VERSION   | mavenCentral()           |
+| protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 4.5.1                | protocolLib()            |
+| vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
+| vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |
+| luckPerms()       | me.lucko.luckperms:luckperms-api:$version        | 5.1                  | mavenCentral()           |
+| worldedit()       | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.1.0                | enginehub()              |
+| worldguard()      | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.3                | enginehub()              |
+| essentialsX()     | net.ess3:EssentialsX:$version                    | 2.17.2               | enderZone()              |
+| banManager()      | me.confuser.banmanager:BanManagerBukkit:$version | 7.3.0-SNAPSHOT       | frostcast()              |
+| commandhelper()   | com.sk89q:commandhelper:$version                 | 3.3.4-SNAPSHOT       | enginehub()              |
+| bStats()          | org.bstats:bstats-bukkit:$version                | 1.7                  | codemc()                 |
+| bStatsLite()      | org.bstats:bstats-bukkit-lite:$version           | 1.7                  | codemc()                 |
+| nukkit            | cn.nukkit:nukkit:$version                        | 2.0.0-SNAPSHOT       | nukkitX()                |
 
 ### Groovy usage
 
 ```groovy
 dependencies {
-    compileOnly spigot("1.16.5") // or just spigot()
+    compileOnly spigot("1.21.8") // or just spigot()
 }
 ```
 
@@ -390,7 +390,7 @@ dependencies {
 import kr.entree.spigradle.kotlin.*
 
 dependencies {
-    compileOnly(spigot("1.16.5")) // or just spigot()
+    compileOnly(spigot("1.21.8")) // or just spigot()
 }
 ```
 
