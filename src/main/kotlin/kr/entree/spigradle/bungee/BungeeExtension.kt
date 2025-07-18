@@ -16,8 +16,9 @@
 
 package kr.entree.spigradle.bungee
 
-import kr.entree.spigradle.StandardDescription
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.property
 
 /**
  * Bungeecord configuration for the 'plugin.yml' description, and debug settings.
@@ -48,11 +49,13 @@ import org.gradle.api.Project
  *
  * See: [https://www.spigotmc.org/wiki/create-your-first-bungeecord-plugin-proxy-spigotmc/#making-it-load]
  */
-open class BungeeExtension(project: Project) : StandardDescription {
-    override var main: String? = null
-    override var name: String? = null
-    override var version: String? = null
-    override var description: String? = null
+open class BungeeExtension(project: Project) {
+    var main: Property<String> = project.objects.property()
+    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name })
+    var version: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.version.toString() })
+    var description: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.description })
     var author: String? = null
     var depends: List<String> = emptyList()
     var softDepends: List<String> = emptyList()

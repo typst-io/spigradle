@@ -61,7 +61,6 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @since 1.3.0
  */
-@Suppress("UnstableApiUsage")
 open class SubclassDetection : DefaultTask() {
     init {
         group = "spigradle"

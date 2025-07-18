@@ -16,12 +16,13 @@
 
 package kr.entree.spigradle.spigot
 
-import kr.entree.spigradle.StandardDescription
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.container
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
 
 /**
  * Spigot configuration for the 'plugin.yml' description, and debug settings.
@@ -101,7 +102,7 @@ import org.gradle.kotlin.dsl.newInstance
 //    "softdepend", "loadbefore", "libraries", "commands",
 //    "permissions"
 //)
-open class SpigotExtension(project: Project) : StandardDescription {
+open class SpigotExtension(project: Project) {
     /**
      * The name of main class that extends [org.bukkit.plugin.java.JavaPlugin].
      *
@@ -109,7 +110,7 @@ open class SpigotExtension(project: Project) : StandardDescription {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    override var main: String? = null
+    var main: Property<String> = project.objects.property()
 
     /**
      * The name of your plugin.
@@ -118,7 +119,7 @@ open class SpigotExtension(project: Project) : StandardDescription {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    override var name: String? = null
+    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name })
 
     /**
      * The version of your plugin.
@@ -127,8 +128,10 @@ open class SpigotExtension(project: Project) : StandardDescription {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    override var version: String? = null
-    override var description: String? = null
+    var version: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.version.toString() })
+    var description: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.description })
     var website: String? = null
     var authors: List<String> = emptyList()
 
@@ -160,13 +163,13 @@ open class SpigotExtension(project: Project) : StandardDescription {
     var load: Load? = null
     var prefix: String? = null
 
-//    @SerialName("depend")
+    //    @SerialName("depend")
     var depends: List<String> = emptyList()
 
-//    @SerialName("softdepend")
+    //    @SerialName("softdepend")
     var softDepends: List<String> = emptyList()
 
-//    @SerialName("loadbefore")
+    //    @SerialName("loadbefore")
     var loadBefore: List<String> = emptyList()
 
     /**

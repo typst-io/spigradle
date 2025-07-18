@@ -65,7 +65,6 @@ import java.nio.charset.Charset
  *
  * @since 1.3.0
  */
-@Suppress("UnstableApiUsage")
 open class YamlGenerate : DefaultTask() {
     init {
         group = "spigradle"
@@ -110,7 +109,7 @@ open class YamlGenerate : DefaultTask() {
 }
 
 // TODO: Too complex! Should whole refactor in 3.0
-internal fun <T : StandardDescription> Project.registerDescGenTask(
+internal fun <T> Project.registerDescGenTask(
     type: PluginConvention, extensionClass: Class<T>, serializer: (T) -> Map<String, Any?>,
 ) {
     val detectResultFile = getPluginMainPathFile(type.mainType)
@@ -151,9 +150,6 @@ internal fun <T : StandardDescription> Project.registerDescGenTask(
         }
     }
     val classes: Task by tasks
-    project.afterEvaluate {
-        description.setDefault(this)
-    }
     /*
     NOTE: Task ordering part
     https://docs.gradle.org/current/userguide/java_plugin.html
