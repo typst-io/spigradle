@@ -1,9 +1,9 @@
 package kr.entree.spigradle
 
 import groovy.lang.GroovyObject
-import kr.entree.spigradle.data.Dependencies
-import kr.entree.spigradle.data.Repositories
-import kr.entree.spigradle.module.common.applySpigradlePlugin
+import io.typst.spigradle.Dependencies
+import io.typst.spigradle.Repositories
+import io.typst.spigradle.applySpigradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult

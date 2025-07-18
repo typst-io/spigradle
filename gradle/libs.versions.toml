@@ -1,0 +1,31 @@
+[versions]
+
+# matched with the version of kotlin-dsl `embeddedKotlinVersion`
+kotlin = "2.0.21"
+dokka = "2.0.0"
+asm = "9.8"
+ideaExt = "1.1.10"
+downloadTask = "5.6.0"
+spigradleAnnotations = "2.2.0"
+autoService = "1.1.1"
+spigot = "1.21.4-R0.1-SNAPSHOT"
+junit = "5.12.1"
+publishPlugin = "1.2.1"
+snakeyamlEngine = "2.9"
+
+[libraries]
+
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+ideaExt = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
+downloadTask = { module = "de.undercouch:gradle-download-task", version.ref = "downloadTask" }
+spigradleAnnotations = { module = "kr.entree:spigradle-annotations", version.ref = "spigradleAnnotations" }
+snakeyamlEngine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyamlEngine" }
+spigotApi = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
+
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradlePlugin-publishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "publishPlugin" }

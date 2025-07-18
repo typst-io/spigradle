@@ -28,7 +28,7 @@ The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin provide
 
 ## Requirements
 
-The plugin requires Gradle 5.4.2+, recommends the latest.
+The plugin requires Gradle 8.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
@@ -44,14 +44,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'kr.entree.spigradle.bungee' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("kr.entree.spigradle.bungee") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
 }
 ```
 
@@ -68,7 +68,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle.bungee'
+apply plugin: 'io.typst.spigradle.bungee'
 ```
 
 </details>
@@ -86,7 +86,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle.bungee")
+apply(plugin = "io.typst.spigradle.bungee")
 ```
 
 </details>
@@ -103,10 +103,8 @@ You can configure all properties of `plugin.yml` in [bungee {} block](#configura
 
 The plugin automatically finds the main class extends [Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html), and set the 'main' property to the class found.
 
-You may present the main class using `@BungeePlugin` or `@PluginMain`:
-
 ```java
-import kr.entree.spigradle.annotations.BungeePlugin;
+import io.typst.spigradle.annotations.BungeePlugin;
 
 @BungeePlugin
 public class SamplePlugin extends Plugin { }
@@ -137,7 +135,7 @@ More information: [Tasks](#tasks)
 
 ## Configuration
 
-### bungee - [BungeeExtension](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.bungee/-bungee-extension/index.html)
+### bungee - [BungeeExtension](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.bungee/-bungee-extension/index.html)
 
 The description of your plugin for a 'bungee.yml'.
 
@@ -227,11 +225,11 @@ tasks {
 
 </details>
 
-### detectBungeeMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-subclass-detection/index.html)
+### detectBungeeMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
 
 Finds the main class extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
 
-### generateBungeeDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-yaml-generate/index.html)
+### generateBungeeDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
 
 *Depends on: `detectBungeeMain`*
 

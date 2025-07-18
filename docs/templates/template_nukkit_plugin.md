@@ -28,7 +28,7 @@ The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin provides yo
 
 ## Requirements
 
-The plugin requires Gradle 5.4.2+, recommends the latest.
+The plugin requires Gradle 8.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
@@ -44,14 +44,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'kr.entree.spigradle.nukkit' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle.nukkit' version '$SPIGRADLE_VERSION'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("kr.entree.spigradle.nukkit") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle.nukkit") version "$SPIGRADLE_VERSION"
 }
 ```
 
@@ -68,7 +68,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle.nukkit'
+apply plugin: 'io.typst.spigradle.nukkit'
 ```
 
 </details>
@@ -86,7 +86,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle.nukkit")
+apply(plugin = "io.typst.spigradle.nukkit")
 ```
 
 </details>
@@ -101,12 +101,10 @@ You can configure all properties of `plugin.yml` in [nukkit {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.  
-
-You may present the main class using `@NukkitPlugin` or `@PluginMain`:
+The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.
 
 ```java
-import kr.entree.spigradle.annotations.NukkitPlugin;
+import io.typst.spigradle.annotations.NukkitPlugin;
 
 @NukkitPlugin
 public class SamplePlugin extends PluginBase { }
@@ -137,7 +135,7 @@ More information: [Tasks](#tasks)
 
 ## Configuration
 
-### nukkit - [NukkitExtension](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.nukkit/-nukkit-extension/index.html)
+### nukkit - [NukkitExtension](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.nukkit/-nukkit-extension/index.html)
 
 The description of your plugin for a 'plugin.yml'.
 
@@ -268,11 +266,11 @@ tasks {
 
 </details>
 
-### detectNukkitMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-subclass-detection/index.html)
+### detectNukkitMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
 
 Finds the main class extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
 
-### generateNukkitDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-yaml-generate/index.html)
+### generateNukkitDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
 
 *Depends on: `detectNukkitMain`*
 

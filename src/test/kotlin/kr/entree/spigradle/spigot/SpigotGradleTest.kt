@@ -1,6 +1,6 @@
 package kr.entree.spigradle.spigot
 
-import kr.entree.spigradle.module.spigot.SpigotPlugin
+import io.typst.spigradle.spigot.SpigotPlugin
 import kr.entree.spigradle.util.testGradleTaskWithResource
 import kotlin.test.Ignore
 import kotlin.test.Test

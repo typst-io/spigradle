@@ -17,7 +17,7 @@
 package kr.entree.spigradle
 
 import kr.entree.spigradle.annotations.PluginType
-import kr.entree.spigradle.module.common.SpigradlePlugin.Companion.DEBUG_DIR
+import io.typst.spigradle.SpigradlePlugin.Companion.DEBUG_DIR
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
@@ -326,12 +326,12 @@ class GradleFunctionalTest {
             }
             spigot.main = 'AwesomePlugin'
             spigot.debug.eula = true
-            import com.fasterxml.jackson.core.type.TypeReference
-            import kr.entree.spigradle.internal.Jackson
-            configSpigot {
+            import com.fasterxml.jackson.core.type.TypeReference                         
+
+configSpigot {
                 properties.put("mykey", "myval")            
                 def file = new File(spigot.debug.serverDirectory, 'spigot.yml')
-                def getter = { file.isFile() ? Jackson.YAML.readValue(file, new TypeReference<Map<String, Object>>() { }) : [:] }
+                def getter = { file.isFile() ? kr.entree.spigradle.Jackson.YAML.readValue(file, new TypeReference<Map<String, Object>>() { }) : [:] }
                 doFirst { assert getter()["settings"]?.get("restart-on-crash") != false }
                 doLast { assert getter()["settings"]["restart-on-crash"] == false }
                 doLast { assert getter()["mykey"] == "myval" }

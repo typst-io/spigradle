@@ -36,7 +36,7 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides you to
 
 ## Requirements
 
-The plugin requires Gradle 5.4.2+, recommends the latest.
+The plugin requires Gradle 8.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
@@ -52,14 +52,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'kr.entree.spigradle' version '$SPIGRADLE_VERSION'
+    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("kr.entree.spigradle") version "$SPIGRADLE_VERSION"
+    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
 }
 ```
 
@@ -76,7 +76,7 @@ buildscript {
     }
 }
 
-apply plugin: 'kr.entree.spigradle'
+apply plugin: 'io.typst.spigradle'
 ```
 
 </details>
@@ -94,7 +94,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kr.entree.spigradle")
+apply(plugin = "io.typst.spigradle")
 ```
 
 </details>
@@ -109,12 +109,10 @@ You can configure all properties of `plugin.yml` in [spigot {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [JavaPlugin]((https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html)), and set the 'main' property to the class found.  
-
-You may present the main class using `@SpigotMain` or `@PluginMain`:
+The plugin automatically finds the main class extends [JavaPlugin]((https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html)), and set the 'main' property to the class found.
 
 ```java
-import kr.entree.spigradle.annotations.SpigotPlugin;
+import io.typst.spigradle.annotations.SpigotPlugin;
 
 @SpigotPlugin
 public class SamplePlugin extends JavaPlugin { }
@@ -179,11 +177,11 @@ Then WorldEdit and WorldGuard will be excluded by the `prepareSpigotPlugins` whi
 
 ## Configuration
 
-### spigot - [SpigotExtension](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.spigot/-spigot-extension/index.html)
+### spigot - [SpigotExtension](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html)
 
 The description of your plugin for a `plugin.yml`.
 
-The 'main' property will be set to the class [auto-detected](#main-class-detection) or presented by `@kr.entree.spigradle.annotations.SpigotMain`.
+The 'main' property will be set to the class [auto-detected](#main-class-detection) or presented by `@io.typst.spigradle.annotations.SpigotMain`.
 
 About the `plugin.yml`, See [plugin-yml wiki](https://www.spigotmc.org/wiki/plugin-yml/)
 
@@ -314,11 +312,11 @@ tasks {
 
 </details>
 
-### detectSpigotMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-subclass-detection/index.html)
+### detectSpigotMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
 
 Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
-### generateSpigotDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-yaml-generate/index.html)
+### generateSpigotDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
 
 *Depends on: `detectSpigotMain`*
 
@@ -372,7 +370,7 @@ Accepts the Mojang EULA, used in `runSpigot` task and IDEA RunConfiguration.
 
 Configure the `spigot.yml`, used to set `settings.restart-on-crash` to false as default.
 
-### downloadPaper - [Download](https://entree.dev/spigradle/docs/spigradle/kr.entree.spigradle.module.common/-download/index.html)
+### downloadPaper - [Download](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-download/index.html)
 
 Downloads Paperclip.
 
@@ -446,7 +444,7 @@ tasks.test.dependsOn(copyPluginYaml)
 ### 2.x <- 1.x
 
 - The task `spigotPluginYaml` renamed to `generateSpigotDescription`
-- The annotation `@Plugin` repackaged to `@kr.entree.spigradle.annotations.Plugin`.
+- The annotation `@Plugin` repackaged to `@io.typst.spigradle.annotations.Plugin`.
 
 ## Templates
 

@@ -17,10 +17,10 @@
 package kr.entree.spigradle
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kr.entree.spigradle.module.spigot.SpigotDebugTask.downloadPaperTaskname
-import kr.entree.spigradle.module.spigot.SpigotDebugTask.getPaperBuildsTaskname
-import kr.entree.spigradle.module.spigot.SpigotDebugTask.getPaperDownloadsTaskname
-import kr.entree.spigradle.module.spigot.SpigotDebugTask.paperBuildsJsonFilename
+import kr.entree.spigradle.spigot.SpigotDebugTask.downloadPaperTaskname
+import kr.entree.spigradle.spigot.SpigotDebugTask.getPaperBuildsTaskname
+import kr.entree.spigradle.spigot.SpigotDebugTask.getPaperDownloadsTaskname
+import kr.entree.spigradle.spigot.SpigotDebugTask.paperBuildsJsonFilename
 import kr.entree.spigradle.util.testGradleTask
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir

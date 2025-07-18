@@ -16,8 +16,8 @@
 
 package kr.entree.spigradle
 
-import kr.entree.spigradle.detection.ClassDefinition
-import kr.entree.spigradle.detection.findSubClass
+import io.typst.spigradle.detection.ClassDefinition
+import io.typst.spigradle.detection.findSubClass
 import org.junit.jupiter.api.Test
 import kotlin.test.Ignore
 import kotlin.test.assertEquals

@@ -18,7 +18,8 @@ package kr.entree.spigradle
 
 import kr.entree.spigradle.util.testGradleTask
 import org.junit.jupiter.api.io.TempDir
-import org.yaml.snakeyaml.Yaml
+import org.snakeyaml.engine.v2.api.Load
+import org.snakeyaml.engine.v2.api.LoadSettings
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,7 +28,8 @@ class SpigotLibraryResolution {
     @Test
     fun `resolve libraries and serialize`(@TempDir dir: File) {
         val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
-        testGradleTask("generateSpigotDescription", dir, """
+        testGradleTask(
+            "generateSpigotDescription", dir, """
             plugins {
                 id 'kr.entree.spigradle'
             }
@@ -44,10 +46,13 @@ class SpigotLibraryResolution {
                 compileOnly(spigot('1.18.1'))
                 implementation("$okhttp")
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val ymlFile = dir.resolve("build").resolve("tmp").resolve("generateSpigotDescription").resolve("plugin.yml")
-        val yaml = Yaml().load<Map<String, Any>>(ymlFile.readText())
-        val libs = yaml["libraries"] as? List<String>
+        val settings = LoadSettings.builder()
+            .build()
+        val yaml = Load(settings).loadFromString(ymlFile.readText()) as Map<String, Any?>
+        val libs = yaml["libraries"] as? List<*>
         assertEquals(okhttp, libs?.get(0))
         assertEquals(1, libs?.size ?: 0)
     }
@@ -55,7 +60,8 @@ class SpigotLibraryResolution {
     @Test
     fun `ignore resolution if the property presented`(@TempDir dir: File) {
         val dep = "me.mygroup:myname:1.0.0"
-        testGradleTask("generateSpigotDescription", dir, """
+        testGradleTask(
+            "generateSpigotDescription", dir, """
             plugins {
                 id 'kr.entree.spigradle'
             }
@@ -73,10 +79,11 @@ class SpigotLibraryResolution {
                 compileOnly(spigot('1.18.1'))
                 implementation("com.squareup.okhttp3:okhttp:4.9.0")
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val ymlFile = dir.resolve("build").resolve("tmp").resolve("generateSpigotDescription").resolve("plugin.yml")
         val yaml = Yaml().load<Map<String, Any>>(ymlFile.readText())
-        val libs = yaml["libraries"] as? List<String>
+        val libs = yaml["libraries"] as? List<*>
         assertEquals(dep, libs?.get(0))
         assertEquals(1, libs?.size ?: 0)
     }

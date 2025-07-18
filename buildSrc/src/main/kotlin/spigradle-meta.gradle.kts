@@ -1,33 +1,35 @@
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-
 plugins {
     kotlin("jvm")
 }
 
-val generatedSourceDir = File("$buildDir/generated/source/spigradle-build/kotlin/main")
+val generateSpigradleMeta by tasks.registering {
+    group = "spigradle build"
 
-sourceSets.main {
-    java.srcDir(generatedSourceDir)
+    val version = project.version
+    inputs.property("version", version)
+
+    val generatedSourceDir = layout.buildDirectory.dir("generated/source/spigradle-build/kotlin/main")
+    outputs.dir(generatedSourceDir)
+
+    doLast {
+        val outputDir = generatedSourceDir.get().asFile
+        outputDir.deleteRecursively()
+        outputDir.mkdirs()
+
+        outputDir.resolve("SpigradleMeta.kt").writeText(
+            """
+            package io.typst.spigradle
+
+            object SpigradleMeta {
+                const val VERSION = "$version"
+            }
+            """.trimIndent()
+        )
+    }
 }
 
-tasks {
-    val metaFile = generatedSourceDir.resolve("kr/entree/spigradle/SpigradleMeta.kt")
-    val generateSpigradleMeta by registering {
-        group = "spigradle build"
-        outputs.files(metaFile)
-        doLast {
-            metaFile.apply {
-                parentFile.mkdirs()
-            }.writeText("""
-                package kr.entree.spigradle
-
-                object SpigradleMeta {
-                    const val VERSION = "${project.version}"
-                }
-            """.trimIndent())
-        }
-    }
-    compileKotlin { dependsOn(generateSpigradleMeta) }
+sourceSets.main {
+    kotlin.srcDir(generateSpigradleMeta)
 }
