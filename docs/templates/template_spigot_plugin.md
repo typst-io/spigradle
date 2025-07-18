@@ -109,9 +109,7 @@ You can configure all properties of `plugin.yml` in [spigot {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [JavaPlugin]((https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html)), and set the 'main' property to the class found.  
-
-You may present the main class using `@SpigotMain` or `@PluginMain`:
+The plugin automatically finds the main class extends [JavaPlugin]((https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html)), and set the 'main' property to the class found.
 
 ```java
 import io.typst.spigradle.annotations.SpigotPlugin;

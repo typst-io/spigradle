@@ -101,9 +101,7 @@ You can configure all properties of `plugin.yml` in [nukkit {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.  
-
-You may present the main class using `@NukkitPlugin` or `@PluginMain`:
+The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.
 
 ```java
 import io.typst.spigradle.annotations.NukkitPlugin;
