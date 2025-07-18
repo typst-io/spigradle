@@ -21,7 +21,6 @@ import kr.entree.spigradle.PluginConvention
 import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.applySpigradlePlugin
 import kr.entree.spigradle.groovyExtension
-import kr.entree.spigradle.kotlin.mockBukkit
 import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -51,10 +50,10 @@ class SpigotPlugin : Plugin<Project> {
             // TODO: auto libraries
             registerDescGenTask(SPIGOT_TYPE, SpigotExtension::class.java) { desc ->
                 linkedMapOf(
-                    "main" to desc.main,
-                    "name" to desc.name,
-                    "version" to desc.version,
-                    "description" to desc.description,
+                    "main" to desc.main.orNull,
+                    "name" to desc.name.orNull,
+                    "version" to desc.version.orNull,
+                    "description" to desc.description.orNull,
                     "website" to desc.website,
                     "authors" to desc.authors.ifEmpty { null },
                     "api-version" to desc.apiVersion,

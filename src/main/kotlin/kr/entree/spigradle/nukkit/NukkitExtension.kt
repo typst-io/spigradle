@@ -16,6 +16,7 @@
 
 package kr.entree.spigradle.nukkit
 
+import kr.entree.spigradle.caseKebabToPascal
 import kr.entree.spigradle.spigot.Command
 import kr.entree.spigradle.spigot.Load
 import kr.entree.spigradle.spigot.Permission
@@ -103,7 +104,7 @@ import org.gradle.kotlin.dsl.property
 //)
 open class NukkitExtension(project: Project) {
     var main: Property<String> = project.objects.property()
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name })
+    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
     var version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     var description: Property<String> =

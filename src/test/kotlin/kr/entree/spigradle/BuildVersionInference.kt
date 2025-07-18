@@ -18,7 +18,7 @@ package kr.entree.spigradle
 
 import kr.entree.spigradle.spigot.SpigotDebug
 import kr.entree.spigradle.spigot.SpigotDependencies
-import kr.entree.spigradle.kotlin.spigot
+import kr.entree.spigradle.spigot.spigot
 import kr.entree.spigradle.spigot.SpigotDebugTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

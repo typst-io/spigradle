@@ -17,3 +17,10 @@
 package kr.entree.spigradle
 
 internal fun String.capitalized() = replaceFirstChar { it.uppercase() }
+
+internal fun String.caseKebabToPascal(): String {
+    val pieces = split("-")
+    return pieces.joinToString("") {
+        it.replaceFirstChar { it.uppercase() }
+    }
+}

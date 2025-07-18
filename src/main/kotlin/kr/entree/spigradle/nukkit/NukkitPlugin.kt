@@ -48,10 +48,10 @@ class NukkitPlugin : Plugin<Project> {
             setupDefaultRepositories()
             registerDescGenTask(NUKKIT_TYPE, NukkitExtension::class.java) { desc ->
                 linkedMapOf(
-                    "main" to desc.main,
-                    "name" to desc.name,
-                    "version" to desc.version,
-                    "description" to desc.description,
+                    "main" to desc.main.orNull,
+                    "name" to desc.name.orNull,
+                    "version" to desc.version.orNull,
+                    "description" to desc.description.orNull,
                     "website" to desc.website,
                     "authors" to desc.authors,
                     "api" to desc.api,

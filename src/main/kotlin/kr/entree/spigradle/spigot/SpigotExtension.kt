@@ -16,6 +16,7 @@
 
 package kr.entree.spigradle.spigot
 
+import kr.entree.spigradle.caseKebabToPascal
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -119,7 +120,7 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name })
+    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
 
     /**
      * The version of your plugin.

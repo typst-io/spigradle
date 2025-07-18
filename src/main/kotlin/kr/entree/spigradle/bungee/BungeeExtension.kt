@@ -16,6 +16,7 @@
 
 package kr.entree.spigradle.bungee
 
+import kr.entree.spigradle.caseKebabToPascal
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.property
@@ -51,7 +52,7 @@ import org.gradle.kotlin.dsl.property
  */
 open class BungeeExtension(project: Project) {
     var main: Property<String> = project.objects.property()
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name })
+    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
     var version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     var description: Property<String> =

@@ -47,9 +47,9 @@ class BungeePlugin : Plugin<Project> {
             setupDefaultRepositories()
             registerDescGenTask(BUNGEE_TYPE, BungeeExtension::class.java) { desc ->
                 linkedMapOf(
-                    "main" to desc.main,
-                    "name" to desc.name,
-                    "version" to desc.description,
+                    "main" to desc.main.orNull,
+                    "name" to desc.name.orNull,
+                    "version" to desc.description.orNull,
                     "author" to desc.author,
                     "depend" to desc.depends,
                     "softdepend" to desc.softDepends

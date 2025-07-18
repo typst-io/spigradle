@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Spigradle contributors.
+ * Copyright (c) 2025 Spigradle contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle.kotlin
+package kr.entree.spigradle.nukkit
 
-import kr.entree.spigradle.nukkit.NukkitDependencies
-import kr.entree.spigradle.nukkit.NukkitRepositories
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
