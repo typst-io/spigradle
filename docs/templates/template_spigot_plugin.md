@@ -6,8 +6,6 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides you to
 
 - Shortcuts for [dependency](../README.md#dependencies) and [repository](../README.md#repositories).
 
-- Tasks for run server with your plugin for debug.
-
 ## Table of contents
 
 - [Requirements](#requirements)
@@ -17,8 +15,6 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides you to
 - [Description file generation](#description-file-generation)
 
 - [Main class detection](#main-class-detection)
-
-- [Debug your plugin](#debug-your-plugin)
 
 - [Configuration](#configuration)
 
@@ -122,32 +118,6 @@ public class SamplePlugin extends JavaPlugin { }
 @SpigotPlugin
 class SamplePlugin : JavaPlugin()
 ``` 
-
-## Debug your plugin
-
-Run your plugin with just execute single gradle task.
-
-The `debugSpigot` performs to build Spigot using BuildTools, copy it with your plugins into the default path `debug/spigot/server.jar`, and run it.
-
-The `debugPaper` performs to download Paperclip, copy it with your plugins into the same path `debug/spigot/server.jar`, and run it.
-
-> These tasks copy your plugin and its dependency plugins.
-
-You can pass (jvm)arguments:
-
-```groovy
-spigot {
-    debug {
-        args '--nojline', '--max-players', '100'
-        jvmArgs '-Xmx16G'
-        serverPort 25564
-    }
-}
-```
-
-This affects both tasks `debugSpigot`, `debugPaper`, also to [IDEA RunConfigurations](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html) `RunSpigot`, `RunPaper`.
-
-More information: [Tasks](#tasks)
 
 ### Exclusion
 
@@ -321,67 +291,6 @@ Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spi
 *Depends on: `detectSpigotMain`*
 
 Generates the description file 'plugin.yml'.
-
-### debugSpigot
-
-*Depends on: `prepareSpigotPlugins`, `prepareSpigot`, `runSpigot`*
-
-Builds Spigot and runs it with your plugin and dependency plugins.
-
-### debugPaper
-
-*Depends on: `prepareSpigotPlugins`, `downloadPaper`, `runSpigot`*
-
-Runs Paper with your plugin and dependency plugins.
-
-### prepareSpigotPlugins - [Copy](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html)
-
-*Depends on: `build`*
-
-Copies project plugin jar and its dependency plugins into the server plugins directory.
-
-### prepareSpigot - [Copy](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html)
-
-*Depends on: `downloadSpigotBuildTools`, `buildSpigot`*
-
-Prepares Spigot for ready to run.
-
-### runSpigot - [JavaExec](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html)
-
-*Depends on: `acceptSpigotEula`, `configSpigot`
-
-Just runs the server jar at configured path even there's no executable file.
-
-NOTE: Use `debugSpigot` or `debugPaper` instead of `runSpigot` if you need prepare process like download server jar, copy plugins.
-
-### downloadSpigotBuildTools - [Download](https://github.com/michel-kraemer/gradle-download-task#usage)
-
-Downloads Spigot BuildTools.
-
-### buildSpigot - [JavaExec](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html)
-
-Builds Spigot using BuildTools.
-
-### acceptSpigotEula
-
-Accepts the Mojang EULA, used in `runSpigot` task and IDEA RunConfiguration.
-
-### configSpigot
-
-Configure the `spigot.yml`, used to set `settings.restart-on-crash` to false as default.
-
-### downloadPaper - [Download](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-download/index.html)
-
-Downloads Paperclip.
-
-### cleanSpigotBuild
-
-Deletes all build outputs created by Spigot BuildTools.
-
-### cleanDebug
-
-Deletes all server files.
-
 
 ## Why not spigot-annotations?
 

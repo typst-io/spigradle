@@ -6,8 +6,6 @@ The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin provides yo
 
 - Shortcuts for [dependency](../README.md#dependencies) and [repository](../README.md#repositories).
 
-- Tasks for run server with your plugins for debug.
-
 ## Table of contents
 
 - [Requirements](#requirements)
@@ -17,8 +15,6 @@ The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin provides yo
 - [Description file generation](#description-file-generation)
 
 - [Main class detection](#main-class-detection)
-
-- [Debug your plugin](#debug-your-plugin)
 
 - [Configuration](#configuration)
 
@@ -109,29 +105,6 @@ import io.typst.spigradle.annotations.NukkitPlugin;
 @NukkitPlugin
 public class SamplePlugin extends PluginBase { }
 ```  
-
-## Debug your plugin
-
-Run your plugin with just execute single gradle task.
-
-The `debugNukkit` performs to download Nukkit, copy it with your plugins into the default path `debug/nukkit`, and run it.
-
-> These tasks copy your plugin and its dependency plugins.
-
-You can pass (jvm)arguments:
-
-```groovy
-nukkit {
-    debug {
-        args '--nojline', '--max-players', '100'
-        jvmArgs '-Xmx16G'
-    }
-}
-```
-
-This affects to `debugNukkit`, also `RunNukkit` [IDEA RunConfiguration](https://www.jetbrains.com/help/idea/run-debug-configuration-application.html).
-
-More information: [Tasks](#tasks)
 
 ## Configuration
 
@@ -275,32 +248,6 @@ Finds the main class extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.co
 *Depends on: `detectNukkitMain`*
 
 Generates the description file 'plugin.yml'.
-
-### debugNukkit
-
-*Depends on: `prepareNukkitPlugins`, `downloadNukkit`, `runNukkit`*
-
-Downloads NukkitX and runs it with your plugin and dependency plugins.
-
-### prepareNukkitPlugins - [Copy](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html)
-
-*Depends on: `build`*
-
-Copies project plugin jar and its dependency plugins into the server plugins directory.
-
-### downloadNukkit - [Download](https://github.com/michel-kraemer/gradle-download-task#usage)
-
-Downloads NukkitX.
-
-### runNukkit - [JavaExec](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html)
-
-Just runs the NukkitX jar at configured path even there's no executable file.
-
-NOTE: Use `debugNukkit` instead of `runNukkit` if you need prepare process like download NukkitX jar, copy plugins.
-
-### cleanDebug
-
-Deletes all server files.
 
 ## See also
 

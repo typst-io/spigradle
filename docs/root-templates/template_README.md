@@ -72,6 +72,11 @@ plugins {
     id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
 dependencies {
     compileOnly spigot('1.21.8')
 }
@@ -93,11 +98,16 @@ spigot {
 <summary>Kotlin DSL</summary>
 
 ```kotlin
-import io.typst.spigradle.kotlin.*
+import io.typst.spigradle.spigot.*
 
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
+    spigotmc()
 }
 
 dependencies {
@@ -172,6 +182,10 @@ plugins {
     id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compileOnly bungeecord('1.15')
 }
@@ -184,6 +198,10 @@ dependencies {
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -247,6 +265,10 @@ plugins {
     id 'io.typst.spigradle.nukkit' version '$SPIGRADLE_VERSION'
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compileOnly nukkit('1.0')
 }
@@ -259,6 +281,10 @@ dependencies {
 plugins {
     kotlin("jvm") version "$KOTLIN_VERSION"
     id("io.typst.spigradle.nukkit") version "$SPIGRADLE_VERSION"
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -359,19 +385,18 @@ repositories {
 | paper()           | com.destroystokyo.paper:paper-api:$version       | 1.21.8-R0.1-SNAPSHOT | papermc()                |
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
-| lombok()          | org.projectlombok:lombok:$version                | 1.18.36              | mavenCentral()           |
+| lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
 | spigradle()       | kr.entree:spigradle:$version                     | $SPIGRADLE_VERSION   | mavenCentral()           |
-| protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 4.5.1                | protocolLib()            |
+| protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |
-| luckPerms()       | me.lucko.luckperms:luckperms-api:$version        | 5.1                  | mavenCentral()           |
-| worldedit()       | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.1.0                | enginehub()              |
-| worldguard()      | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.3                | enginehub()              |
-| essentialsX()     | net.ess3:EssentialsX:$version                    | 2.17.2               | enderZone()              |
-| banManager()      | me.confuser.banmanager:BanManagerBukkit:$version | 7.3.0-SNAPSHOT       | frostcast()              |
-| commandhelper()   | com.sk89q:commandhelper:$version                 | 3.3.4-SNAPSHOT       | enginehub()              |
-| bStats()          | org.bstats:bstats-bukkit:$version                | 1.7                  | codemc()                 |
-| bStatsLite()      | org.bstats:bstats-bukkit-lite:$version           | 1.7                  | codemc()                 |
+| luckPerms()       | me.lucko.luckperms:luckperms-api:$version        | 5.5.9                | mavenCentral()           |
+| worldedit()       | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.3.15               | enginehub()              |
+| worldguard()      | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.14               | enginehub()              |
+| essentialsX()     | net.ess3:EssentialsX:$version                    | 2.21.1               | enderZone()              |
+| banManager()      | me.confuser.banmanager:BanManagerBukkit:$version | 7.9.0-SNAPSHOT       | frostcast()              |
+| commandhelper()   | com.sk89q:commandhelper:$version                 | 3.3.5-SNAPSHOT       | enginehub()              |
+| bStats()          | org.bstats:bstats-bukkit:$version                | 3.0.2                | codemc()                 |
 | nukkit            | cn.nukkit:nukkit:$version                        | 2.0.0-SNAPSHOT       | nukkitX()                |
 
 ### Groovy usage
@@ -385,7 +410,7 @@ dependencies {
 ### Kotlin usage
 
 ```kotlin
-import io.typst.spigradle.kotlin.*
+import io.typst.spigradle.spigot.*
 
 dependencies {
     compileOnly(spigot("1.21.8")) // or just spigot()
