@@ -22,8 +22,6 @@ import kr.entree.spigradle.annotations.PluginType
 import kr.entree.spigradle.applySpigradlePlugin
 import kr.entree.spigradle.groovyExtension
 import kr.entree.spigradle.kotlin.mockBukkit
-import kr.entree.spigradle.kotlin.spigot
-import kr.entree.spigradle.kotlin.spigotmc
 import kr.entree.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -50,7 +48,6 @@ class SpigotPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             applySpigradlePlugin()
-            setupDefaultDependencies()
             // TODO: auto libraries
             registerDescGenTask(SPIGOT_TYPE, SpigotExtension::class.java) { desc ->
                 linkedMapOf(
@@ -81,9 +78,6 @@ class SpigotPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.setupDefaultDependencies() {
-    }
-
     private fun Project.setupGroovyExtensions() {
         val depExt = dependencies.groovyExtension
         val repExp = repositories.groovyExtension
@@ -93,15 +87,18 @@ class SpigotPlugin : Plugin<Project> {
             fun doCall(vararg arguments: String) =
                 dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
         })
-        depExt.set("spigot", object : Closure<Any>(this, this) {
-            fun doCall(vararg arguments: String) =
-                dependencies.spigot(arguments.getOrNull(0))
-        })
+        for (dep in SpigotDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
+            })
+        }
         // repositories
-        repExp.set("spigotmc", object : Closure<Any>(this, this) {
-            fun doCall() =
-                repositories.spigotmc()
-        })
+        for (repo in SpigotRepositories.values()) {
+            repExp.set(repo.alias, object : Closure<Any>(this, this) {
+                fun doCall() = repositories.maven { setUrl(repo.address) }
+            })
+        }
         // literal
         depExt.set("POST_WORLD", Load.POST_WORLD)
         depExt.set("POSTWORLD", Load.POST_WORLD)

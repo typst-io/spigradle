@@ -68,34 +68,35 @@ open class Permission @Inject constructor(@Transient val name: String) {
     }
 }
 
-enum class SpigotRepositories(val address: String) {
+enum class SpigotRepositories(val address: String, val alias: String) {
     // @SerialName("purpurmc"), purpur
-    PURPUR_MC("https://repo.purpurmc.org/snapshots"),
+    PURPUR_MC("https://repo.purpurmc.org/snapshots", "purpurmc"),
 
     // @SerialName("spigotmc"), spigot
-    SPIGOT_MC("https://hub.spigotmc.org/nexus/content/repositories/snapshots/"),
+    SPIGOT_MC("https://hub.spigotmc.org/nexus/content/repositories/snapshots/", "spigotmc"),
 
     // @SerialName("papermc"), paper
-    PAPER_MC("https://repo.papermc.io/repository/maven-public/"),
-    PROTOCOL_LIB("https://repo.dmulloy2.net/nexus/repository/public/"),
+    PAPER_MC("https://repo.papermc.io/repository/maven-public/", "papermc"),
+    PROTOCOL_LIB("https://repo.dmulloy2.net/nexus/repository/public/", "protocolLib"),
 
     // @SerialName("enginehub")
-    ENGINE_HUB("https://maven.enginehub.org/repo/"),
+    ENGINE_HUB("https://maven.enginehub.org/repo/", "enginehub"),
 
     // @SerialName("codemc"), bstats
-    CODE_MC("https://repo.codemc.org/repository/maven-public/"),
+    CODE_MC("https://repo.codemc.org/repository/maven-public/", "codemc"),
 
     // essentialsX
-    ENDER_ZONE("https://ci.ender.zone/plugin/repository/everything/"),
+    ENDER_ZONE("https://ci.ender.zone/plugin/repository/everything/", "enderzone"),
 
     // banManager
-    FROSTCAST("https://ci.frostcast.net/plugin/repository/everything")
+    FROSTCAST("https://ci.frostcast.net/plugin/repository/everything", "frostcast")
 }
 
 enum class SpigotDependencies(
     val group: String,
     val publicName: String,
     val version: String,
+    val alias: String,
     val local: Boolean = false,
     val versionModifier: (String) -> String = { it },
 ) {
@@ -103,6 +104,7 @@ enum class SpigotDependencies(
         "org.purpurmc.purpur",
         "purpur-api",
         "1.18.1-R0.1-SNAPSHOT",
+        "purpur",
         false,
         VersionModifier.SPIGOT_ADJUSTER
     ),
@@ -110,6 +112,7 @@ enum class SpigotDependencies(
         "org.spigotmc",
         "spigot-api",
         "1.18.1-R0.1-SNAPSHOT",
+        "spigot",
         false,
         VersionModifier.SPIGOT_ADJUSTER
     ),
@@ -117,6 +120,7 @@ enum class SpigotDependencies(
         "org.spigotmc",
         "spigot",
         "1.18.1-R0.1-SNAPSHOT",
+        "spigotAll",
         true,
         VersionModifier.SPIGOT_ADJUSTER
     ),
@@ -124,6 +128,7 @@ enum class SpigotDependencies(
         SPIGOT.group,
         "minecraft-server",
         "1.18.1-SNAPSHOT",
+        "minecraftServer",
         true,
         VersionModifier.SNAPSHOT_APPENDER
     ),
@@ -131,12 +136,14 @@ enum class SpigotDependencies(
         "io.papermc.paper",
         "paper-api",
         "1.18.1-R0.1-SNAPSHOT",
+        "paper",
         versionModifier = VersionModifier.SPIGOT_ADJUSTER
     ),
     BUKKIT(
         "org.bukkit",
         "bukkit",
         "1.18.1-R0.1-SNAPSHOT",
+        "bukkit",
         true,
         VersionModifier.SPIGOT_ADJUSTER
     ),
@@ -144,53 +151,63 @@ enum class SpigotDependencies(
         "org.bukkit",
         "craftbukkit",
         "1.18.1-R0.1-SNAPSHOT",
+        "craftbukkit",
         true,
         VersionModifier.SPIGOT_ADJUSTER
     ),
     PROTOCOL_LIB(
         "com.comphenix.protocol",
         "ProtocolLib",
-        "4.5.1"
+        "4.5.1",
+        "protocolLib"
     ),
     VAULT_API(
         "com.github.MilkBowl",
         "VaultAPI",
-        "1.7"
+        "1.7",
+        "vault"
     ),
     LUCK_PERMS(
         "net.luckperms",
         "api",
-        "5.1"
+        "5.1",
+        "luckperms",
     ),
     WORLDEDIT(
         "com.sk89q.worldedit",
         "worldedit-bukkit",
-        "7.1.0"
+        "7.1.0",
+        "worldedit",
     ),
     WORLDGUARD(
         "com.sk89q.worldguard",
         "worldguard-bukkit",
-        "7.0.3"
+        "7.0.3",
+        "worldguard",
     ),
     ESSENTIALS_X(
         "net.ess3",
         "EssentialsX",
-        "2.17.2"
+        "2.17.2",
+        "essentialsX",
     ),
     BAN_MANAGER(
         "me.confuser.banmanager",
         "BanManagerBukkit",
-        "7.3.0-SNAPSHOT"
+        "7.3.0-SNAPSHOT",
+        "banManager",
     ),
     COMMANDHELPER(
         "com.sk89q",
         "commandhelper",
-        "3.3.4-SNAPSHOT"
+        "3.3.4-SNAPSHOT",
+        "commandHelper",
     ),
     B_STATS(
         "org.bstats",
         "bstats-bukkit",
-        "1.7"
+        "1.7",
+        "bStats",
     ),
     ;
 
