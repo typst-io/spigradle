@@ -22,6 +22,11 @@ plugins {
 group 'org.sample'
 version '1.0.0'
 
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
 dependencies {
     compileOnly spigot('1.21.8')
 }
