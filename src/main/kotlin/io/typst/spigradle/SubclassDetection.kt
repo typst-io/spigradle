@@ -23,7 +23,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.get
 import org.gradle.work.InputChanges
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
@@ -136,7 +135,7 @@ open class SubclassDetection : DefaultTask() {
 // TODO: Optimize scheduled in 2.3.0!
 internal fun findSubclass(
     supers: Set<String>,
-    access: Int, name: String, superName: String?
+    access: Int, name: String, superName: String?,
 ): Pair<String?, Set<String>> {
     return if (superName in supers) {
         val sub = if (access.isPublic && !access.isAbstract) name else null
@@ -150,15 +149,15 @@ internal val Int.isAbstract get() = (this and Opcodes.ACC_ABSTRACT) != 0
 
 class SubclassDetector(
     private val supersR: AtomicReference<Set<String>>,
-    private val detectedR: AtomicReference<String?>
-) : ClassVisitor(Opcodes.ASM8) {
+    private val detectedR: AtomicReference<String?>,
+) : ClassVisitor(Opcodes.ASM9) {
     override fun visit(
         version: Int,
         access: Int,
         name: String,
         signature: String?,
         superName: String?,
-        interfaces: Array<out String>?
+        interfaces: Array<out String>?,
     ) {
         val (sub, supers) = findSubclass(supersR.get(), access, name, superName)
         supersR.set(supers)
