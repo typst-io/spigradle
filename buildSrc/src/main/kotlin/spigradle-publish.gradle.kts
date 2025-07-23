@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
 }
 
-val spigradleVcsUrl = "https://github.com/io-typst/spigradle.git"
+val spigradleVcsUrl = "https://github.com/typst-io/spigradle.git"
 
 val spigradleDocsJar by tasks.registering(Jar::class) {
     group = "spigradle build"
@@ -27,7 +27,7 @@ publishing {
 }
 
 gradlePlugin {
-    website = "https://github.com/io-typst/spigradle"
+    website = "https://github.com/typst-io/spigradle"
     vcsUrl = spigradleVcsUrl
     fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin."
 //
