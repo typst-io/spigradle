@@ -350,6 +350,12 @@ tasks.test.dependsOn(copyPluginYaml)
 
 ## Migration Tips
 
+### 3.x <- 2.x
+
+- No more implicit repo/dep: need to declare repository(spigotmc)
+- No more @Plugin annotation: will be detected the main automatically
+- The debug feature removed at this time
+
 ### 2.x <- 1.x
 
 - The task `spigotPluginYaml` renamed to `generateSpigotDescription`
