@@ -34,7 +34,7 @@ dependencies {
 spigot {
     depends 'ProtocolLib'
     softDepends 'SomeLibrary'
-    // libraries = configurations.implementation.dependencies.collect {"$it.group:$it.name:$it.version".toString() }
+    // libraries = configurations.implementation.dependencies.collect { "\$it.group:\$it.name:\$it.version".toString() }
     commands {
         create('mycmd') {
             aliases 'cmd'
