@@ -127,6 +127,34 @@ open class NukkitExtension(project: Project) {
     val commands: NamedDomainObjectContainer<Command> = project.container { project.objects.newInstance(it) }
     val permissions: NamedDomainObjectContainer<Permission> = project.container { project.objects.newInstance(it) }
 
+    /**
+     * Groovy DSL helper for the [main] lazy property.
+     */
+    fun main(xs: String) {
+        main.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [name] lazy property.
+     */
+    fun name(xs: String) {
+        name.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [version] lazy property.
+     */
+    fun version(xs: String) {
+        version.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [description] lazy property.
+     */
+    fun description(xs: String) {
+        description.set(xs)
+    }
+
     fun authors(authors: Array<String>) {
         this.authors = authors.toList()
     }

@@ -61,6 +61,34 @@ open class BungeeExtension(project: Project) {
     var depends: List<String> = emptyList()
     var softDepends: List<String> = emptyList()
 
+    /**
+     * Groovy DSL helper for the [main] lazy property.
+     */
+    fun main(xs: String) {
+        main.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [name] lazy property.
+     */
+    fun name(xs: String) {
+        name.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [version] lazy property.
+     */
+    fun version(xs: String) {
+        version.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [description] lazy property.
+     */
+    fun description(xs: String) {
+        description.set(xs)
+    }
+
     fun depends(vararg depends: String) {
         this.depends = depends.toList()
     }

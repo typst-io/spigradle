@@ -120,7 +120,8 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
+    var name: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
 
     /**
      * The version of your plugin.
@@ -133,6 +134,7 @@ open class SpigotExtension(project: Project) {
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     var description: Property<String> =
         project.objects.property<String>().convention(project.provider { project.description })
+
     var website: String? = null
     var authors: List<String> = emptyList()
 
@@ -254,6 +256,34 @@ open class SpigotExtension(project: Project) {
     val permissions: NamedDomainObjectContainer<Permission> = project.run { container { objects.newInstance(it) } }
 
     /**
+     * Groovy DSL helper for the [main] lazy property.
+     */
+    fun main(xs: String) {
+        main.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [name] lazy property.
+     */
+    fun name(xs: String) {
+        name.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [version] lazy property.
+     */
+    fun version(xs: String) {
+        version.set(xs)
+    }
+
+    /**
+     * Groovy DSL helper for the [description] lazy property.
+     */
+    fun description(xs: String) {
+        description.set(xs)
+    }
+
+    /**
      * DSL helper for [commands] configuration.
      */
     fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
@@ -293,17 +323,6 @@ open class SpigotExtension(project: Project) {
      */
     fun loadBefore(vararg loadBefore: String) {
         this.loadBefore = loadBefore.toList()
-    }
-
-    /**
-     * Groovy DSL helper for the [excludeLibraries] configuration.
-     */
-    @Deprecated(
-        message = "Use `excludeLibraries` instead",
-        replaceWith = ReplaceWith("this.excludeLibraries(*dependencyNotations)")
-    )
-    fun shadowLibraries(vararg dependencyNotations: String) {
-        this.excludeLibraries = listOf(*dependencyNotations)
     }
 
     /**
