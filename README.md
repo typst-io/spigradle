@@ -107,8 +107,6 @@ spigot {
       aliases 'cmd'
     }
   }
-  // if you want to exclude all [spigot.libraries]:
-  // `excludeLibraries = ['*']`
 }
 ```
 
@@ -141,8 +139,6 @@ spigot {
       aliases = listOf("cmd")
     }
   }
-  // if you want to exclude all [spigot.libraries]:
-  // `excludeLibraries = listOf("*")`
 }
 ```
 
