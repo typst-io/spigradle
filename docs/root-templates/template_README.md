@@ -371,7 +371,7 @@ repositories {
 ### Kotiln usage
 
 ```kotlin
-import io.typst.spigradle.kotlin.*
+import io.typst.spigradle.spigot.*
 
 repositories {
     enginehub()
