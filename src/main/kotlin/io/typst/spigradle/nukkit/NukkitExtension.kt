@@ -20,6 +20,7 @@ import io.typst.spigradle.caseKebabToPascal
 import io.typst.spigradle.spigot.Command
 import io.typst.spigradle.spigot.Load
 import io.typst.spigradle.spigot.Permission
+import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -155,12 +156,24 @@ open class NukkitExtension(project: Project) {
         description.set(xs)
     }
 
+    fun website(website: String) {
+        this.website = website
+    }
+
     fun authors(authors: Array<String>) {
         this.authors = authors.toList()
     }
 
     fun api(vararg apis: String) {
         this.api = apis.toList()
+    }
+
+    fun load(load: Load) {
+        this.load = load
+    }
+
+    fun prefix(prefix: String) {
+        this.prefix = prefix
     }
 
     fun depends(vararg depends: String) {
@@ -173,5 +186,19 @@ open class NukkitExtension(project: Project) {
 
     fun loadBefore(vararg loadBefore: String) {
         this.loadBefore = loadBefore.toList()
+    }
+
+    /**
+     * DSL helper for [commands] configuration.
+     */
+    fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
+        configure.execute(commands)
+    }
+
+    /**
+     * DSL helper for [permissions] configuration.
+     */
+    fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
+        configure.execute(permissions)
     }
 }

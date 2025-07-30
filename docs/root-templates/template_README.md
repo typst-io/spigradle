@@ -34,6 +34,7 @@ dependencies {
 spigot {
     depends 'ProtocolLib'
     softDepends 'SomeLibrary'
+    apiVersion '1.21'
     // libraries = configurations.implementation.dependencies.collect { "\$it.group:\$it.name:\$it.version".toString() }
     commands {
         create('mycmd') {
@@ -122,6 +123,7 @@ dependencies {
 spigot {
   depends = listOf("ProtocolLib")
   softDepends = listOf("SomeLibrary")
+  apiVersion = "1.21"
   commands {
     create("mycmd") {
       aliases = listOf("cmd")
@@ -141,7 +143,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:$SPIGRADLE_VERSION'
+        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
     }
 }
 
@@ -159,7 +161,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:$SPIGRADLE_VERSION")
+        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
     }
 }
 
@@ -223,7 +225,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:$SPIGRADLE_VERSION'
+        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
     }
 }
 
@@ -241,7 +243,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:$SPIGRADLE_VERSION")
+        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
     }
 }
 
@@ -306,7 +308,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:$SPIGRADLE_VERSION'
+        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
     }
 }
 
@@ -324,7 +326,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:$SPIGRADLE_VERSION")
+        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
     }
 }
 
@@ -388,7 +390,7 @@ repositories {
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | kr.entree:spigradle:$version                     | $SPIGRADLE_VERSION   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                     | $SPIGRADLE_VERSION   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

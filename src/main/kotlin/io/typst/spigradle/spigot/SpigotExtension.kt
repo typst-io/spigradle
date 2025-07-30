@@ -185,22 +185,6 @@ open class SpigotExtension(project: Project) {
     var libraries: List<String> = emptyList()
 
     /**
-     * Exclude libraries from the [libraries].
-     *
-     * This will be 'contains' matching with [libraries], it's ok just piece of keyword.
-     *
-     * Example:
-     * - `okhttp`
-     * - `com.squareup.okhttp3:okhttp`
-     * - `com.squareup.okhttp3:okhttp:4.9.0`
-     * - `*`
-     *
-     * See also: [libraries]
-     */
-    @Transient
-    var excludeLibraries: List<String> = emptyList()
-
-    /**
      * DSL container for the [commands] configuration.
      *
      * Groovy Example:
@@ -284,17 +268,10 @@ open class SpigotExtension(project: Project) {
     }
 
     /**
-     * DSL helper for [commands] configuration.
+     * Groovy DSL helper for the [website] property.
      */
-    fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
-        configure.execute(commands)
-    }
-
-    /**
-     * DSL helper for [permissions] configuration.
-     */
-    fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
-        configure.execute(permissions)
+    fun website(xs: String) {
+        website = xs
     }
 
     /**
@@ -302,6 +279,27 @@ open class SpigotExtension(project: Project) {
      */
     fun authors(vararg authors: String) {
         this.authors = authors.toList()
+    }
+
+    /**
+     * Groovy DSL helper for the [apiVersion] property.
+     */
+    fun apiVersion(xs: String) {
+        apiVersion = xs
+    }
+
+    /**
+     * Groovy DSL helper for the [load] property.
+     */
+    fun load(x: Load) {
+        load = x
+    }
+
+    /**
+     * Groovy DSL helper for the [prefix] property.
+     */
+    fun prefix(xs: String) {
+        prefix = xs
     }
 
     /**
@@ -326,9 +324,23 @@ open class SpigotExtension(project: Project) {
     }
 
     /**
-     * Groovy DSL helper for the [excludeLibraries] configuration.
+     * Groovy DSL helper for the [libraries] configuration.
      */
-    fun excludeLibraries(vararg dependencyNotations: String) {
-        this.excludeLibraries = listOf(*dependencyNotations)
+    fun libraries(vararg libraries: String) {
+        this.libraries = libraries.toList()
+    }
+
+    /**
+     * DSL helper for [commands] configuration.
+     */
+    fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
+        configure.execute(commands)
+    }
+
+    /**
+     * DSL helper for [permissions] configuration.
+     */
+    fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
+        configure.execute(permissions)
     }
 }

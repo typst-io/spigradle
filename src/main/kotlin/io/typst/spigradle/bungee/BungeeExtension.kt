@@ -89,6 +89,10 @@ open class BungeeExtension(project: Project) {
         description.set(xs)
     }
 
+    fun author(xs: String) {
+        this.author = xs
+    }
+
     fun depends(vararg depends: String) {
         this.depends = depends.toList()
     }

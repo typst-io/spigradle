@@ -20,7 +20,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.0.1'
+    id 'io.typst.spigradle' version '3.0.2'
 }
 
 group 'org.sample'
@@ -38,6 +38,7 @@ dependencies {
 spigot {
     depends 'ProtocolLib'
     softDepends 'SomeLibrary'
+    apiVersion '1.21'
     // libraries = configurations.implementation.dependencies.collect { "$it.group:$it.name:$it.version".toString() }
     commands {
         create('mycmd') {
@@ -87,7 +88,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.0.1'
+    id 'io.typst.spigradle' version '3.0.2'
 }
 
 repositories {
@@ -118,7 +119,7 @@ import io.typst.spigradle.spigot.*
 
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle") version "3.0.1"
+    id("io.typst.spigradle") version "3.0.2"
 }
 
 repositories {
@@ -134,6 +135,7 @@ dependencies {
 spigot {
   depends = listOf("ProtocolLib")
   softDepends = listOf("SomeLibrary")
+  apiVersion = "1.21"
   commands {
     create("mycmd") {
       aliases = listOf("cmd")
@@ -153,7 +155,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:3.0.1'
+        classpath 'io.typst:spigradle:3.0.2'
     }
 }
 
@@ -171,7 +173,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:3.0.1")
+        classpath("io.typst:spigradle:3.0.2")
     }
 }
 
@@ -197,7 +199,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.bungee' version '3.0.1'
+    id 'io.typst.spigradle.bungee' version '3.0.2'
 }
 
 repositories {
@@ -215,7 +217,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.bungee") version "3.0.1"
+    id("io.typst.spigradle.bungee") version "3.0.2"
 }
 
 repositories {
@@ -239,7 +241,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:3.0.1'
+        classpath 'io.typst:spigradle:3.0.2'
     }
 }
 
@@ -257,7 +259,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:3.0.1")
+        classpath("io.typst:spigradle:3.0.2")
     }
 }
 
@@ -284,7 +286,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.nukkit' version '3.0.1'
+    id 'io.typst.spigradle.nukkit' version '3.0.2'
 }
 
 repositories {
@@ -302,7 +304,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.nukkit") version "3.0.1"
+    id("io.typst.spigradle.nukkit") version "3.0.2"
 }
 
 repositories {
@@ -326,7 +328,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:3.0.1'
+        classpath 'io.typst:spigradle:3.0.2'
     }
 }
 
@@ -344,7 +346,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:3.0.1")
+        classpath("io.typst:spigradle:3.0.2")
     }
 }
 
@@ -418,7 +420,7 @@ repositories {
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | kr.entree:spigradle:$version                     | 3.0.1   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                     | 3.0.2   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |
