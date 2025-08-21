@@ -44,6 +44,11 @@ kotlin {
         apiVersion = KotlinVersion.KOTLIN_1_8
         languageVersion = KotlinVersion.KOTLIN_1_8
     }
+    jvmToolchain(17)
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 tasks {
