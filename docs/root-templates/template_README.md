@@ -5,6 +5,8 @@
 
 An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and NukkitX.
 
+[Here are migration tips for breaking changes](docs/spigot_plugin.md#3x---2x)
+
 # Benefits
 
 - [Description file](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html) generation: `plugin.yml` and/or `bungee.yml`

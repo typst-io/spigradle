@@ -16,15 +16,20 @@
 
 package io.typst.spigradle
 
-object Dependencies {
-    val LOMBOK = Dependency("org.projectlombok", "lombok", "1.18.38")
-    val SPIGRADLE = Dependency("kr.entree", "spigradle", SpigradleMeta.VERSION)
-    val SPIGRADLE_ANNOTATIONS = Dependency(SPIGRADLE, name = "spigradle-annotations", version = "2.2.0")
-    val ALL: List<Dependency> =
-        listOf(LOMBOK, SPIGRADLE, SPIGRADLE_ANNOTATIONS)
-//    val ALL: List<Pair<String, Dependency>>
-//        get() = listOf(
-//            Dependencies, SpigotDependencies,
-//            BungeeDependencies, NukkitDependencies
-//        ).flatMap { it.toFieldEntries() }
+enum class Dependencies(
+    val group: String,
+    val publicName: String,
+    val version: String,
+    val alias: String,
+) {
+    LOMBOK("org.projectlombok", "lombok", "1.18.38", "lombok")
+    ;
+
+    fun toDependency(): Dependency {
+        return Dependency(group, publicName, version)
+    }
+
+    fun format(version: String?): String {
+        return toDependency().format(version)
+    }
 }

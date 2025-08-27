@@ -32,13 +32,6 @@ fun RepositoryHandler.sonatype(configure: MavenArtifactRepository.() -> Unit = {
 fun RepositoryHandler.jitpack(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.JITPACK, configure)
 
 /**
- * The dependency shortcut for Spigradle.
- *
- * @param version Defaults to [Dependencies.SPIGRADLE].version
- */
-fun DependencyHandler.spigradle(version: String? = null) = Dependencies.SPIGRADLE.format(version)
-
-/**
  * The dependency shortcut for Lombok.
  *
  * @param version Defaults to [Dependencies.LOMBOK].version

@@ -50,9 +50,9 @@ class SpigradlePlugin : Plugin<Project> {
 
     private fun Project.setupDependencyExtensions() {
         val ext = dependencies.groovyExtension
-        Dependencies.ALL.forEach { (name, dependency) ->
-            ext.set(name, object : Closure<Any>(this, this) {
-                fun doCall(version: String?) = dependency.format(version)
+        for (dep in Dependencies.values()) {
+            ext.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(version: String?) = dep.format(version)
             })
         }
     }
