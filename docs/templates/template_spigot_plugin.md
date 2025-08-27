@@ -352,15 +352,15 @@ tasks.test.dependsOn(copyPluginYaml)
 
 ### 3.x <- 2.x
 
+- The groupId has been changed from `kr.entree.spigradle` to `io.typst.spigradle`.
 - No more implicit repo/dep: need to declare repository(spigotmc)
-- No more @Plugin annotation: will be detected the main automatically
-- The debug feature removed at this time
-- The groupId has been changed from kr.entree.spigradle to io.typst.spigradle.
-- The Gradle JVM version must be at least 17 or higher.
+- No more @Plugin annotation: the main class will be detected automatically.
+- The debug feature is removed at this time
+- The Gradle version must be 8.x or higher
+- The Gradle JVM version must be 17 or higher.
 
 ![img.png](./../assets/idea-gradle-jvm.png)
 
-- The Gradle version must be 8.x or higher
 
 ### 2.x <- 1.x
 
