@@ -358,7 +358,7 @@ tasks.test.dependsOn(copyPluginYaml)
 - The groupId has been changed from kr.entree.spigradle to io.typst.spigradle.
 - The Gradle JVM version must be at least 17 or higher.
 
-![img.png](assets/idea-gradle-jvm.png)
+![img.png](./../assets/idea-gradle-jvm.png)
 
 - The Gradle version must be 8.x or higher
 
