@@ -73,7 +73,7 @@ class GradleFunctionalTest {
     }
 
     @Test
-    fun `jdk16 java`() {
+    fun `jdk21 java`() {
         buildFile.writeText(
             """
             plugins {
@@ -85,11 +85,11 @@ class GradleFunctionalTest {
                 spigotmc()
             }
             dependencies {
-                compileOnly(spigot("1.17.1"))
+                compileOnly(spigot("1.21.8"))
             }
             java {
                 toolchain {
-                    languageVersion.set(JavaLanguageVersion.of(16))
+                    languageVersion.set(JavaLanguageVersion.of(21))
                 }
             }
         """.trimIndent()
@@ -107,12 +107,12 @@ class GradleFunctionalTest {
     }
 
     @Test
-    fun `jdk16 kotlin`() {
+    fun `jdk21 kotlin`() {
         buildFileKt.writeText(
             """
             import io.typst.spigradle.spigot.*
             plugins {
-                kotlin("jvm") version "1.6.10"
+                kotlin("jvm") version "2.2.0"
                 id("io.typst.spigradle")
             }
             repositories {
@@ -120,18 +120,14 @@ class GradleFunctionalTest {
                 spigotmc()
             }
             dependencies {
-                compileOnly(spigot("1.17.1"))
+                compileOnly(spigot("1.21.8"))
                 implementation(kotlin("stdlib"))
             }
             spigot {
                 description.set("A test plugin")
             }
             kotlin {
-                target.compilations.all {
-                    kotlinOptions {
-                        jvmTarget = "16"
-                    }
-                }
+                jvmToolchain(21)
             }
         """.trimIndent()
         )
