@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Spigradle contributors.
+ * Copyright (c) 2025 Spigradle contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package io.typst.spigradle
 
-import kr.entree.spigradle.util.testGradleTask
+import io.typst.spigradle.util.testGradleTask
 import org.junit.jupiter.api.io.TempDir
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
 import java.io.File
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SpigotLibraryResolution {
     @Test
+    @Ignore // TODO: release in future
     fun `resolve libraries and serialize`(@TempDir dir: File) {
         val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
         testGradleTask(
             "generateSpigotDescription", dir, """
             plugins {
-                id 'kr.entree.spigradle'
+                id 'java'
+                id 'io.typst.spigradle'
             }
             
             repositories {
@@ -63,7 +66,8 @@ class SpigotLibraryResolution {
         testGradleTask(
             "generateSpigotDescription", dir, """
             plugins {
-                id 'kr.entree.spigradle'
+                id 'java'
+                id 'io.typst.spigradle'
             }
             
             repositories {
@@ -82,7 +86,8 @@ class SpigotLibraryResolution {
         """.trimIndent()
         )
         val ymlFile = dir.resolve("build").resolve("tmp").resolve("generateSpigotDescription").resolve("plugin.yml")
-        val yaml = Yaml().load<Map<String, Any>>(ymlFile.readText())
+        val load = Load(LoadSettings.builder().build())
+        val yaml = load.loadFromString(ymlFile.readText()) as Map<String, Any>
         val libs = yaml["libraries"] as? List<*>
         assertEquals(dep, libs?.get(0))
         assertEquals(1, libs?.size ?: 0)

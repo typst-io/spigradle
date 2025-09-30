@@ -1,8 +1,8 @@
-import kr.entree.spigradle.kotlin.bungeecord
+import io.typst.spigradle.kotlin.bungeecord
 
 plugins {
     kotlin("jvm") version "1.4.20"
-    id("kr.entree.spigradle.bungee")
+    id("io.typst.spigradle.bungee")
 }
 
 repositories {

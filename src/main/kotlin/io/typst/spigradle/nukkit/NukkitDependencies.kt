@@ -19,13 +19,38 @@ package io.typst.spigradle.nukkit
 import io.typst.spigradle.Dependency
 import io.typst.spigradle.VersionModifier
 
-object NukkitDependencies {
-    val NUKKIT = Dependency(
+enum class NukkitDependencies(
+    val group: String,
+    val publicName: String,
+    val version: String,
+    val alias: String,
+    val local: Boolean = false,
+    val versionModifier: (String) -> String = { it },
+) {
+    NUKKIT(
         "cn.nukkit",
         "nukkit",
         "2.0.0-SNAPSHOT",
+        "nukkit",
         false,
         VersionModifier.SNAPSHOT_APPENDER
-    )
-    val NUKKIT_X = NUKKIT
+    ),
+
+    NUKKIT_X(
+        NUKKIT.group,
+        NUKKIT.publicName,
+        NUKKIT.version,
+        "nukkitX",
+        NUKKIT.local,
+        NUKKIT.versionModifier
+    ),
+    ;
+
+    fun toDependency(): Dependency {
+        return Dependency(group, publicName, version, local, versionModifier)
+    }
+
+    fun format(version: String? = null): String {
+        return toDependency().format(version)
+    }
 }

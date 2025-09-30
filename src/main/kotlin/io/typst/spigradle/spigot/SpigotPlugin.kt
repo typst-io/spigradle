@@ -48,29 +48,7 @@ class SpigotPlugin : Plugin<Project> {
             applySpigradlePlugin()
             // TODO: auto libraries
             registerDescGenTask(SPIGOT_TYPE, SpigotExtension::class.java) { desc ->
-                linkedMapOf(
-                    "main" to desc.main.orNull,
-                    "name" to desc.name.orNull,
-                    "version" to desc.version.orNull,
-                    "description" to desc.description.orNull,
-                    "website" to desc.website,
-                    "authors" to desc.authors.ifEmpty { null },
-                    "api-version" to desc.apiVersion,
-                    "load" to desc.load?.name,
-                    "prefix" to desc.prefix,
-                    "depend" to desc.depends.ifEmpty { null },
-                    "softdepend" to desc.softDepends.ifEmpty { null },
-                    "loadbefore" to desc.loadBefore.ifEmpty { null },
-                    "libraries" to desc.libraries.ifEmpty { null },
-                    "commands" to desc.commands.toList().associate {
-                        it.name to it.serialize()
-                    }.ifEmpty { null },
-                    "permissions" to desc.permissions.toList().associate {
-                        it.name to it.serialize()
-                    }.ifEmpty { null },
-                ).filterValues {
-                    it != null
-                }
+                desc.encodeToMap()
             }
             setupGroovyExtensions()
         }

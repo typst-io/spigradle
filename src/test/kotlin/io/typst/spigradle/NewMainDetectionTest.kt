@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package io.typst.spigradle
 
 import io.typst.spigradle.detection.ClassDefinition
 import io.typst.spigradle.detection.findSubClass

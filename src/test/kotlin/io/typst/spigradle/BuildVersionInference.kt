@@ -14,59 +14,18 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package io.typst.spigradle
 
 import io.typst.spigradle.applySpigradlePlugin
-import kr.entree.spigradle.spigot.SpigotDebug
 import io.typst.spigradle.spigot.SpigotDependencies
 import io.typst.spigradle.spigot.spigot
-import kr.entree.spigradle.spigot.SpigotDebugTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.testfixtures.ProjectBuilder
-import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BuildVersionInference {
-    val debug = SpigotDebug(
-        File(File("parent"), "child"),
-        File(File("parent"), "child")
-    )
-
-    @Test
-    fun `sort versions`() {
-        val vers = listOf(
-            "1.16.5",
-            "1.16.4",
-            "1.16.3",
-            "1.16.2",
-            "1.16.1",
-            "1.15.2",
-            "1.15.1",
-            "1.15",
-            "1.14.4",
-            "1.14.3",
-            "1.14.2",
-            "1.14.1",
-            "1.14",
-            "1.13.2",
-            "1.13.1",
-            "1.13-pre7",
-            "1.12.2",
-            "1.12.1",
-            "1.12",
-            "1.11.2",
-            "1.10.2",
-            "1.9.4",
-            "1.8.8"
-        )
-        assertEquals(
-            vers,
-            SpigotDebugTask.sortDescendingVersion(vers.shuffled())
-        )
-    }
-
     @Test
     fun gradle() {
         val ver = "0.1.0-R0.1-SNAPSHOT"
@@ -75,41 +34,28 @@ class BuildVersionInference {
         listOf("compileOnly", "implementation").forEach {
             listOf(
                 SpigotDependencies.SPIGOT,
-                SpigotDependencies.SPIGOT_ALL,
-                SpigotDependencies.PAPER
+                SpigotDependencies.SPIGOT_API,
+                SpigotDependencies.PAPER_API,
             ).forEach { dep ->
                 prepareProject().run {
                     dependencies {
                         add(it, dep.format(ver))
                     }
-                    assertEquals(ver.substringBefore('-'), SpigotDebugTask.run { getBuildVersion(debug) }, "$it ${dep.format(ver)}")
                     dependencies {
                         add(it, dep.format(bigVer))
                     }
-                    assertEquals(bigVer.substringBefore('-'), SpigotDebugTask.run { getBuildVersion(debug) }, "$it ${dep.format(bigVer)}")
                     dependencies {
                         add(it, dep.format(smallVer))
                     }
-                    assertEquals(bigVer.substringBefore('-'), SpigotDebugTask.run { getBuildVersion(debug) }, "$it ${dep.format(bigVer)}")
                 }
             }
-        }
-    }
-
-    @Test
-    fun `gradle 1_16_5 spigot`() {
-        val project = prepareProject()
-        project.dependencies {
-            spigot("1.16.5")
-        }
-        SpigotDebugTask.apply {
-            project.getBuildVersion(debug)
         }
     }
 
     fun prepareProject(): Project {
         val project = ProjectBuilder.builder().build()
         project.applySpigradlePlugin()
+        project.plugins.apply("java")
         return project
     }
 }

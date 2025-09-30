@@ -1,8 +1,8 @@
-import kr.entree.spigradle.data.*
+import io.typst.spigradle.data.*
 
 plugins {
     id 'java'
-    id 'kr.entree.spigradle'
+    id 'io.typst.spigradle'
 }
 
 repositories {

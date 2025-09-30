@@ -18,6 +18,6 @@ package io.typst.spigradle.bungee
 
 import io.typst.spigradle.Repositories
 
-object BungeeRepositories {
-    val BUNGEECORD = Repositories.SONATYPE
+enum class BungeeRepositories(val address: String, val alias: String) {
+    BUNGEECORD(Repositories.SONATYPE.address, "bungeecord")
 }

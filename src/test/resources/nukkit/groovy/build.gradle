@@ -1,5 +1,5 @@
 plugins {
-    id 'kr.entree.spigradle.nukkit'
+    id 'io.typst.spigradle.nukkit'
 }
 
 repositories {

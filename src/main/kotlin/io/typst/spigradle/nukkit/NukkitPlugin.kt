@@ -16,15 +16,14 @@
 
 package io.typst.spigradle.nukkit
 
+import groovy.lang.Closure
 import io.typst.spigradle.PluginConvention
 import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
-import io.typst.spigradle.spigot.Load
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.maven
 
 /**
  * The Nukkit plugin that adds:
@@ -46,42 +45,26 @@ class NukkitPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             applySpigradlePlugin()
-            setupDefaultRepositories()
             registerDescGenTask(NUKKIT_TYPE, NukkitExtension::class.java) { desc ->
-                linkedMapOf(
-                    "main" to desc.main.orNull,
-                    "name" to desc.name.orNull,
-                    "version" to desc.version.orNull,
-                    "description" to desc.description.orNull,
-                    "website" to desc.website,
-                    "authors" to desc.authors,
-                    "api" to desc.api,
-                    "load" to desc.load?.name,
-                    "prefix" to desc.prefix,
-                    "depend" to desc.depends,
-                    "softdepend" to desc.softDepends,
-                    "loadbefore" to desc.loadBefore,
-                    "commands" to desc.commands.map {
-                        it.serialize()
-                    },
-                    "permissions" to desc.permissions.map {
-                        it.serialize()
-                    },
-                )
+                desc.encodeToMap()
             }
             setupGroovyExtensions()
         }
     }
 
-    private fun Project.setupDefaultRepositories() {
-        repositories.maven(NukkitRepositories.NUKKIT_X)
-    }
-
     private fun Project.setupGroovyExtensions() {
-        extensions.getByName(NUKKIT_TYPE.descExtension).groovyExtension.apply {
-            set("POST_WORLD", Load.POST_WORLD)
-            set("POSTWORLD", Load.POST_WORLD)
-            set("STARTUP", Load.STARTUP)
+        val depExt = dependencies.groovyExtension
+        val repExp = repositories.groovyExtension
+        for (dep in NukkitDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
+            })
+        }
+        for (repo in NukkitRepositories.values()) {
+            repExp.set(repo.alias, object : Closure<Any>(this, this) {
+                fun doCall() = repositories.maven { setUrl(repo.address) }
+            })
         }
     }
 }

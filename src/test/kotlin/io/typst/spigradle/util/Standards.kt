@@ -1,4 +1,4 @@
-package kr.entree.spigradle.util
+package io.typst.spigradle.util
 
 import kotlin.random.Random
 

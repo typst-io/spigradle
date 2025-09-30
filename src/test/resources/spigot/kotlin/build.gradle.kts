@@ -1,8 +1,8 @@
-import kr.entree.spigradle.kotlin.spigot
+import io.typst.spigradle.kotlin.spigot
 
 plugins {
     kotlin("jvm") version "1.4.20"
-    id("kr.entree.spigradle")
+    id("io.typst.spigradle")
 }
 
 repositories {

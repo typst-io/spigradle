@@ -16,14 +16,14 @@
 
 package io.typst.spigradle.bungee
 
+import groovy.lang.Closure
 import io.typst.spigradle.PluginConvention
-import io.typst.spigradle.Repositories
 import io.typst.spigradle.applySpigradlePlugin
+import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.maven
 
 /**
  * The Bungeecord plugin that adds:
@@ -45,23 +45,26 @@ class BungeePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             applySpigradlePlugin()
-            setupDefaultRepositories()
+            setupGroovyExtension()
             registerDescGenTask(BUNGEE_TYPE, BungeeExtension::class.java) { desc ->
-                linkedMapOf(
-                    "main" to desc.main.orNull,
-                    "name" to desc.name.orNull,
-                    "version" to desc.description.orNull,
-                    "author" to desc.author,
-                    "depend" to desc.depends,
-                    "softdepend" to desc.softDepends
-                ).filterValues {
-                    it != null
-                }
+                desc.encodeToMap()
             }
         }
     }
 
-    private fun Project.setupDefaultRepositories() {
-        repositories.maven(Repositories.SONATYPE)
+    private fun Project.setupGroovyExtension() {
+        val depExt = dependencies.groovyExtension
+        val repExp = repositories.groovyExtension
+        for (dep in BungeeDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
+            })
+        }
+        for (repo in BungeeRepositories.values()) {
+            repExp.set(repo.alias, object : Closure<Any>(this, this) {
+                fun doCall() = repositories.maven { setUrl(repo.address) }
+            })
+        }
     }
 }

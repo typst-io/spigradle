@@ -16,8 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-enum class Load {
-    // @SerialName("POSTWORLD")
-    POST_WORLD,
-    STARTUP
+enum class Load(val label: String) {
+    POST_WORLD("POSTWORLD"),
+    STARTUP("STARTUP")
 }

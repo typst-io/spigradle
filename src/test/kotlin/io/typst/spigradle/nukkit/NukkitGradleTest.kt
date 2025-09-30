@@ -1,7 +1,7 @@
-package kr.entree.spigradle.nukkit
+package io.typst.spigradle.nukkit
 
 import io.typst.spigradle.nukkit.NukkitPlugin
-import kr.entree.spigradle.util.testGradleTaskWithResource
+import io.typst.spigradle.util.testGradleTaskWithResource
 import org.junit.jupiter.api.Test
 import kotlin.test.Ignore
 

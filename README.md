@@ -22,7 +22,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.0.4'
+    id 'io.typst.spigradle' version '3.0.5'
 }
 
 group 'org.sample'
@@ -90,7 +90,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.0.4'
+    id 'io.typst.spigradle' version '3.0.5'
 }
 
 repositories {
@@ -121,7 +121,7 @@ import io.typst.spigradle.spigot.*
 
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle") version "3.0.4"
+    id("io.typst.spigradle") version "3.0.5"
 }
 
 repositories {
@@ -157,7 +157,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.0.4'
+        classpath 'io.typst:spigradle:3.0.5'
     }
 }
 
@@ -175,7 +175,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.0.4")
+        classpath("io.typst:spigradle:3.0.5")
     }
 }
 
@@ -201,7 +201,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.bungee' version '3.0.4'
+    id 'io.typst.spigradle.bungee' version '3.0.5'
 }
 
 repositories {
@@ -219,7 +219,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.bungee") version "3.0.4"
+    id("io.typst.spigradle.bungee") version "3.0.5"
 }
 
 repositories {
@@ -243,7 +243,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.0.4'
+        classpath 'io.typst:spigradle:3.0.5'
     }
 }
 
@@ -261,7 +261,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.0.4")
+        classpath("io.typst:spigradle:3.0.5")
     }
 }
 
@@ -288,7 +288,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.nukkit' version '3.0.4'
+    id 'io.typst.spigradle.nukkit' version '3.0.5'
 }
 
 repositories {
@@ -306,7 +306,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.nukkit") version "3.0.4"
+    id("io.typst.spigradle.nukkit") version "3.0.5"
 }
 
 repositories {
@@ -330,7 +330,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.0.4'
+        classpath 'io.typst:spigradle:3.0.5'
     }
 }
 
@@ -348,7 +348,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.0.4")
+        classpath("io.typst:spigradle:3.0.5")
     }
 }
 
@@ -422,7 +422,7 @@ repositories {
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:$version                     | 3.0.4   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                     | 3.0.5   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

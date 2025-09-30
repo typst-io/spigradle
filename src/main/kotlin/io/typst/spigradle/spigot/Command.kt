@@ -36,8 +36,8 @@ open class Command @Inject constructor(@Transient val name: String) {
         return mapOf(
             "description" to description,
             "usage" to usage,
-            "permisison" to permission,
-            "permission-message" to permission,
+            "permission" to permission,
+            "permission-message" to permissionMessage,
             "aliases" to aliases.ifEmpty { null }
         ).filterValues { it != null }
     }

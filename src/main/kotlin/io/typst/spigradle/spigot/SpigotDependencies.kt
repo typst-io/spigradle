@@ -142,7 +142,7 @@ enum class SpigotDependencies(
         return Dependency(group, publicName, version, local, versionModifier)
     }
 
-    fun format(version: String?): String {
+    fun format(version: String? = null): String {
         return toDependency().format(version)
     }
 }

@@ -105,7 +105,8 @@ import org.gradle.kotlin.dsl.property
 //)
 open class NukkitExtension(project: Project) {
     var main: Property<String> = project.objects.property()
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
+    var name: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
     var version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     var description: Property<String> =
@@ -200,5 +201,30 @@ open class NukkitExtension(project: Project) {
      */
     fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
         configure.execute(permissions)
+    }
+
+    fun encodeToMap(): Map<String, Any?> {
+        return linkedMapOf(
+            "main" to main.orNull,
+            "name" to name.orNull,
+            "version" to version.orNull,
+            "description" to description.orNull,
+            "website" to website,
+            "authors" to authors.ifEmpty { null },
+            "api" to api.ifEmpty { null },
+            "load" to load?.label,
+            "prefix" to prefix,
+            "depend" to depends.ifEmpty { null },
+            "softdepend" to softDepends.ifEmpty { null },
+            "loadbefore" to loadBefore.ifEmpty { null },
+            "commands" to commands.map {
+                it.serialize()
+            }.ifEmpty { null },
+            "permissions" to permissions.map {
+                it.serialize()
+            }.ifEmpty { null },
+        ).filterValues {
+            it != null
+        }
     }
 }

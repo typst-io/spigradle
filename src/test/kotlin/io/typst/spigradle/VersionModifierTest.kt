@@ -1,4 +1,4 @@
-package kr.entree.spigradle
+package io.typst.spigradle
 
 import io.typst.spigradle.VersionModifier
 import kotlin.test.Test

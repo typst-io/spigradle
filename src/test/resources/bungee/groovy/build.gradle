@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'kr.entree.spigradle.bungee'
+    id 'io.typst.spigradle.bungee'
 }
 
 repositories {

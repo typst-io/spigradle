@@ -16,9 +16,9 @@
 
 package io.typst.spigradle
 
-enum class Repositories(val address: String) {
-    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/"),
-    JITPACK("https://jitpack.io"),
+enum class Repositories(val address: String, val alias: String) {
+    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/", "sonatype"),
+    JITPACK("https://jitpack.io", "jitpack"),
 //    val ALL: List<Pair<String, String>>
 //        get() = listOf(
 //            Repositories, SpigotRepositories,

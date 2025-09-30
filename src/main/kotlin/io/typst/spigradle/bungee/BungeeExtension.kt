@@ -52,7 +52,8 @@ import org.gradle.kotlin.dsl.property
  */
 open class BungeeExtension(project: Project) {
     var main: Property<String> = project.objects.property()
-    var name: Property<String> = project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
+    var name: Property<String> =
+        project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
     var version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     var description: Property<String> =
@@ -99,5 +100,19 @@ open class BungeeExtension(project: Project) {
 
     fun softDepends(vararg softDepends: String) {
         this.softDepends = softDepends.toList()
+    }
+
+    fun encodeToMap(): Map<String, Any?> {
+        return linkedMapOf(
+            "main" to main.orNull,
+            "name" to name.orNull,
+            "version" to version.orNull,
+            "description" to description.orNull,
+            "author" to author,
+            "depend" to depends.ifEmpty { null },
+            "softdepend" to softDepends.ifEmpty { null }
+        ).filterValues {
+            it != null
+        }
     }
 }

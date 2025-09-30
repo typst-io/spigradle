@@ -343,4 +343,30 @@ open class SpigotExtension(project: Project) {
     fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
         configure.execute(permissions)
     }
+
+    fun encodeToMap(): Map<String, Any?> {
+        return linkedMapOf(
+            "main" to main.orNull,
+            "name" to name.orNull,
+            "version" to version.orNull,
+            "description" to description.orNull,
+            "website" to website,
+            "authors" to authors.ifEmpty { null },
+            "api-version" to apiVersion,
+            "load" to load?.label,
+            "prefix" to prefix,
+            "depend" to depends.ifEmpty { null },
+            "softdepend" to softDepends.ifEmpty { null },
+            "loadbefore" to loadBefore.ifEmpty { null },
+            "libraries" to libraries.ifEmpty { null },
+            "commands" to commands.toList().associate {
+                it.name to it.serialize()
+            }.ifEmpty { null },
+            "permissions" to permissions.toList().associate {
+                it.name to it.serialize()
+            }.ifEmpty { null },
+        ).filterValues {
+            it != null
+        }
+    }
 }

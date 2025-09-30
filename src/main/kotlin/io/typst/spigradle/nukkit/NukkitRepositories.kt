@@ -16,6 +16,6 @@
 
 package io.typst.spigradle.nukkit
 
-object NukkitRepositories {
-    val NUKKIT_X = "https://repo.nukkitx.com/maven-snapshots"
+enum class NukkitRepositories(val address: String, val alias: String) {
+    NUKKIT_X("https://repo.nukkitx.com/maven-snapshots", "nukkitX")
 }

@@ -1,8 +1,8 @@
-package kr.entree.spigradle
+package io.typst.spigradle
 
-import io.typst.spigradle.YamlGenerate
 import io.typst.spigradle.spigot.Load
 import io.typst.spigradle.spigot.SpigotExtension
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.normaliseLineSeparators
@@ -37,23 +37,30 @@ class GenerateYamlTaskTest {
     @Test
     fun `simple serialization`() {
         val extension = project.extensions.create<SpigotExtension>("spigot", project).apply {
-            main = "SpigradleMain"
+            main.set("SpigradleMain")
         }
         yamlTask.apply {
+            properties.set(
+                project.getMainDetectivePropertiesProvider(
+                    extension.encodeToMap(),
+                    project.getPluginMainPathFile(SpigotPlugin.SPIGOT_TYPE.serverName)
+                )
+            )
             outputFiles.from(file)
-            serialize(extension)
             generate()
         }
-        assertEquals("main: SpigradleMain\n", file.readText())
+        assertEquals("main: SpigradleMain\n" +
+                "name: Test\n" +
+                "version: unspecified\n", file.readText())
     }
 
     @Test
     fun `detail serialization`() {
         val ext = project.extensions.create<SpigotExtension>("spigot", project).apply {
-            main = "kr.entree.spigradle.Main"
-            name = "Spigradle"
-            version = "1.1"
-            description = "This plugin does so much stuff it can't be contained!"
+            main.set("io.typst.spigradle.Main")
+            name.set("Spigradle")
+            version.set("1.1")
+            description.set("This plugin does so much stuff it can't be contained!")
             website = "https://github.com/spigradle/spigradle"
             authors = listOf("EntryPoint")
             apiVersion = "1.15"
@@ -88,7 +95,12 @@ class GenerateYamlTaskTest {
         }
         yamlTask.apply {
             outputFiles.from(file)
-            serialize(ext)
+            properties.set(
+                project.getMainDetectivePropertiesProvider(
+                    ext.encodeToMap(),
+                    project.getPluginMainPathFile(SpigotPlugin.SPIGOT_TYPE.serverName)
+                )
+            )
             generate()
         }
         val expected =

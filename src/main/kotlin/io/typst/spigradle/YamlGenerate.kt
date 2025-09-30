@@ -22,9 +22,9 @@ import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.get
 import org.snakeyaml.engine.v2.api.Dump
 import org.snakeyaml.engine.v2.api.DumpSettings
 import org.snakeyaml.engine.v2.common.FlowStyle
@@ -108,6 +108,29 @@ open class YamlGenerate : DefaultTask() {
     }
 }
 
+internal fun Project.getMainDetectivePropertiesProvider(
+    map: Map<String, Any?>,
+    detectResultFile: File,
+): Provider<Map<String, Any?>> {
+    return provider {
+        if (!map.containsKey("main")) {
+            val detectResult = runCatching {
+                detectResultFile.readText()
+            }.getOrNull() ?: runCatching {
+                detectResultFile.parentFile.resolve("plugin_main").readText()
+            }.getOrNull()
+            val newMap = LinkedHashMap<String, Any?>()
+            if (detectResult != null) {
+                newMap.put("main", detectResult)
+            }
+            newMap.putAll(map)
+            newMap as Map<String, Any?>
+        } else {
+            map
+        }
+    }
+}
+
 // TODO: Too complex! Should whole refactor in 3.0
 internal fun <T> Project.registerDescGenTask(
     type: PluginConvention, extensionClass: Class<T>, serializer: (T) -> Map<String, Any?>,
@@ -122,26 +145,13 @@ internal fun <T> Project.registerDescGenTask(
     val generationTask = registerYamlGenTask(type).applyToConfigure {
         inputs.files(detectResultFile)
         group = type.taskGroup
-        properties.set(provider {
-            val map = serializer(description)
-                .filterValues { it != null }
-            if (!map.containsKey("main")) {
-                val detectResult = runCatching {
-                    detectResultFile.readText()
-                }.getOrNull()
-                val newMap = LinkedHashMap<String, Any?>()
-                if (detectResult != null) {
-                    newMap.put("main", detectResult)
-                }
-                newMap.putAll(map)
-                newMap
-            } else {
-                map
-            }
-        })
+        properties.set(getMainDetectivePropertiesProvider(serializer(description), detectResultFile))
         doFirst {
             notNull(properties.get()["main"]) {
-                Messages.noMainFound(type.descExtension, type.descGenTask)
+                Messages.noMainFound(
+                    type.descExtension,
+                    type.descGenTask
+                )
             }
         }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package kr.entree.spigradle
+package io.typst.spigradle
 
 import io.typst.spigradle.findSubclass
 import org.junit.jupiter.api.Test

@@ -48,14 +48,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'io.typst.spigradle.bungee' version '3.0.4'
+    id 'io.typst.spigradle.bungee' version '3.0.5'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("io.typst.spigradle.bungee") version "3.0.4"
+    id("io.typst.spigradle.bungee") version "3.0.5"
 }
 ```
 
@@ -68,7 +68,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:3.0.4'
+        classpath 'kr.entree:spigradle:3.0.5'
     }
 }
 
@@ -86,7 +86,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:3.0.4")
+        classpath("kr.entree:spigradle:3.0.5")
     }
 }
 

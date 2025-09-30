@@ -1,28 +1,28 @@
-main: kr.entree.spigradle.Main
+main: io.typst.spigradle.Main
 name: Spigradle
-version: 1.1
+version: '1.1'
 description: This plugin does so much stuff it can't be contained!
 website: https://github.com/spigradle/spigradle
 authors:
- - EntryPoint
-api-version: 1.15
+- EntryPoint
+api-version: '1.15'
 load: POSTWORLD
 prefix: Its prefix
 softdepend:
- - ProtocolLib
+- ProtocolLib
 loadbefore:
- - ABC
+- ABC
 libraries:
- - com.squareup.okhttp3:okhttp:4.9.0
- - a:b:1.0.0
+- com.squareup.okhttp3:okhttp:4.9.0
+- a:b:1.0.0
 commands:
   give:
     description: Give command.
-    usage: "/<command> [test|stop]"
+    usage: /<command> [test|stop]
     permission: test.foo
     permission-message: You do not have permission!
     aliases:
-     - alias
+    - alias
 permissions:
   test.*:
     description: Wildcard permission
@@ -31,4 +31,4 @@ permissions:
       test.foo: true
   test.foo:
     description: Allows foo command
-    default: "true"
+    default: 'true'

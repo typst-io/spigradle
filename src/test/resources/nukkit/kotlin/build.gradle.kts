@@ -1,8 +1,8 @@
-import kr.entree.spigradle.kotlin.nukkit
+import io.typst.spigradle.kotlin.nukkit
 
 plugins {
     kotlin("jvm") version "1.4.20"
-    id("kr.entree.spigradle.nukkit")
+    id("io.typst.spigradle.nukkit")
 }
 
 repositories {
