@@ -1,7 +1,7 @@
 # Spigradle
 [![License](https://img.shields.io/github/license/typst-io/spigradle.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle)](https://plugins.gradle.org/plugin/io.typst.spigradle)
-[![TeamCity CI](https://ci.entree.dev/app/rest/builds/buildType(id:Spigradle_Build)/statusIcon)](https://ci.entree.dev/buildConfiguration/Spigradle_Build?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds&guest=1)
+![TeamCity build status](https://ci.typst.io/app/rest/builds/buildType:id:Spigradle_Build/statusIcon.svg)
 
 An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and NukkitX.
 
