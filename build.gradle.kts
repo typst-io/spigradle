@@ -9,7 +9,7 @@ plugins {
     `spigradle-docs`
 }
 
-group = "kr.entree"
+group = "io.typst"
 version = VersionTask.readVersion(project)
 description = "An intelligent Gradle plugin for developing Minecraft resources."
 

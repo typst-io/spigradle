@@ -68,7 +68,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:3.0.5'
+        classpath 'io.typst:spigradle:3.0.5'
     }
 }
 
@@ -86,7 +86,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:3.0.5")
+        classpath("io.typst:spigradle:3.0.5")
     }
 }
 

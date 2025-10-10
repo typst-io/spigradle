@@ -18,9 +18,7 @@ snakeyamlEngine = "2.9"
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
-ideaExt = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
 downloadTask = { module = "de.undercouch:gradle-download-task", version.ref = "downloadTask" }
-spigradleAnnotations = { module = "kr.entree:spigradle-annotations", version.ref = "spigradleAnnotations" }
 snakeyamlEngine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyamlEngine" }
 spigotApi = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 

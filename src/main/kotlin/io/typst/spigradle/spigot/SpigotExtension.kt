@@ -107,7 +107,7 @@ open class SpigotExtension(project: Project) {
     /**
      * The name of main class that extends [org.bukkit.plugin.java.JavaPlugin].
      *
-     * Defaults to the class that auto-detected by [io.typst.spigradle.SubclassDetection] or presented by [kr.entree.spigradle.annotations.Plugin].
+     * Defaults to the class that auto-detected by [io.typst.spigradle.SubclassDetection]
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
