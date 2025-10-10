@@ -29,8 +29,6 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.plugins.ide.idea.model.IdeaProject
-import org.jetbrains.gradle.ext.ProjectSettings
-import org.jetbrains.gradle.ext.RunConfigurationContainer
 
 internal inline fun <T> notNull(any: T?, message: () -> String = { "" }): T {
     return any ?: throw GradleException(message())
@@ -63,11 +61,5 @@ internal inline fun <T> Project.cachingProvider(crossinline provider: () -> T): 
         cache
     }
 }
-
-internal fun IdeaProject.settings(configure: ProjectSettings.() -> Unit = {}) =
-        (this as ExtensionAware).extensions.getByType(ProjectSettings::class).apply(configure)
-
-internal fun ProjectSettings.runConfigurations(configure: RunConfigurationContainer.() -> Unit) =
-        ((this as ExtensionAware).extensions["runConfigurations"] as RunConfigurationContainer).apply(configure)
 
 internal val Any.groovyExtension get() = (this as GroovyObject).getProperty("ext") as ExtraPropertiesExtension
