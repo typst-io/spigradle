@@ -56,14 +56,14 @@ Groovy DSL
 
 ```groovy
 plugins {
-    id 'io.typst.spigradle' version '3.0.5'
+    id 'io.typst.spigradle' version '3.0.6'
 }
 ```
 Kotlin DSL
 
 ```kotlin
 plugins {
-    id("io.typst.spigradle") version "3.0.5"
+    id("io.typst.spigradle") version "3.0.6"
 }
 ```
 
@@ -76,7 +76,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.0.5'
+        classpath 'io.typst:spigradle:3.0.6'
     }
 }
 
@@ -94,7 +94,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.0.5")
+        classpath("io.typst:spigradle:3.0.6")
     }
 }
 
