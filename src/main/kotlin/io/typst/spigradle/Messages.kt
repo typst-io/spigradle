@@ -19,8 +19,7 @@ package io.typst.spigradle
 internal object Messages {
     fun noMainFound(extensionName: String, taskName: String) = """
         Spigradle couldn't find main class automatically!
-        Please present your main class using the annotation @PluginMain or: @SpigotPlugin, @BungeePlugin, @NukkitPlugin,
-        or set the 'main' property in $extensionName {} block on build.gradle,
+        Please set the 'main' property in $extensionName {} block on build.gradle,
         or just disable $taskName task: 'tasks.$taskName.enabled = false'
     """.trimIndent()
 }

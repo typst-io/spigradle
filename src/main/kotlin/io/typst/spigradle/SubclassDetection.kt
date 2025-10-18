@@ -16,6 +16,8 @@
 
 package io.typst.spigradle
 
+import io.typst.spigradle.detection.ClassDefinition
+import io.typst.spigradle.detection.DetectionContext
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
@@ -86,27 +88,27 @@ open class SubclassDetection : DefaultTask() {
 
     @TaskAction
     fun inspect(inputChanges: InputChanges) {
-        val superClassesR = AtomicReference(setOf(superClassName.get()))
-        val detectedClassR = AtomicReference<String?>(null)
+        val contextR = AtomicReference(DetectionContext())
         val options = ClassReader.SKIP_CODE and ClassReader.SKIP_DEBUG and ClassReader.SKIP_FRAMES
-        inputChanges.getFileChanges(classDirectories).asSequence().takeWhile {
-            detectedClassR.get() == null
-        }.map {
-            it.file
-        }.filter {
-            it.extension == "class" && it.isFile
-        }.forEach { classFile ->
-            classFile.inputStream().buffered().use {
-                ClassReader(it).accept(SubclassDetector(superClassesR, detectedClassR), options)
+
+        val parentName = superClassName.get()
+        val fileChanges = inputChanges.getFileChanges(classDirectories)
+        for (change in fileChanges) {
+            val file = change.file
+            if (file.extension == "class" && file.isFile) {
+                file.inputStream().buffered().use {
+                    ClassReader(it).accept(SubclassDetector(contextR), options)
+                }
+            }
+            if (contextR.get().findMainClass(parentName) != null) {
+                break
             }
         }
-        val detectedClass = detectedClassR.get()
-        // Add `-i` option to see this log!
-        logger.info("detected: ${detectedClass?.plus(".java")}")
+        val detectedClass = contextR.get().findMainClass(parentName)
         if (detectedClass != null) {
             outputFile.get().apply {
                 parentFile.mkdirs()
-            }.writeText(detectedClass.replace('/', '.'))
+            }.writeText(detectedClass.name.replace('/', '.'))
         }
     }
 
@@ -124,32 +126,13 @@ open class SubclassDetection : DefaultTask() {
                  */
                 classDirectories.from(sourceSets["main"].output.classesDirs.files)
                 outputFile.convention(pathFile) // defaults to pathFile
-                onlyIf {
-                    !pathFile.isFile
-                }
             }
         }
     }
 }
 
-// TODO: Optimize scheduled in 2.3.0!
-internal fun findSubclass(
-    supers: Set<String>,
-    access: Int, name: String, superName: String?,
-): Pair<String?, Set<String>> {
-    return if (superName in supers) {
-        val sub = if (access.isPublic && !access.isAbstract) name else null
-        val newSupers = if (access.isAbstract) supers + name else supers
-        (sub to newSupers)
-    } else (null to supers)
-}
-
-internal val Int.isPublic get() = (this and Opcodes.ACC_PUBLIC) != 0
-internal val Int.isAbstract get() = (this and Opcodes.ACC_ABSTRACT) != 0
-
-class SubclassDetector(
-    private val supersR: AtomicReference<Set<String>>,
-    private val detectedR: AtomicReference<String?>,
+internal class SubclassDetector(
+    private val contextR: AtomicReference<DetectionContext>,
 ) : ClassVisitor(Opcodes.ASM9) {
     override fun visit(
         version: Int,
@@ -159,8 +142,9 @@ class SubclassDetector(
         superName: String?,
         interfaces: Array<out String>?,
     ) {
-        val (sub, supers) = findSubclass(supersR.get(), access, name, superName)
-        supersR.set(supers)
-        detectedR.updateAndGet { it ?: sub }
+        val classDef = ClassDefinition.fromASM(access, name, superName)
+        contextR.updateAndGet { ctx ->
+            ctx.addClassDef(classDef)
+        }
     }
 }

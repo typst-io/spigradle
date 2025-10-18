@@ -25,7 +25,6 @@ import java.io.File
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
  * Created by JunHyung Im on 2020-08-18
@@ -47,6 +46,8 @@ class GradleFunctionalTest {
     lateinit var subBuildFile: File
     lateinit var subSettingsFile: File
     lateinit var javaFile: File
+    lateinit var javaFileB: File
+    lateinit var javaFileC: File
     lateinit var kotlinFile: File
     lateinit var subJavaFile: File
 
@@ -68,8 +69,121 @@ class GradleFunctionalTest {
         subBuildFile = dir.resolve("sub/build.gradle").createDirectories()
         subSettingsFile = dir.resolve("sub/settings.gradle").createDirectories()
         javaFile = dir.resolve("src/main/java/Main.java").createDirectories()
+        javaFileB = dir.resolve("src/main/java/MainB.java").createDirectories()
+        javaFileC = dir.resolve("src/main/java/MainC.java").createDirectories()
         kotlinFile = dir.resolve("src/main/kotlin/Main.kt").createDirectories()
         subJavaFile = dir.resolve("sub/src/main/java/Main.java").createDirectories()
+    }
+
+    @Test
+    fun `main detection task incremental`() {
+        buildFile.writeText(
+            """
+            plugins {
+                id 'java'
+                id 'io.typst.spigradle'
+            }
+            repositories {
+                mavenCentral()
+                spigotmc()
+            }
+            dependencies {
+                compileOnly(spigot("1.21.8"))
+            }
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(21))
+                }
+            }
+            detectSpigotMain {
+                doLast {
+                    assert outputFile.get().text == mainParam
+                }
+            }
+        """.trimIndent()
+        )
+
+        javaFile.writeText(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public class Main extends MainB {}
+        """.trimIndent()
+        )
+        javaFileB.writeText(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public abstract class MainB extends MainC {}
+        """.trimIndent()
+        )
+        javaFileC.writeText(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public abstract class MainC extends JavaPlugin {}
+        """.trimIndent()
+        )
+
+        val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=Main").build()
+        assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+        println(result.output)
+    }
+
+    @Test
+    fun `main detection task update`() {
+        buildFile.writeText(
+            """
+            plugins {
+                id 'java'
+                id 'io.typst.spigradle'
+            }
+            repositories {
+                mavenCentral()
+                spigotmc()
+            }
+            dependencies {
+                compileOnly(spigot("1.21.8"))
+            }
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(21))
+                }
+            }
+            detectSpigotMain {
+                doLast {
+                    assert outputFile.get().text == mainParam
+                }
+            }
+        """.trimIndent()
+        )
+
+        // step 1: normal
+        javaFile.writeText(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public class Main extends JavaPlugin {}
+        """.trimIndent()
+        )
+        assertDoesNotThrow {
+            val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=Main").build()
+            assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+            println(result.output)
+        }
+
+        // step 2: rename main class
+        javaFile.delete()
+        javaFileB.writeText(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public class MainB extends JavaPlugin {}
+        """.trimIndent()
+        )
+        val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=MainB").build()
+        assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+        println(result.output)
+
+        // step 3: up to date
+        val resultB = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=MainB").build()
+        assertEquals(TaskOutcome.UP_TO_DATE, resultB.task(":detectSpigotMain")?.outcome)
+        println(resultB.output)
     }
 
     @Test
@@ -241,33 +355,48 @@ class GradleFunctionalTest {
                 id 'io.typst.spigradle.bungee'
             }
             
+            repositories {
+                mavenCentral()
+                spigotmc()
+                bungeecord()
+                minecraftLibraries()
+            }
+            
+            dependencies {
+                compileOnly spigot('1.21.8')
+                compileOnly bungeecord('1.21-R0.4')
+            }
+            
             generateSpigotDescription {
                 doLast {
-                    assert properties["main"].get() == "MySpigotMain"
+                    assert properties["main"].get() == "Main"
                 }
             }
             generateBungeeDescription {
                 doLast {
-                    assert properties["main"].get() == "MyBungeeMain"
+                    assert properties["main"].get() == "MainB"
                 }
             }
         """.trimIndent()
         )
-        val spigotMainFile =
-            dir.resolve("build/spigradle/spigot_main").createDirectories().apply { writeText("MySpigotMain") }
-        dir.resolve("build/spigradle/bungee_main").createDirectories().apply { writeText("MyBungeeMain") }
+        javaFile.writeGroovy(
+            """
+            import org.bukkit.plugin.java.JavaPlugin;
+            public class Main extends JavaPlugin {
+            }
+        """.trimIndent()
+        )
+        javaFileB.writeGroovy(
+            """
+            import net.md_5.bungee.api.plugin.Plugin;
+            public class MainB extends Plugin {
+            }
+        """.trimIndent()
+        )
         val result =
             createGradleRunner().withArguments("generateSpigotDescription", "generateBungeeDescription", "-i").build()
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateSpigotDescription")?.outcome)
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateBungeeDescription")?.outcome)
-        // check general main detection (@PluginMain)
-        assertTrue { spigotMainFile.delete() }
-        dir.resolve("build/spigradle/plugin_main").createDirectories().apply { writeText("MySpigotMain") }
-        dir.resolve("build/spigradle/bungee_main").createDirectories().apply { writeText("MyBungeeMain") }
-        val resultB =
-            createGradleRunner().withArguments("generateSpigotDescription", "generateBungeeDescription", "-i").build()
-        assertEquals(TaskOutcome.SUCCESS, resultB.task(":generateSpigotDescription")?.outcome)
-        assertEquals(TaskOutcome.UP_TO_DATE, resultB.task(":generateBungeeDescription")?.outcome)
     }
 
     @Test

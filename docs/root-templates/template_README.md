@@ -1,4 +1,5 @@
 # Spigradle
+
 [![License](https://img.shields.io/github/license/typst-io/spigradle.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle)](https://plugins.gradle.org/plugin/io.typst.spigradle)
 ![TeamCity build status](https://ci.typst.io/app/rest/builds/buildType:id:Spigradle_Build/statusIcon.svg)
@@ -9,7 +10,8 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 
 # Benefits
 
-- [Description file](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html) generation: `plugin.yml` and/or `bungee.yml`
+- [Description file](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html)
+  generation: `plugin.yml` and/or `bungee.yml`
 
 - Main class detection
 
@@ -91,13 +93,13 @@ dependencies {
 }
 
 spigot {
-  depends 'ProtocolLib'
-  softDepends 'SomeLibrary'
-  commands {
-    create('mycmd') {
-      aliases 'cmd'
+    depends 'ProtocolLib'
+    softDepends 'SomeLibrary'
+    commands {
+        create('mycmd') {
+            aliases 'cmd'
+        }
     }
-  }
 }
 ```
 
@@ -123,14 +125,14 @@ dependencies {
 }
 
 spigot {
-  depends = listOf("ProtocolLib")
-  softDepends = listOf("SomeLibrary")
-  apiVersion = "1.21"
-  commands {
-    create("mycmd") {
-      aliases = listOf("cmd")
+    depends = listOf("ProtocolLib")
+    softDepends = listOf("SomeLibrary")
+    apiVersion = "1.21"
+    commands {
+        create("mycmd") {
+            aliases = listOf("cmd")
+        }
     }
-  }
 }
 ```
 
@@ -177,6 +179,7 @@ apply(plugin = "io.typst.spigradle")
 [Documentation](docs/bungeecord_plugin.md)
 
 ### Demo
+
 - [Groovy - build.gradle](https://github.com/spigradle/spigradle-sample/tree/master/bungeecord/bungeecord.gradle)
 - [Kotlin - build.gradle.kts](https://github.com/spigradle/spigradle-sample/tree/master/bungeecord-kotlin/bungeecord-kotlin.gradle.kts)
 
@@ -349,18 +352,19 @@ gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 
 # Repositories
 
-|  Name         |  URL                                                           | Relations                               | Aliases       |
-|---------------|----------------------------------------------------------------|-----------------------------------------|---------------|
-| spigotmc()    | https://hub.spigotmc.org/nexus/content/repositories/snapshots/ |                                         | spigot()      |
-| sonaytype()   | https://oss.sonatype.org/content/repositories/snapshots/       |                                         | bungeecord()  |
-| papermc()     | https://papermc.io/repo/repository/maven-public/               |                                         | paper()       |
-| jitpack()     | https://jitpack.io                                             | Vault                                   | vault()       |
-| protocolLib() | https://repo.dmulloy2.net/nexus/repository/public/             |                                         |               |
-| enginehub()   | https://maven.enginehub.org/repo/                              | worldguard, worldedit, commandhelper... |               |
-| codemc()      | https://repo.codemc.org/repository/maven-public/               | BStats                                  | bStats()      |
-| enderZone()   | https://ci.ender.zone/plugin/repository/everything/            | EssentialsX                             | essentialsX() |
-| frostcast()   | https://ci.frostcast.net/plugin/repository/everything          | BanManager                              | banManager()  |
-| nukkitX()     | https://repo.nukkitx.com/maven-snapshots                       | NukkitX                                 |               |
+| Name                 | URL                                                            | Relations                               | Aliases       |
+|----------------------|----------------------------------------------------------------|-----------------------------------------|---------------|
+| spigotmc()           | https://hub.spigotmc.org/nexus/content/repositories/snapshots/ |                                         | spigot()      |
+| sonaytype()          | https://oss.sonatype.org/content/repositories/snapshots/       |                                         | bungeecord()  |
+| papermc()            | https://papermc.io/repo/repository/maven-public/               |                                         | paper()       |
+| jitpack()            | https://jitpack.io                                             | Vault                                   | vault()       |
+| protocolLib()        | https://repo.dmulloy2.net/nexus/repository/public/             |                                         |               |
+| enginehub()          | https://maven.enginehub.org/repo/                              | worldguard, worldedit, commandhelper... |               |
+| codemc()             | https://repo.codemc.org/repository/maven-public/               | BStats                                  | bStats()      |
+| enderZone()          | https://ci.ender.zone/plugin/repository/everything/            | EssentialsX                             | essentialsX() |
+| frostcast()          | https://ci.frostcast.net/plugin/repository/everything          | BanManager                              | banManager()  |
+| nukkitX()            | https://repo.nukkitx.com/maven-snapshots                       | NukkitX                                 |               |
+| minecraftLibraries() | https://libraries.minecraft.net                                | Brigadier(from BungeeCord)              |               |
 
 ### Groovy usage
 
@@ -382,17 +386,17 @@ repositories {
 
 # Dependencies
 
-|  Name             |  Signature                                       | Default version      | Official repository      |
+| Name              | Signature                                        | Default version      | Official repository      |
 |-------------------|--------------------------------------------------|----------------------|--------------------------|
 | spigot(version)   | org.spigotmc:spigot-api:$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
 | spigotAll()       | org.spigotmc:spigot:$version                     | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
-| bungeecord()      | net.md-5:bungeecord-api:$version                 | 1.21-R0.4-SNAPSHOT   | spigotmc()               |
+| bungeecord()      | net.md-5:bungeecord-api:$version                 | 1.21-R0.4-SNAPSHOT   | sonatype()               |
 | minecraftServer() | org.spigotmc:minecraft-server:$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools |
 | paper()           | com.destroystokyo.paper:paper-api:$version       | 1.21.8-R0.1-SNAPSHOT | papermc()                |
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:$version                     | $SPIGRADLE_VERSION   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                      | $SPIGRADLE_VERSION   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

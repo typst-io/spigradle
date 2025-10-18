@@ -16,41 +16,64 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.findSubclass
+import io.typst.spigradle.detection.ClassDefinition
+import io.typst.spigradle.detection.DetectionContext
 import org.junit.jupiter.api.Test
-import org.objectweb.asm.Opcodes.ACC_ABSTRACT
-import org.objectweb.asm.Opcodes.ACC_PUBLIC
 import kotlin.test.assertEquals
 
 class MainDetectionTest {
     val superName = "org/bukkit/api/Plugin"
     val subName = "org/sample/test/MyMain"
-    val supersInit = setOf(superName)
+    internal val superClass: ClassDefinition = ClassDefinition(
+        publicClass = true,
+        abstractClass = true,
+        name = superName
+    )
+    internal val subClass: ClassDefinition = ClassDefinition(
+        publicClass = true,
+        abstractClass = false,
+        name = subName,
+        parentName = superName
+    )
+    internal val middleClass = ClassDefinition(
+        publicClass = true,
+        abstractClass = true,
+        name = "MiddleClass",
+        parentName = superName
+    )
 
     @Test
     fun `when received a wanted sub class`() {
+        val ctx = DetectionContext()
+            .addClassDef(subClass)
+            .addClassDef(superClass)
         assertEquals(
-            subName to setOf(superName),
-            findSubclass(setOf(superName), ACC_PUBLIC, subName, superName)
+            subClass,
+            ctx.findMainClass(superName)
         )
     }
 
     @Test
     fun `when received a wanted but a abstract`() {
-        val middleClass = "MiddleClass"
         assertEquals(
-            null to (supersInit + middleClass),
-            findSubclass(supersInit, ACC_PUBLIC or ACC_ABSTRACT, middleClass, superName)
+            null,
+            DetectionContext()
+                .addClassDef(superClass)
+                .addClassDef(middleClass)
+                .findMainClass(middleClass.name)
         )
     }
 
     @Test
     fun `when received a grand sub class`() {
-        val middleClass = "MiddleClass"
-        val supers = supersInit + middleClass
+        val subClass = subClass.copy(parentName = middleClass.name)
+        val ctx = DetectionContext()
+            .addClassDef(superClass)
+            .addClassDef(middleClass)
+            .addClassDef(subClass)
         assertEquals(
-            subName to supers,
-            findSubclass(supers, ACC_PUBLIC, subName, middleClass)
+            subClass,
+            ctx.findMainClass(superName)
         )
     }
 }

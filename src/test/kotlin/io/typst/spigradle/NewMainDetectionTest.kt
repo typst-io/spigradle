@@ -17,91 +17,82 @@
 package io.typst.spigradle
 
 import io.typst.spigradle.detection.ClassDefinition
-import io.typst.spigradle.detection.findSubClass
-import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
+import io.typst.spigradle.detection.DetectionContext
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@Ignore
 class NewMainDetectionTest {
-    @Test
-    fun unit() {
-        assertEquals(
-            null to emptySet(),
-            findSubClass(
-                ClassDefinition.empty,
-                emptySet()
-            )
-        )
-    }
-
     @Test
     fun `single detection`() {
         val parentName = "parent"
         val childName = "child"
-        val base = ClassDefinition(
+        val childClass = ClassDefinition(
             publicClass = true,
             abstractClass = false,
             name = childName,
             parentName = parentName
         )
-        assertEquals(
-            childName to setOf(parentName),
-            findSubClass(
-                base,
-                setOf(parentName)
-            )
+        val parentClass = ClassDefinition(
+            publicClass = true,
+            abstractClass = true,
+            name = parentName,
         )
+
+        val ctxA = DetectionContext()
+            .addClassDef(childClass)
+            .addClassDef(parentClass)
         assertEquals(
-            null to setOf(parentName),
-            findSubClass(
-                base.copy(publicClass = false),
-                setOf(parentName)
-            )
+            childClass,
+            ctxA.findMainClass(parentName)
         )
+
         for (isPublic in listOf(true, false)) {
+            val ctx = DetectionContext()
+                .addClassDef(parentClass)
+                .addClassDef(childClass.copy(publicClass = isPublic, abstractClass = true))
             assertEquals(
-                null to setOf(parentName, childName),
-                findSubClass(
-                    base.copy(publicClass = isPublic, abstractClass = true),
-                    setOf(parentName)
-                )
+                null,
+                ctx.findMainClass(parentName)
             )
         }
     }
 
     @Test
     fun `higher detection`() {
-        val high = "high"
-        val middle = "middle"
-        val low = "low"
-
+        val high = ClassDefinition(
+            true,
+            false,
+            "high"
+        )
+        val middle = ClassDefinition(
+            true,
+            true,
+            "middle",
+            high.name
+        )
+        val low = ClassDefinition(
+            true,
+            false,
+            "low",
+            middle.name
+        )
         for (i in 0..1) {
-            val (subA, supersA) = findSubClass(
-                ClassDefinition(
-                    publicClass = i == 0,
-                    abstractClass = true,
-                    name = middle,
-                    parentName = high
-                ),
-                setOf(high)
-            )
+            val ctxA = DetectionContext()
+                .addClassDef(high)
+                .addClassDef(
+                    middle.copy(
+                        publicClass = i == 0
+                    )
+                )
+            val mainA = ctxA.findMainClass(high.name)
             assertEquals(
-                null to setOf(middle, high),
-                subA to supersA
+                null,
+                mainA
             )
-            val (subB, supersB) = findSubClass(
-                ClassDefinition(
-                    publicClass = true,
-                    abstractClass = false,
-                    name = low,
-                    parentName = middle
-                ),
-                supersA
-            )
+            val ctxB = ctxA.addClassDef(low)
             assertEquals(
-                low to setOf(middle, high),
-                subB to supersB
+                low,
+                ctxB.findMainClass(high.name)
             )
         }
     }
@@ -111,31 +102,34 @@ class NewMainDetectionTest {
         val high = "high"
         val middle = "middle"
         val low = "low"
-        val (subA, supersA) = findSubClass(
-            ClassDefinition(
-                publicClass = true,
-                abstractClass = false,
-                name = low,
-                parentName = middle
-            ),
-            setOf(high)
+        val highClass = ClassDefinition(
+            publicClass = true,
+            abstractClass = false,
+            name = high
         )
+        val middleClass = ClassDefinition(
+            publicClass = true,
+            abstractClass = true,
+            name = middle,
+            parentName = high
+        )
+        val lowClass = ClassDefinition(
+            publicClass = true,
+            abstractClass = false,
+            name = low,
+            parentName = middle
+        )
+        val ctxA = DetectionContext()
+            .addClassDef(highClass)
+            .addClassDef(lowClass)
         assertEquals(
             null,
-            subA
+            ctxA.findMainClass(high)
         )
-        val (subB, supersB) = findSubClass(
-            ClassDefinition(
-                publicClass = true,
-                abstractClass = true,
-                name = middle,
-                parentName = high
-            ),
-            supersA
-        )
+        val ctxB = ctxA.addClassDef(middleClass)
         assertEquals(
-            low to setOf(middle, high),
-            subB to supersB
+            lowClass,
+            ctxB.findMainClass(high)
         )
     }
 }
