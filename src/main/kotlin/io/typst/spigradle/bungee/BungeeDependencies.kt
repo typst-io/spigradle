@@ -31,10 +31,9 @@ enum class BungeeDependencies(
     BUNGEE_CORD(
         "net.md-5",
         "bungeecord-api",
-        "1.21-SNAPSHOT",
+        "1.21-R0.4",
         "bungeecord",
-        false,
-        VersionModifier.SNAPSHOT_APPENDER
+        false
     ),
     ;
 

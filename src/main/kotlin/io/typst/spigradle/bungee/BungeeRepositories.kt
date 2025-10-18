@@ -19,5 +19,6 @@ package io.typst.spigradle.bungee
 import io.typst.spigradle.Repositories
 
 enum class BungeeRepositories(val address: String, val alias: String) {
-    BUNGEECORD(Repositories.SONATYPE.address, "bungeecord")
+    BUNGEECORD(Repositories.SONATYPE.address, "bungeecord"),
+    MINECRAFT_LIBRARIES("https://libraries.minecraft.net", "minecraftLibraries")
 }

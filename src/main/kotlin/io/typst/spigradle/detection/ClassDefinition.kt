@@ -16,11 +16,13 @@
 
 package io.typst.spigradle.detection
 
+import org.objectweb.asm.Opcodes
+
 internal data class ClassDefinition(
     val publicClass: Boolean,
     val abstractClass: Boolean,
     val name: String,
-    val parentName: String? = null
+    val parentName: String? = null,
 ) {
     companion object {
         val empty: ClassDefinition = ClassDefinition(
@@ -29,5 +31,20 @@ internal data class ClassDefinition(
             "",
             null
         )
+
+        fun fromASM(access: Int, name: String, superName: String? = null): ClassDefinition {
+            return ClassDefinition(
+                checkPublic(access),
+                checkAbstract(access),
+                name,
+                superName
+            )
+        }
+
+        fun checkPublic(access: Int): Boolean =
+            (access and Opcodes.ACC_PUBLIC) != 0
+
+        fun checkAbstract(access: Int): Boolean =
+            (access and Opcodes.ACC_ABSTRACT) != 0
     }
 }
