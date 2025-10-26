@@ -35,6 +35,13 @@ enum class SpigotDependencies(
         false,
         VersionModifier.SPIGOT_ADJUSTER
     ),
+    PAPER_API(
+        "io.papermc.paper",
+        "paper-api",
+        "1.21.8-R0.1-SNAPSHOT",
+        "paper",
+        versionModifier = VersionModifier.SPIGOT_ADJUSTER
+    ),
     SPIGOT_API(
         "org.spigotmc",
         "spigot-api",
@@ -59,13 +66,6 @@ enum class SpigotDependencies(
         true,
         VersionModifier.SNAPSHOT_APPENDER
     ),
-    PAPER_API(
-        "io.papermc.paper",
-        "paper-api",
-        "1.21.8-R0.1-SNAPSHOT",
-        "paper",
-        versionModifier = VersionModifier.SPIGOT_ADJUSTER
-    ),
     BUKKIT(
         "org.bukkit",
         "bukkit",
@@ -83,9 +83,9 @@ enum class SpigotDependencies(
         VersionModifier.SPIGOT_ADJUSTER
     ),
     PROTOCOL_LIB(
-        "com.comphenix.protocol",
+        "net.dmulloy2",
         "ProtocolLib",
-        "5.3.0",
+        "5.4.0",
         "protocolLib"
     ),
     VAULT_API(
@@ -97,7 +97,7 @@ enum class SpigotDependencies(
     LUCK_PERMS(
         "net.luckperms",
         "api",
-        "5.5.9",
+        "5.5",
         "luckperms",
     ),
     WORLDEDIT(
@@ -113,7 +113,7 @@ enum class SpigotDependencies(
         "worldguard",
     ),
     ESSENTIALS_X(
-        "net.ess3",
+        "net.essentialsx",
         "EssentialsX",
         "2.21.1",
         "essentialsX",
@@ -121,13 +121,13 @@ enum class SpigotDependencies(
     BAN_MANAGER(
         "me.confuser.banmanager",
         "BanManagerBukkit",
-        "7.9.0-SNAPSHOT",
+        "7.7.0-SNAPSHOT",
         "banManager",
     ),
     COMMANDHELPER(
         "com.sk89q",
         "commandhelper",
-        "3.3.5-SNAPSHOT",
+        "3.3.4-SNAPSHOT",
         "commandHelper",
     ),
     B_STATS(

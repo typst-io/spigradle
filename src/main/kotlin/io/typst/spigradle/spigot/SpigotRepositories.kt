@@ -34,7 +34,8 @@ enum class SpigotRepositories(val address: String, val alias: String) {
     CODE_MC("https://repo.codemc.org/repository/maven-public/", "codemc"),
 
     // essentialsX
-    ENDER_ZONE("https://ci.ender.zone/plugin/repository/everything/", "enderzone"),
+    ESSENTIALS_X("https://repo.essentialsx.net/releases/", "essentialsX"),
+    ENDER_ZONE(ESSENTIALS_X.address, "enderzone"),
 
     // banManager
     FROSTCAST("https://ci.frostcast.net/plugin/repository/everything", "frostcast")

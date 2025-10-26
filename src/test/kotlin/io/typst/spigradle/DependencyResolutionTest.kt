@@ -1,9 +1,6 @@
 package io.typst.spigradle
 
 import groovy.lang.GroovyObject
-import io.typst.spigradle.Dependencies
-import io.typst.spigradle.Repositories
-import io.typst.spigradle.SpigradlePlugin
 import io.typst.spigradle.bungee.BungeeDependencies
 import io.typst.spigradle.bungee.BungeePlugin
 import io.typst.spigradle.bungee.BungeeRepositories
@@ -16,8 +13,6 @@ import io.typst.spigradle.spigot.SpigotRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult
-import org.gradle.kotlin.dsl.closureOf
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.BeforeTest
@@ -37,35 +32,74 @@ class DependencyResolutionTest {
         testProject.pluginManager.apply(plugin)
         testProject.repositories {
             this as GroovyObject
+            mavenCentral()
             for (repo in repositories) {
                 invokeMethod(repo, emptyArray<Any>())
             }
         }
-        testProject.dependencies.apply {
-            this as GroovyObject
-            for (dep in dependencies) {
-                add("compileOnly", invokeMethod(dep, emptyArray<Any>()), closureOf<ExternalModuleDependency> {
+
+        val depObjects = dependencies.map { name ->
+            val dependencies = testProject.dependencies
+            dependencies as GroovyObject
+            val notation = dependencies.invokeMethod(name, emptyArray<Any>())
+            testProject.dependencies.create(notation).apply {
+                if (this is ExternalModuleDependency) {
                     isTransitive = false
-                })
+                }
             }
+        }.toTypedArray()
+
+        val detachedConfig = testProject.configurations.detachedConfiguration(*depObjects)
+        for (file in detachedConfig.resolve()) {
+            println(file.name)
         }
-        // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:programmatic_api
-        val compileOnlyConfig = testProject.configurations["compileOnly"]
-        compileOnlyConfig.isCanBeResolved = true
-        compileOnlyConfig.incoming.resolutionResult.allDependencies.forEach {
+
+        detachedConfig.incoming.resolutionResult.allDependencies.forEach {
             val name = it.toString()
+            println(it.toString())
             assertTrue("Couldn't resolved dependency: $name") {
-                name !in dependencies || it is ResolvedDependencyResult
+                it is ResolvedDependencyResult
             }
         }
     }
 
     @Test
     fun `validate spigot dependencies`() {
+        val apis = setOf(
+            SpigotDependencies.PURPUR.alias,
+            SpigotDependencies.PAPER_API.alias,
+            SpigotDependencies.SPIGOT_API.alias
+        )
+        val baseDeps = SpigotDependencies.values().filter {
+            it.alias !in apis && !it.local
+        }
+
+        // base
         validate(
-            SpigotDependencies.values().map {
+            baseDeps.map { it.alias },
+            SpigotRepositories.values().map { it.alias },
+            SpigotPlugin::class.java
+        )
+
+        // purpur
+        validate(
+            listOf(SpigotDependencies.PURPUR.alias),
+            SpigotRepositories.values().map {
                 it.alias
             },
+            SpigotPlugin::class.java
+        )
+        // spigot
+        validate(
+            listOf(SpigotDependencies.SPIGOT_API.alias),
+            SpigotRepositories.values().map {
+                it.alias
+            },
+            SpigotPlugin::class.java
+        )
+        // paper
+        validate(
+            listOf(SpigotDependencies.PAPER_API.alias),
             SpigotRepositories.values().map {
                 it.alias
             },
@@ -76,9 +110,11 @@ class DependencyResolutionTest {
     @Test
     fun `validate bungee dependencies`() {
         validate(
-            BungeeDependencies.values().map {
-                it.alias
-            },
+            BungeeDependencies.values()
+                .filter { !it.local }
+                .map {
+                    it.alias
+                },
             BungeeRepositories.values().map {
                 it.alias
             },
@@ -89,9 +125,11 @@ class DependencyResolutionTest {
     @Test
     fun `validate nukkit dependencies`() {
         validate(
-            NukkitDependencies.values().map {
-                it.alias
-            },
+            NukkitDependencies.values()
+                .filter { !it.local }
+                .map {
+                    it.alias
+                },
             NukkitRepositories.values().map {
                 it.alias
             },
@@ -102,9 +140,10 @@ class DependencyResolutionTest {
     @Test
     fun `validate common dependencies`() {
         validate(
-            Dependencies.values().map {
-                it.alias
-            },
+            Dependencies.values()
+                .map {
+                    it.alias
+                },
             Repositories.values().map {
                 it.alias
             },
