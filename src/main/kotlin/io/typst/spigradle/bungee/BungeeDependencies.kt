@@ -17,7 +17,6 @@
 package io.typst.spigradle.bungee
 
 import io.typst.spigradle.Dependency
-import io.typst.spigradle.VersionModifier
 
 enum class BungeeDependencies(
     val group: String,
@@ -32,9 +31,15 @@ enum class BungeeDependencies(
         "net.md-5",
         "bungeecord-api",
         "1.21-R0.4",
-        "bungeecord",
-        false
+        "bungeecord"
     ),
+
+    BRIGADIER(
+        "com.mojang",
+        "brigadier",
+        "1.0.18",
+        "brigadier"
+    )
     ;
 
     fun toDependency(): Dependency {

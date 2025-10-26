@@ -359,6 +359,8 @@ tasks.test.dependsOn(copyPluginYaml)
 - The Gradle version must be 8.x or higher (ex: 8.14.3)
   - If you use gradle wrapper, edit the `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` ex) `gradle-8.14.3-all.zip`
 - The Gradle JVM version must be 17 or higher.
+- The options `main`, `name`, `version`, `description` are changed type Property<String> from String
+  - Configuration example: `spigot { description.set("my description") }`
 
 ![img.png](./../assets/idea-gradle-jvm.png)
 

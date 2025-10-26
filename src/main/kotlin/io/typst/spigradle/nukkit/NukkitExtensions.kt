@@ -21,10 +21,14 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 
+fun RepositoryHandler.openCollabRelease(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.OPEN_COLLAB_RELEASE.address, configure)
+
+fun RepositoryHandler.openCollabSnapshot(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.OPEN_COLLAB_SNAPSHOT.address, configure)
+
 /**
  * The repo shortcut for NukkitX, related with Nukkit.
  */
-fun RepositoryHandler.nukkitX(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.NUKKIT_X, configure)
+fun RepositoryHandler.nukkitX(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.NUKKIT_X.address, configure)
 
 /**
  * The dependency shortcut for Nukkit, NukkitX, requires repository NukkitX.

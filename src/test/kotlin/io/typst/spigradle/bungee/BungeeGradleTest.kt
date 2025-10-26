@@ -5,7 +5,6 @@ import io.typst.spigradle.util.testGradleTaskWithResource
 import org.junit.jupiter.api.Test
 import kotlin.test.Ignore
 
-@Ignore
 class BungeeGradleTest {
     @Test
     fun kotlin() {

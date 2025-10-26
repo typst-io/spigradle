@@ -1,16 +1,17 @@
 plugins {
+    id 'java'
     id 'io.typst.spigradle.nukkit'
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    openCollabRelease()
+    openCollabSnapshot()
 }
 
 dependencies {
     compileOnly nukkit()
 }
-
-detectNukkitMain.enabled = false
 
 nukkit {
     authors = ['EntryPoint']

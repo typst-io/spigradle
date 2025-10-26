@@ -1,20 +1,18 @@
-import io.typst.spigradle.kotlin.nukkit
+import io.typst.spigradle.nukkit.*
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "2.2.0"
     id("io.typst.spigradle.nukkit")
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    openCollabRelease()
+    openCollabSnapshot()
 }
 
 dependencies {
     compileOnly(nukkit())
-}
-
-tasks {
-    detectNukkitMain.get().enabled = false
 }
 
 nukkit {

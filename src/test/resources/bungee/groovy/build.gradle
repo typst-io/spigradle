@@ -4,14 +4,14 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    sonatype()
+    minecraftLibraries()
 }
 
 dependencies {
     compileOnly bungeecord()
 }
-
-detectBungeeMain.enabled = false
 
 bungee {
     author = 'EntryPoint'

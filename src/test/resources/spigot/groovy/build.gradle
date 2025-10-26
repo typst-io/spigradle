@@ -1,4 +1,4 @@
-import io.typst.spigradle.data.*
+import io.typst.spigradle.spigot.*
 
 plugins {
     id 'java'
@@ -6,7 +6,8 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    spigotmc()
 }
 
 dependencies {
@@ -38,12 +39,7 @@ spigot {
             children 'test.foo': true
         }
     }
-    debug {
-        serverPort 25564
-    }
 }
-
-detectSpigotMain.enabled = false
 
 build.doLast {
     def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')

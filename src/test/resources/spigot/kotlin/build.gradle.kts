@@ -1,12 +1,13 @@
-import io.typst.spigradle.kotlin.spigot
+import io.typst.spigradle.spigot.*
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "2.2.0"
     id("io.typst.spigradle")
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    spigotmc()
 }
 
 dependencies {
@@ -14,7 +15,6 @@ dependencies {
 }
 
 tasks {
-    detectSpigotMain.get().enabled = false
     build.get().doLast {
         val pluginFile = File(sourceSets["main"].output.resourcesDir, "plugin.yml")
         if (pluginFile.isFile) {

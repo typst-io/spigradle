@@ -56,7 +56,8 @@ class SpigotPlugin : Plugin<Project> {
 
     private fun Project.setupGroovyExtensions() {
         val depExt = dependencies.groovyExtension
-        val repExp = repositories.groovyExtension
+        val repExt = repositories.groovyExtension
+        val spigotExt = spigot.groovyExtension
         // dependencies
         depExt.set("mockBukkit", object : Closure<Any>(this, this) {
             fun doCall(vararg arguments: String) =
@@ -76,13 +77,13 @@ class SpigotPlugin : Plugin<Project> {
         }
         // repositories
         for (repo in SpigotRepositories.values()) {
-            repExp.set(repo.alias, object : Closure<Any>(this, this) {
+            repExt.set(repo.alias, object : Closure<Any>(this, this) {
                 fun doCall() = repositories.maven { setUrl(repo.address) }
             })
         }
         // literal
-        depExt.set("POST_WORLD", Load.POST_WORLD)
-        depExt.set("POSTWORLD", Load.POST_WORLD)
-        depExt.set("STARTUP", Load.STARTUP)
+        spigotExt.set("POST_WORLD", Load.POST_WORLD)
+        spigotExt.set("POSTWORLD", Load.POST_WORLD)
+        spigotExt.set("STARTUP", Load.STARTUP)
     }
 }

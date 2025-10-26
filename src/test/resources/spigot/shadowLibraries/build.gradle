@@ -1,28 +1,25 @@
+import io.typst.spigradle.spigot.*
+
 plugins {
     id 'java'
     id 'io.typst.spigradle'
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    spigotmc()
 }
 
 dependencies {
     implementation spigot()
-    implementation bungeecord()
 }
 
 def spigotKeyword = 'spigot'
-def bungeeKeyword = 'bungeecord'
-
-spigot {
-    excludeLibraries '*'
-}
 
 build.doLast {
     def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')
     def text = pluginFile.isFile() ? pluginFile.text : ""
-    if (!text.isEmpty() && !text.contains(spigotKeyword) && !text.contains(bungeeKeyword)) {
+    if (!text.isEmpty() && !text.contains(spigotKeyword)) {
         println(pluginFile.absolutePath)
         println(text)
     } else {

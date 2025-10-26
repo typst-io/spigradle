@@ -1,11 +1,8 @@
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.spigot.SpigotPlugin
 import io.typst.spigradle.util.testGradleTaskWithResource
-import kotlin.test.Ignore
 import kotlin.test.Test
 
-@Ignore
 class SpigotGradleTest {
     @Test
     fun kotlin() {

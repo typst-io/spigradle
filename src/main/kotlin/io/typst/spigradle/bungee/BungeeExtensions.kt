@@ -16,15 +16,25 @@
 
 package io.typst.spigradle.bungee
 
+import io.typst.spigradle.Repositories
 import io.typst.spigradle.sonatype
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.kotlin.dsl.maven
 
 /**
  * The repo shortcut for Sonatype same as sonatype(), related with Bungeecord.
  */
 fun RepositoryHandler.bungeecord(configure: MavenArtifactRepository.() -> Unit = {}) = sonatype(configure)
+/**
+ * The repo shortcut for Sonatype same as sonatype(), related with Bungeecord.
+ */
+fun RepositoryHandler.sonatype(configure: MavenArtifactRepository.() -> Unit = {}) = sonatype(configure)
+/**
+ * The repo shortcut for Sonatype same as sonatype(), related with Bungeecord.
+ */
+fun RepositoryHandler.minecraftLibraries(configure: MavenArtifactRepository.() -> Unit = {}) = maven(BungeeRepositories.MINECRAFT_LIBRARIES.address, configure)
 
 /**
  * The dependency shortcut for Bungeecord, requires repository sonatype() or bungeecord().
@@ -32,3 +42,9 @@ fun RepositoryHandler.bungeecord(configure: MavenArtifactRepository.() -> Unit =
  * @param version Defaults to [BungeeDependencies.BUNGEE_CORD].version
  */
 fun DependencyHandler.bungeecord(version: String? = null) = BungeeDependencies.BUNGEE_CORD.format(version)
+/**
+ * The dependency shortcut for Brigadier, requires repository minecraftLibraries().
+ *
+ * @param version Defaults to [BungeeDependencies.BUNGEE_CORD].version
+ */
+fun DependencyHandler.brigadier(version: String? = null) = BungeeDependencies.BRIGADIER.format(version)

@@ -24,12 +24,12 @@ import org.gradle.kotlin.dsl.maven
 /**
  * The repo shortcut for Sonatype, related with Bungeecord.
  */
-fun RepositoryHandler.sonatype(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.SONATYPE, configure)
+fun RepositoryHandler.sonatype(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.SONATYPE.address, configure)
 
 /**
  * The repo shortcut for Jitpack, related with Vault.
  */
-fun RepositoryHandler.jitpack(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.JITPACK, configure)
+fun RepositoryHandler.jitpack(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.JITPACK.address, configure)
 
 /**
  * The dependency shortcut for Lombok.

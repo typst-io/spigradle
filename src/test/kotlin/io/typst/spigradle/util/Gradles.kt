@@ -12,7 +12,7 @@ fun Any.testGradleTaskWithResource(path: String, taskName: String) {
         .withProjectDir(File(javaClass.getResource(path)!!.file))
         .withPluginClasspath()
         .withArguments("build", "--stacktrace")
-        .withGradleVersion("5.4.1") // This is the minimal version required to use Spigradle.
+        .withGradleVersion("8.14.3") // This is the minimal version required to use Spigradle.
         .build()
     println(result.output)
     assertNotEquals(TaskOutcome.FAILED, result.task(":$taskName")!!.outcome)
@@ -32,7 +32,7 @@ fun testGradleScript(
     })
     .withPluginClasspath()
     .withArguments("build", "--stacktrace")
-    .withGradleVersion("5.4.1")
+    .withGradleVersion("8.14.3")
 
 
 fun testGradleTask(

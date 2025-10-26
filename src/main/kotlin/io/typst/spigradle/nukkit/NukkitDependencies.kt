@@ -30,7 +30,7 @@ enum class NukkitDependencies(
     NUKKIT(
         "cn.nukkit",
         "nukkit",
-        "2.0.0-SNAPSHOT",
+        "1.0-SNAPSHOT",
         "nukkit",
         false,
         VersionModifier.SNAPSHOT_APPENDER
