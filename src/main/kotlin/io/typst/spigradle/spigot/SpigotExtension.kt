@@ -73,7 +73,7 @@ import org.gradle.kotlin.dsl.property
  *   apiVersion = "1.15"
  *   load = Load.STARTUP
  *   commands {
- *     create("give") {
+ *     register("give") {
  *       aliases = listOf("giv", "i")
  *       description = "Give command."
  *       permission = "test.foo"
@@ -82,11 +82,11 @@ import org.gradle.kotlin.dsl.property
  *     }
  *   }
  *   permissions {
- *     create("test.foo") {
+ *     register("test.foo") {
  *       description = "Allows foo command"
  *       defaults = "true"
  *     }
- *     create("test.*") {
+ *     register("test.*") {
  *       description = "Wildcard permission"
  *       defaults = "op"
  *       children = mapOf("test.foo" to true)
@@ -201,7 +201,7 @@ open class SpigotExtension(project: Project) {
      *
      * ```kotlin
      * commands {
-     *   create("give") {
+     *   register("give") {
      *     aliases = listOf("giv", "i")
      *     description = "Give command."
      *   }
@@ -228,7 +228,7 @@ open class SpigotExtension(project: Project) {
      * Kotiln Example:
      * ```kotlin
      * permissions {
-     *   create("test.foo") {
+     *   register("test.foo") {
      *     description = "Allows foo command."
      *     default = "true"
      *   }

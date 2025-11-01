@@ -74,7 +74,7 @@ import org.gradle.kotlin.dsl.property
  *   api = listOf("1.0.5")
  *   load = Load.STARTUP
  *   commands {
- *     create("give") {
+ *     register("give") {
  *       aliases = listOf("giv", "i")
  *       description = "Give command."
  *       permission = "test.foo"
@@ -83,11 +83,11 @@ import org.gradle.kotlin.dsl.property
  *     }
  *   }
  *   permissions {
- *     create("test.foo") {
+ *     register("test.foo") {
  *       description = "Allows foo command"
  *       defaults = "true"
  *     }
- *     create("test.*") {
+ *     register("test.*") {
  *       description = "Wildcard permission"
  *       defaults = "op"
  *       children = mapOf("test.foo" to true)

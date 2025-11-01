@@ -26,7 +26,7 @@ fun RepositoryHandler.openCollabRelease(configure: MavenArtifactRepository.() ->
 fun RepositoryHandler.openCollabSnapshot(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.OPEN_COLLAB_SNAPSHOT.address, configure)
 
 /**
- * The repo shortcut for NukkitX, related with Nukkit.
+ * The repo shortcut for [NukkitRepositories.NUKKIT_X], related with Nukkit.
  */
 fun RepositoryHandler.nukkitX(configure: MavenArtifactRepository.() -> Unit = {}) = maven(NukkitRepositories.NUKKIT_X.address, configure)
 

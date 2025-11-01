@@ -23,7 +23,6 @@ repositories {
 dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.asm)
-    implementation(libs.downloadTask)
     implementation(libs.snakeyamlEngine)
     compileOnly(libs.spigotApi)
     testImplementation(libs.junit.jupiter.api)

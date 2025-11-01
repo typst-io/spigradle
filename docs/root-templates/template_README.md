@@ -41,7 +41,7 @@ spigot {
     apiVersion '1.21'
     // libraries = configurations.implementation.dependencies.collect { "\$it.group:\$it.name:\$it.version".toString() }
     commands {
-        create('mycmd') {
+        register('mycmd') {
             aliases 'cmd'
         }
     }
@@ -96,7 +96,7 @@ spigot {
     depends 'ProtocolLib'
     softDepends 'SomeLibrary'
     commands {
-        create('mycmd') {
+        register('mycmd') {
             aliases 'cmd'
         }
     }
@@ -129,7 +129,7 @@ spigot {
     softDepends = listOf("SomeLibrary")
     apiVersion = "1.21"
     commands {
-        create("mycmd") {
+        register("mycmd") {
             aliases = listOf("cmd")
         }
     }

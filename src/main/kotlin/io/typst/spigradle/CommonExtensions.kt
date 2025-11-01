@@ -22,12 +22,12 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 
 /**
- * The repo shortcut for Sonatype, related with Bungeecord.
+ * The repo shortcut for [Repositories.SONATYPE], related with Bungeecord.
  */
 fun RepositoryHandler.sonatype(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.SONATYPE.address, configure)
 
 /**
- * The repo shortcut for Jitpack, related with Vault.
+ * The repo shortcut for [Repositories.JITPACK], related with Vault.
  */
 fun RepositoryHandler.jitpack(configure: MavenArtifactRepository.() -> Unit = {}) = maven(Repositories.JITPACK.address, configure)
 

@@ -6,12 +6,12 @@ dokka {
     moduleName = project.name
 
     dokkaSourceSets.named("main") {
-        jdkVersion = 8
+        jdkVersion = 17
 
         sourceLink {
-            localDirectory = rootDir
-            remoteUrl("https://github.com/spigradle/spigradle/tree/master")
-            remoteLineSuffix = "#L"
+            localDirectory.set(rootDir)
+            remoteUrl("https://github.com/typst-io/spigradle/tree/master")
+            remoteLineSuffix.set("#L")
         }
 
         externalDocumentationLinks {
@@ -21,7 +21,7 @@ dokka {
             }
             register("gradle-docs") {
                 url("https://docs.gradle.org/current/javadoc/")
-                packageListUrl("https://docs.gradle.org/current/javadoc/package-list")
+                packageListUrl("https://docs.gradle.org/current/javadoc/element-list")
             }
             register("jackson-dataformat-yaml-docs") {
                 url("https://javadoc.io/doc/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/latest/")
@@ -29,7 +29,7 @@ dokka {
             }
             register("spigot-docs") {
                 url("https://hub.spigotmc.org/javadocs/spigot/")
-                packageListUrl("https://hub.spigotmc.org/javadocs/spigot/package-list")
+                packageListUrl("https://hub.spigotmc.org/javadocs/spigot/element-list")
             }
         }
     }

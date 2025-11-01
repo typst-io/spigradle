@@ -24,7 +24,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.1.2'
+    id 'io.typst.spigradle' version '3.1.3'
 }
 
 group 'org.sample'
@@ -45,7 +45,7 @@ spigot {
     apiVersion '1.21'
     // libraries = configurations.implementation.dependencies.collect { "$it.group:$it.name:$it.version".toString() }
     commands {
-        create('mycmd') {
+        register('mycmd') {
             aliases 'cmd'
         }
     }
@@ -92,7 +92,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.1.2'
+    id 'io.typst.spigradle' version '3.1.3'
 }
 
 repositories {
@@ -108,7 +108,7 @@ spigot {
     depends 'ProtocolLib'
     softDepends 'SomeLibrary'
     commands {
-        create('mycmd') {
+        register('mycmd') {
             aliases 'cmd'
         }
     }
@@ -123,7 +123,7 @@ import io.typst.spigradle.spigot.*
 
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle") version "3.1.2"
+    id("io.typst.spigradle") version "3.1.3"
 }
 
 repositories {
@@ -141,7 +141,7 @@ spigot {
     softDepends = listOf("SomeLibrary")
     apiVersion = "1.21"
     commands {
-        create("mycmd") {
+        register("mycmd") {
             aliases = listOf("cmd")
         }
     }
@@ -159,7 +159,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.1.2'
+        classpath 'io.typst:spigradle:3.1.3'
     }
 }
 
@@ -177,7 +177,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.1.2")
+        classpath("io.typst:spigradle:3.1.3")
     }
 }
 
@@ -204,7 +204,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.bungee' version '3.1.2'
+    id 'io.typst.spigradle.bungee' version '3.1.3'
 }
 
 repositories {
@@ -222,7 +222,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.bungee") version "3.1.2"
+    id("io.typst.spigradle.bungee") version "3.1.3"
 }
 
 repositories {
@@ -246,7 +246,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.1.2'
+        classpath 'io.typst:spigradle:3.1.3'
     }
 }
 
@@ -264,7 +264,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.1.2")
+        classpath("io.typst:spigradle:3.1.3")
     }
 }
 
@@ -291,7 +291,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'io.typst.spigradle.nukkit' version '3.1.2'
+    id 'io.typst.spigradle.nukkit' version '3.1.3'
 }
 
 repositories {
@@ -309,7 +309,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("io.typst.spigradle.nukkit") version "3.1.2"
+    id("io.typst.spigradle.nukkit") version "3.1.3"
 }
 
 repositories {
@@ -333,7 +333,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.1.2'
+        classpath 'io.typst:spigradle:3.1.3'
     }
 }
 
@@ -351,7 +351,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.typst:spigradle:3.1.2")
+        classpath("io.typst:spigradle:3.1.3")
     }
 }
 
@@ -426,7 +426,7 @@ repositories {
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:$version                      | 3.1.2   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                      | 3.1.3   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

@@ -201,7 +201,7 @@ spigot {
     apiVersion = "1.15"
     load = Load.STARTUP
     commands {
-        create("give") {
+        register("give") {
             aliases = listOf("i")
             description = "Give command."
             permission = "test.foo"
@@ -210,11 +210,11 @@ spigot {
         }
     }
     permissions {
-        create("test.foo") {
+        register("test.foo") {
             description = "Allows foo command"
             defaults = "true"
         }
-        create("test.*") {
+        register("test.*") {
             description = "Wildcard permission"
             defaults = "op"
             children = mapOf("test.foo" to true)
