@@ -108,7 +108,7 @@ public class SamplePlugin extends PluginBase { }
 
 ## Configuration
 
-### nukkit - [NukkitExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.nukkit/-nukkit-extension/index.html)
+### nukkit - [NukkitExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.nukkit/-nukkit-extension/index.html)
 
 The description of your plugin for a 'plugin.yml'.
 
@@ -239,11 +239,11 @@ tasks {
 
 </details>
 
-### detectNukkitMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
+### detectNukkitMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
 
-### generateNukkitDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
+### generateNukkitDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectNukkitMain`*
 

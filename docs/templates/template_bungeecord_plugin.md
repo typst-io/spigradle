@@ -108,7 +108,7 @@ public class SamplePlugin extends Plugin { }
 
 ## Configuration
 
-### bungee - [BungeeExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.bungee/-bungee-extension/index.html)
+### bungee - [BungeeExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.bungee/-bungee-extension/index.html)
 
 The description of your plugin for a 'bungee.yml'.
 
@@ -198,11 +198,11 @@ tasks {
 
 </details>
 
-### detectBungeeMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
+### detectBungeeMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
 
-### generateBungeeDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
+### generateBungeeDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectBungeeMain`*
 

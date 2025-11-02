@@ -282,11 +282,11 @@ tasks {
 
 </details>
 
-### detectSpigotMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
+### detectSpigotMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
-### generateSpigotDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
+### generateSpigotDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectSpigotMain`*
 
