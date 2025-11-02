@@ -147,7 +147,7 @@ Then WorldEdit and WorldGuard will be excluded by the `prepareSpigotPlugins` whi
 
 ## Configuration
 
-### spigot - [SpigotExtension](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html)
+### spigot - [SpigotExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
 
 The description of your plugin for a `plugin.yml`.
 
@@ -282,11 +282,11 @@ tasks {
 
 </details>
 
-### detectSpigotMain - [SubclassDetection](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
+### detectSpigotMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-subclass-detection/index.html)
 
 Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
-### generateSpigotDescription - [YamlGenerate](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
+### generateSpigotDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.module.common/-yaml-generate/index.html)
 
 *Depends on: `detectSpigotMain`*
 

@@ -10,7 +10,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 
 # Benefits
 
-- [Description file](https://entree.dev/spigradle/docs/spigradle/io.typst.spigradle.module.spigot/-spigot-extension/index.html)
+- [Description file](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
   generation: `plugin.yml` and/or `bungee.yml`
 
 - Main class detection
