@@ -1,5 +1,3 @@
-import io.typst.spigradle.spigot.*
-
 plugins {
     id 'java'
     id 'io.typst.spigradle'
@@ -14,9 +12,17 @@ dependencies {
     compileOnly spigot()
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+import io.typst.spigradle.spigot.Load
+
 spigot {
     description 'A sample plugin'
-    depends 'ProtocolLib', 'Vault'
+    softDepends = ['Vault', 'PlaceholderAPI']
     load Load.STARTUP
     load STARTUP
     load POSTWORLD
@@ -39,6 +45,12 @@ spigot {
             children 'test.foo': true
         }
     }
+}
+
+debugSpigot {
+    version.set('1.21.8')
+    eula.set(true)
+    downloadSoftDepends.set(true)
 }
 
 build.doLast {

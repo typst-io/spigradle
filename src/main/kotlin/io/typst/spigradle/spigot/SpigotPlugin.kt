@@ -20,10 +20,14 @@ import groovy.lang.Closure
 import io.typst.spigradle.PluginConvention
 import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.bungee.BungeeDependencies
+import io.typst.spigradle.debug.DebugExtension
+import io.typst.spigradle.debug.DebugRegistrationContext
+import io.typst.spigradle.debug.DebugTask
 import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.getByName
 
 /**
@@ -51,6 +55,43 @@ class SpigotPlugin : Plugin<Project> {
                 desc.encodeToMap()
             }
             setupGroovyExtensions()
+
+            // debug
+            setupDebug()
+        }
+    }
+
+    private fun Project.setupDebug() {
+        val paperExt = extensions.create("debugSpigot", DebugExtension::class.java)
+        val ctx = DebugRegistrationContext(
+            "paper",
+            paperExt.version,
+            "",
+            "plugins",
+            project.tasks.named("jar", Jar::class.java),
+            listOf("nogui"),
+            eula = paperExt.eula
+        )
+        val downloadPaper = tasks.register("downloadPaper", PaperDownloadTask::class.java) {
+            group = ctx.taskGroupName
+
+            dependsOn(ctx.jarTask)
+            version.set(paperExt.version)
+            outputFile.set(ctx.getDownloadOutputFile(this@setupDebug))
+        }
+        val preparePluginDependencies =
+            tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {
+                group = ctx.taskGroupName
+
+                pluginNames.set(paperExt.downloadSoftDepends.map {
+                    if (it) {
+                        spigot.depends + spigot.softDepends
+                    } else spigot.depends
+                })
+                outputDir.set(ctx.getDebugArtifactDir(this@setupDebug))
+            }
+        DebugTask.register(this, ctx).configure {
+            dependsOn(downloadPaper, preparePluginDependencies)
         }
     }
 
