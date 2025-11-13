@@ -64,7 +64,6 @@ internal object DebugTask {
 
             delete(ctx.getDownloadBaseDir(project))
         }
-        project.pluginManager.apply("org.jetbrains.gradle.plugin.idea-ext")
         val ideaModel = project.extensions["idea"] as IdeaModel
         ideaModel.project.settings {
             runConfigurations {

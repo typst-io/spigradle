@@ -17,6 +17,8 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 
 - Shortcuts for [repository](#repositories) and [dependency](#dependencies)
 
+- Debug task -- download server software, copy the artifact, prepare dependencies, run the server
+
 ```groovy
 plugins {
     id 'java'
@@ -45,6 +47,13 @@ spigot {
             aliases 'cmd'
         }
     }
+}
+
+debugSpigot {
+    // run task named `debugPaper`
+    // debug run configuration named `DebugPaper`
+    version.set("1.21.8")
+    eula.set(true)
 }
 ```
 
@@ -101,6 +110,11 @@ spigot {
         }
     }
 }
+
+debugSpigot {
+    version.set("1.21.8")
+    eula.set(true)
+}
 ```
 
 <details>
@@ -133,6 +147,11 @@ spigot {
             aliases = listOf("cmd")
         }
     }
+}
+
+debugSpigot {
+    version.set("1.21.8")
+    eula.set(true)
 }
 ```
 

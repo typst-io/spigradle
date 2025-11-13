@@ -57,6 +57,7 @@ class SpigotPlugin : Plugin<Project> {
             setupGroovyExtensions()
 
             // debug
+            project.pluginManager.apply("org.jetbrains.gradle.plugin.idea-ext")
             setupDebug()
         }
     }
@@ -91,6 +92,7 @@ class SpigotPlugin : Plugin<Project> {
                 outputDir.set(ctx.getDebugArtifactDir(this@setupDebug))
             }
         DebugTask.register(this, ctx).configure {
+            enabled = false
             dependsOn(downloadPaper, preparePluginDependencies)
         }
     }
