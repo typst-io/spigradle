@@ -1,6 +1,6 @@
 # Spigradle
 
-[![License](https://img.shields.io/github/license/typst-io/spigradle.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-yellowgreen.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle)](https://plugins.gradle.org/plugin/io.typst.spigradle)
 ![TeamCity build status](https://ci.typst.io/app/rest/builds/buildType:id:Spigradle_Build/statusIcon.svg)
 
