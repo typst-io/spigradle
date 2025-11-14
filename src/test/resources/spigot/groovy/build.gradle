@@ -54,7 +54,7 @@ debugSpigot {
 }
 
 debugPaper {
-    enabled = true
+    enabled = false
 }
 
 build.doLast {
