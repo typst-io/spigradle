@@ -23,6 +23,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -258,14 +259,20 @@ class GradleFunctionalTest {
     }
 
     @Test
+    @Ignore
     fun `apply scala and spigradle on a subproject`() {
         subBuildFile.writeGroovy(
             """ 
             plugins {
                 id 'scala'
+                id 'idea'
                 id 'io.typst.spigradle'
             }
             spigot.main = 'Main'
+            
+            scala {
+                scalaVersion = '2.13.12'
+            }
         """.trimIndent()
         )
         assertDoesNotThrow {

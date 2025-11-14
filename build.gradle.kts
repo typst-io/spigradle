@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.asm)
     implementation(libs.snakeyamlEngine)
+    implementation(libs.gradlePlugin.ideaExt)
     compileOnly(libs.spigotApi)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)

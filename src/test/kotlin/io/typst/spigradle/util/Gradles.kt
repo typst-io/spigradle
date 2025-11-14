@@ -7,15 +7,18 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-fun Any.testGradleTaskWithResource(path: String, taskName: String) {
+fun Any.testGradleTaskWithResource(path: String, resultTaskName: String, taskName: String = "build") {
+    val projectDir = File(javaClass.getResource(path)!!.file)
+    val testKitHome = projectDir.resolve("test-kit-home").apply { mkdirs() }
     val result = GradleRunner.create()
-        .withProjectDir(File(javaClass.getResource(path)!!.file))
+        .withProjectDir(projectDir)
+        .withTestKitDir(testKitHome)
         .withPluginClasspath()
-        .withArguments("build", "--stacktrace")
+        .withArguments(taskName, "--stacktrace")
         .withGradleVersion("8.14.3") // This is the minimal version required to use Spigradle.
         .build()
     println(result.output)
-    assertNotEquals(TaskOutcome.FAILED, result.task(":$taskName")!!.outcome)
+    assertNotEquals(TaskOutcome.FAILED, result.task(":$resultTaskName")!!.outcome)
 }
 
 fun testGradleScript(

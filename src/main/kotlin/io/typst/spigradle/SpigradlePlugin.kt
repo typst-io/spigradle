@@ -30,6 +30,7 @@ fun Project.getPluginMainPathFile(type: String) =
 class SpigradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
+            pluginManager.apply("java")
             setupGroovyExtensions()
         }
     }

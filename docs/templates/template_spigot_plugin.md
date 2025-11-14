@@ -238,50 +238,6 @@ configure<SpigotExtension> {
 
 All tasks supports [UP-TO-DATE check](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
 
-<details>
-<summary>Configuration Guide</summary>
-
-Groovy:
-
-```groovy
-runSpigot {
-    jvmArgs('-Xmx8G')
-}
-```
-
-Kotlin with type-safe accessors:
-
-```kotlin
-tasks {
-    runSpigot {
-        jvmArgs("-Xmx8G")
-    }
-}
-```
-
-Kotlin without [type-safe accessors](https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin_using_standard_api):
-
-```kotlin
-tasks {
-    named<JavaExec>("runSpigot") {
-        jvmArgs("-Xmx8G")
-    }
-}
-```
-
-Kotlin with property delegation
-
-```kotlin
-tasks {
-    val runSpigot by existing(JavaExec::clas) {
-        jvmArgs("-Xmx8G")
-    }
-    // Do something with 'runSpigot'
-}
-```
-
-</details>
-
 ### detectSpigotMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
@@ -291,6 +247,18 @@ Finds the main class extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spi
 *Depends on: `detectSpigotMain`*
 
 Generates the description file 'plugin.yml'.
+org.gradle.api.tasks
+### debugPaper - [Exec](https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Exec.html)
+
+*Depends on: `downloadPaper, preparePluginDependencies`
+
+Run the server with the project artifacts and it's dependencies.
+
+To attach debugger, run the run configuration `DebugPaper` generated from Spigradle.
+
+The server path: `MY_PROJECT/.gradle/spigradle-debug/paper/`
+
+The paper.jar path: `GRADLE_USER_HOME/spigradle-debug-jars/paper/VERSION/paper.jar`
 
 ## Why not spigot-annotations?
 
