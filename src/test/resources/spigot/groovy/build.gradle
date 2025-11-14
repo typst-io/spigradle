@@ -53,6 +53,10 @@ debugSpigot {
     downloadSoftDepends.set(true)
 }
 
+debugPaper {
+    enabled = true
+}
+
 build.doLast {
     def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')
     if (pluginFile.isFile()) {

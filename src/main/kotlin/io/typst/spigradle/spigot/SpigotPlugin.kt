@@ -92,7 +92,6 @@ class SpigotPlugin : Plugin<Project> {
                 outputDir.set(ctx.getDebugArtifactDir(this@setupDebug))
             }
         DebugTask.register(this, ctx).configure {
-            enabled = false
             dependsOn(downloadPaper, preparePluginDependencies)
         }
     }
