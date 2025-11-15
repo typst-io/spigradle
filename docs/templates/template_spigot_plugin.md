@@ -119,32 +119,6 @@ public class SamplePlugin extends JavaPlugin { }
 class SamplePlugin : JavaPlugin()
 ``` 
 
-### Exclusion
-
-If you want to exclude some plugins, this is an example,
-
-Kotlin:
-
-```kotlin
-tasks {
-    prepareSpigotPlugins {
-        exclude("**/worldedit*.jar")
-        exclude("**/worldguard*.jar")
-    }
-}
-```
-
-Groovy:
-
-```groovy
-prepareSpigotPlugins {
-    exclude '**/worldedit*.jar' // or exclude 'worldedit*.jar'?
-    exclude '**/worldguard*.jar'
-}
-```
-
-Then WorldEdit and WorldGuard will be excluded by the `prepareSpigotPlugins` which a [Copy](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html) task, you can use all the `Copy` features.
-
 ## Configuration
 
 ### spigot - [SpigotExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
@@ -166,7 +140,7 @@ spigot {
     apiVersion '1.15'
     load STARTUP
     commands {
-        give {
+        register("give") {
             aliases 'giv', 'i'
             description 'Give command.'
             permission 'test.foo'
@@ -175,11 +149,11 @@ spigot {
         }
     }
     permissions {
-        'test.foo' {
+        register('test.foo') {
             description 'Allows foo command'
             defaults 'true'
         }
-        'test.*' {
+        register('test.*') {
             description 'Wildcard permission'
             defaults 'op'
             children = ['test.foo': true]
@@ -233,6 +207,17 @@ configure<SpigotExtension> {
 ```
 
 </details>
+
+### debugSpigot - [DebugExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.debug/-debug-extension/index.html) 
+
+```groovy
+debugSpigot {
+    // task named `debugPaper`
+    // IDEA Run configuration named `DebugPaper`
+    version.set("1.21.8")
+    eula.set(true)
+}
+```
 
 ## Tasks
 
