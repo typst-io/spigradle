@@ -323,7 +323,6 @@ tasks.test.dependsOn(copyPluginYaml)
 - The groupId has been changed from `kr.entree.spigradle` to `io.typst.spigradle`.
 - No more implicit repo/dep: need to declare repository(spigotmc)
 - No more @Plugin annotation: the main class will be detected automatically.
-- The debug feature is removed at this time
 - The Gradle version must be 8.x or higher (ex: 8.14.3)
   - If you use gradle wrapper, edit the `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` ex) `gradle-8.14.3-all.zip`
 - The Gradle JVM version must be 17 or higher.

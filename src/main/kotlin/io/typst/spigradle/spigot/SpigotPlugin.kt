@@ -16,10 +16,8 @@
 
 package io.typst.spigradle.spigot
 
-import groovy.lang.Closure
 import io.typst.spigradle.PluginConvention
 import io.typst.spigradle.applySpigradlePlugin
-import io.typst.spigradle.bungee.BungeeDependencies
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
 import io.typst.spigradle.debug.DebugTask
@@ -29,6 +27,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.getByName
+import org.jetbrains.gradle.ext.IdeaExtPlugin
 
 /**
  * The Spigot plugin that adds:
@@ -57,7 +56,7 @@ class SpigotPlugin : Plugin<Project> {
             setupGroovyExtensions()
 
             // debug
-            project.pluginManager.apply("org.jetbrains.gradle.plugin.idea-ext")
+            project.rootProject.pluginManager.apply(IdeaExtPlugin::class.java)
             setupDebug()
         }
     }
@@ -97,32 +96,7 @@ class SpigotPlugin : Plugin<Project> {
     }
 
     private fun Project.setupGroovyExtensions() {
-        val depExt = dependencies.groovyExtension
-        val repExt = repositories.groovyExtension
         val spigotExt = spigot.groovyExtension
-        // dependencies
-        depExt.set("mockBukkit", object : Closure<Any>(this, this) {
-            fun doCall(vararg arguments: String) =
-                dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
-        })
-        for (dep in SpigotDependencies.values()) {
-            depExt.set(dep.alias, object : Closure<Any>(this, this) {
-                fun doCall(vararg arguments: String) =
-                    dep.format(arguments.getOrNull(0))
-            })
-        }
-        for (dep in BungeeDependencies.values()) {
-            depExt.set(dep.alias, object : Closure<Any>(this, this) {
-                fun doCall(vararg arguments: String) =
-                    dep.format(arguments.getOrNull(0))
-            })
-        }
-        // repositories
-        for (repo in SpigotRepositories.values()) {
-            repExt.set(repo.alias, object : Closure<Any>(this, this) {
-                fun doCall() = repositories.maven { setUrl(repo.address) }
-            })
-        }
         // literal
         spigotExt.set("POST_WORLD", Load.POST_WORLD)
         spigotExt.set("POSTWORLD", Load.POST_WORLD)

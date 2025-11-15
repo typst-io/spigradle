@@ -17,6 +17,7 @@
 package io.typst.spigradle.debug
 
 import io.typst.spigradle.capitalized
+import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -64,10 +65,10 @@ internal object DebugTask {
 
             delete(ctx.getDownloadBaseDir(project))
         }
-        val ideaModel = project.extensions["idea"] as IdeaModel
+        val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
         ideaModel.project.settings {
             runConfigurations {
-                create("Debug${ctx.platformName.capitalized()}", Remote::class.java) {
+                create("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
                     transport = Remote.RemoteTransport.SHARED_MEM
                     sharedMemoryAddress = project.name
                 }

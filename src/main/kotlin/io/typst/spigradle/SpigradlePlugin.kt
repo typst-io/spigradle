@@ -17,6 +17,10 @@
 package io.typst.spigradle
 
 import groovy.lang.Closure
+import io.typst.spigradle.bungee.BungeeDependencies
+import io.typst.spigradle.spigot.SpigotDependencies
+import io.typst.spigradle.spigot.SpigotRepositories
+import io.typst.spigradle.spigot.mockBukkit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -41,10 +45,34 @@ class SpigradlePlugin : Plugin<Project> {
     }
 
     private fun Project.setupRepositoryExtensions() {
-        val ext = repositories.groovyExtension
+        val depExt = dependencies.groovyExtension
+        val repoExt = repositories.groovyExtension
+        // repo
         for (repo in Repositories.values()) {
-            ext.set(repo.name.lowercase(), object : Closure<Any>(this, this) {
+            repoExt.set(repo.alias, object : Closure<Any>(this, this) {
                 fun doCall() = repositories.maven(repo.address)
+            })
+        }
+        for (repo in SpigotRepositories.values()) {
+            repoExt.set(repo.alias, object : Closure<Any>(this, this) {
+                fun doCall() = repositories.maven(repo.address)
+            })
+        }
+        // dep
+        depExt.set("mockBukkit", object : Closure<Any>(this, this) {
+            fun doCall(vararg arguments: String) =
+                dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
+        })
+        for (dep in SpigotDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
+            })
+        }
+        for (dep in BungeeDependencies.values()) {
+            depExt.set(dep.alias, object : Closure<Any>(this, this) {
+                fun doCall(vararg arguments: String) =
+                    dep.format(arguments.getOrNull(0))
             })
         }
     }
