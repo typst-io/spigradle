@@ -156,7 +156,7 @@ spigot {
     apiVersion '1.15'
     load STARTUP
     commands {
-        register("give") {
+        register('give') {
             aliases 'giv', 'i'
             description 'Give command.'
             permission 'test.foo'
@@ -293,11 +293,11 @@ Replacement on build.gradle:
 ```groovy
 spigot {
     // The 'name' and 'version' will be set to project.version and project.name, 
-    // But we may set those manually.
-    name = 'Manual name'
-    version = 'Manual version'
+    // But we may set those manually for the example
+    name.set('Manual name')
+    version.set('Manual version')
     commands {
-        foo {
+        register('foo') {
             aliases = ['foobar', 'fubar']
             description = 'Foo command'
             permission = 'test.foo'
@@ -306,7 +306,7 @@ spigot {
         }
     }
     permissions {
-        'test.foo' {
+        register('test.foo') {
             description = 'Allows foo command'
             defaults = 'op'
         }
