@@ -22,6 +22,6 @@ import org.junit.jupiter.api.Test
 class SpigotDebugTest {
     @Test
     fun debug() {
-        testGradleTaskWithResource("/spigot/groovy", "debugPaper", "debugPaper")
+        testGradleTaskWithResource("/spigot/groovy", "debugSpigradleTestKotlin", "debugSpigradleTestKotlin")
     }
 }

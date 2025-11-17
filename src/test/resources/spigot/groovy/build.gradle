@@ -53,8 +53,10 @@ debugSpigot {
     downloadSoftDepends.set(true)
 }
 
-debugPaper {
-    enabled = false
+tasks {
+    debugSpigradleTestKotlin {
+        enabled = false
+    }
 }
 
 build.doLast {
