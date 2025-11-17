@@ -17,10 +17,13 @@
 package io.typst.spigradle.debug
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 open class DebugExtension(project: Project) {
     val version: Property<String> = project.objects.property(String::class.java)
     val eula: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
     val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    val jvmArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+    val programArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
 }

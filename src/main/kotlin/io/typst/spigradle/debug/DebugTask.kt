@@ -20,10 +20,10 @@ import io.typst.spigradle.capitalized
 import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.get
@@ -32,9 +32,17 @@ import org.jetbrains.gradle.ext.Remote
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermission
+
+private fun escb(xs: String): String =
+    "\"${xs}\""
+
+private fun escs(xs: String): String =
+    xs.replace("'", "'\\''")
 
 internal object DebugTask {
-    internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Exec> {
+    internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
         // TODO: download, copyPlugin, writeFile(eula.txt), JavaExec
         val jarFile = ctx.jarTask.flatMap { it.archiveFile }
         val downloadTask = if (ctx.downloadURI.isNotEmpty()) {
@@ -54,14 +62,15 @@ internal object DebugTask {
             into(ctx.getDebugArtifactDir(project))
         }
         val jarPath = ctx.getDownloadOutputFile(project).map { it.asFile.absolutePath }
-        project.tasks.register("clean${ctx.platformName.capitalized()}", Delete::class.java) {
+        project.tasks.register("cleanDebug${project.name.caseKebabToPascal()}", Delete::class.java) {
             group = ctx.taskGroupName
+            description = "Clean the debug folder of ${project.name}: ${ctx.getDebugDir(project).absolutePath}"
 
             delete(ctx.getDebugDir(project))
         }
-
         project.tasks.register("cleanCache${ctx.platformName.capitalized()}", Delete::class.java) {
             group = ctx.taskGroupName
+            description = "Clean the global cache of ${ctx.platformName}: ${ctx.getDownloadBaseDir(project)}"
 
             delete(ctx.getDownloadBaseDir(project))
         }
@@ -74,7 +83,7 @@ internal object DebugTask {
                 }
             }
         }
-        return project.tasks.register(ctx.runDebugTaskName, Exec::class.java) {
+        return project.tasks.register(ctx.getRunDebugTaskName(project)) {
             group = ctx.taskGroupName
 
             if (downloadTask != null) {
@@ -91,41 +100,33 @@ internal object DebugTask {
             }
             val os = System.getProperty("os.name").lowercase()
             val debugDirPath = ctx.getDebugDir(project).absolutePath
-            if (os.startsWith("windows")) {
-                val pwsh = if (File("C:/Program Files/PowerShell/7/pwsh.exe").exists()) "pwsh" else "powershell"
+
+            val jvmArgs = ctx.jvmArgs.orNull?.joinToString(" ") ?: ""
+            val programArgs = ctx.programArgs.orNull?.joinToString(" ") ?: ""
+            val cmds = if (os.startsWith("windows")) {
                 val scriptPath = File(debugDirPath, "starter.bat").absolutePath
                 val cmds = listOf(
-                    pwsh, "-NoProfile", "-Command",
-                    "Start-Process", "cmd",
-                    "-ArgumentList", "'/k','${scriptPath}'",
-                    "-WorkingDirectory", debugDirPath,
-                    "-WindowStyle", "Normal"
+                    "cmd", "/c",
+                    "start", "\"${project.name}\"",
+                    "/D", debugDirPath,
+                    scriptPath,
+                    escb(javaExe.get()),
+                    escb(jvmArgs),
+                    escb(jarPath.get()),
+                    escb(programArgs),
                 )
-                commandLine(cmds)
-            } else if (os.contains("linux")) {
-                val run = "cd '${debugDirPath.replace("'", "'\\''")}'; ./starter.sh; exec bash"
-                val cli = when {
-                    File("/usr/bin/gnome-terminal").exists() -> listOf("gnome-terminal", "--", "bash", "-lc", run)
-                    File("/usr/bin/konsole").exists() -> listOf("konsole", "-e", "bash", "-lc", run)
-                    File("/usr/bin/xfce4-terminal").exists() -> listOf("xfce4-terminal", "-e", "bash -lc \"$run\"")
-                    else -> listOf("xterm", "-e", "bash", "-lc", run)
-                }
-                commandLine(cli)
-            } else if (os.contains("mac")) {
-                val cmds = listOf(
-                    "osascript", "-e",
-                    """
-                    tell application "Terminal"
-                      activate
-                      do script "cd ${debugDirPath.replace(" ", "\\ ")}; ./starter.sh"
-                    end tell
-                    """.trimIndent()
-                )
-                commandLine(cmds)
+                cmds
             } else {
-                commandLine("bash", "-lc", "cd '${debugDirPath.replace("'", "'\\''")}' && ./starter.sh")
+
+                val debugDirEscaped = escs(debugDirPath)
+                val javaEsc = escs(javaExe.get())
+
+                val script =
+                    "cd '$debugDirEscaped' && ./starter.sh '$javaEsc' '${escs(jvmArgs)}' '${escs(jarPath.get())}' '${
+                        escs(programArgs)
+                    }'"
+                listOf("sh", "-lc", script)
             }
-            isIgnoreExitValue = true
 
             doFirst {
                 if (ctx.eula?.get() == false) {
@@ -138,18 +139,49 @@ internal object DebugTask {
                 }
                 debugDir.resolve("starter.bat").apply {
                     if (!isFile) {
-                        writeText("\"${javaExe.get()}\" -agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name} -jar ${jarPath.get()} nogui\npause:")
-                    }
-                }
-                debugDir.resolve("starter.ps1").apply {
-                    if (!isFile) {
-                        writeText("start powershell ./starter.bat")
+                        writeText(
+                            """
+                            @echo off
+                            REM %1 = javaExe, %2 = jvmArgs, %3 = jarPath, %4 = programArgs
+                            "%~1" %~2 -jar "%~3" %4
+                            pause:
+                        """.trimIndent()
+                        )
                     }
                 }
                 debugDir.resolve("starter.sh").apply {
                     if (!isFile) {
-                        writeText("\"${javaExe.get()}\" -agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name} -jar ${jarPath.get()} nogui")
+                        writeText(
+                            """
+                            #!/usr/bin/env bash
+                            # $1 = javaExe, $2 = jvmArgs, $3 = jarPath, $4 = programArgs
+                            "%~1" %~2 -jar "%~3" %4
+                        """.trimIndent()
+                        )
+                        try {
+                            Files.setPosixFilePermissions(
+                                toPath(),
+                                setOf(
+                                    PosixFilePermission.OWNER_EXECUTE,
+                                    PosixFilePermission.OWNER_READ,
+                                    PosixFilePermission.GROUP_EXECUTE,
+                                    PosixFilePermission.GROUP_READ,
+                                    PosixFilePermission.OTHERS_EXECUTE,
+                                    PosixFilePermission.OTHERS_READ,
+                                )
+                            )
+                        } catch (th: Throwable) {
+                            // ignore
+                        }
                     }
+                }
+            }
+
+            doLast {
+                val process = ProcessBuilder(cmds).inheritIO().start()
+                val processCode = process.waitFor()
+                if (processCode != 0) {
+                    throw GradleException("Process exit code: $processCode")
                 }
             }
         }

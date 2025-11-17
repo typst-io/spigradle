@@ -57,27 +57,34 @@ class SpigotPlugin : Plugin<Project> {
 
             // debug
             project.rootProject.pluginManager.apply(IdeaExtPlugin::class.java)
-            setupDebug()
+            setupSpigotDebug()
         }
     }
 
-    private fun Project.setupDebug() {
-        val paperExt = extensions.create("debugSpigot", DebugExtension::class.java)
+    private fun Project.setupSpigotDebug() {
+        val paperExt = extensions.create("debugSpigot", DebugExtension::class.java).apply {
+            jvmArgs.convention(provider {
+                listOf("-agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name}")
+            })
+            programArgs.convention(listOf("nogui"))
+        }
         val ctx = DebugRegistrationContext(
             "paper",
             paperExt.version,
             "",
             "plugins",
             project.tasks.named("jar", Jar::class.java),
-            listOf("nogui"),
-            eula = paperExt.eula
+            paperExt.jvmArgs,
+            paperExt.programArgs,
+            false,
+            paperExt.eula
         )
         val downloadPaper = tasks.register("downloadPaper", PaperDownloadTask::class.java) {
             group = ctx.taskGroupName
 
             dependsOn(ctx.jarTask)
             version.set(paperExt.version)
-            outputFile.set(ctx.getDownloadOutputFile(this@setupDebug))
+            outputFile.set(ctx.getDownloadOutputFile(this@setupSpigotDebug))
         }
         val preparePluginDependencies =
             tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {
@@ -88,7 +95,7 @@ class SpigotPlugin : Plugin<Project> {
                         spigot.depends + spigot.softDepends
                     } else spigot.depends
                 })
-                outputDir.set(ctx.getDebugArtifactDir(this@setupDebug))
+                outputDir.set(ctx.getDebugArtifactDir(this@setupSpigotDebug))
             }
         DebugTask.register(this, ctx).configure {
             dependsOn(downloadPaper, preparePluginDependencies)

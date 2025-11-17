@@ -17,12 +17,13 @@
 package io.typst.spigradle.debug
 
 import io.typst.spigradle.capitalized
+import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.bundling.Jar
 import java.io.File
-import java.net.URI
 
 data class DebugRegistrationContext(
     val platformName: String,
@@ -30,21 +31,23 @@ data class DebugRegistrationContext(
     val downloadURI: String,
     val debugArtifactRelativeDir: String,
     val jarTask: Provider<Jar>,
-    val programArgs: List<String> = emptyList(),
-    val jvmArgs: List<String> = emptyList(),
+    val jvmArgs: ListProperty<String>,
+    val programArgs: ListProperty<String>,
     val overwrite: Boolean = false,
     val eula: Provider<Boolean>? = null,
 ) {
     val taskGroupName: String get() = "$platformName debug"
     val downloadTaskName: String get() = "download${platformName.capitalized()}"
-    val runDebugTaskName: String get() = "debug${platformName.capitalized()}"
+
+    fun getRunDebugTaskName(project: Project): String {
+        return "debug${project.name.caseKebabToPascal()}"
+    }
 
     fun getDebugArtifactDir(project: Project): File {
         return File(getDebugDir(project), debugArtifactRelativeDir)
     }
 
     fun getDebugDir(project: Project): File {
-        URI("")
         return project.layout.projectDirectory
             .dir(".gradle/spigradle-debug/${platformName}")
             .asFile

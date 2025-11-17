@@ -31,10 +31,11 @@ version '1.0.0'
 repositories {
     mavenCentral()
     spigotmc()
+    papermc()
 }
 
 dependencies {
-    compileOnly spigot('1.21.8')
+    compileOnly paper('1.21.8') // or spigot('1.21.8')
 }
 
 spigot {
@@ -95,10 +96,11 @@ plugins {
 repositories {
     mavenCentral()
     spigotmc()
+    papermc()
 }
 
 dependencies {
-    compileOnly spigot('1.21.8')
+    compileOnly paper('1.21.8') // or spigot('1.21.8')
 }
 
 spigot {
@@ -131,11 +133,12 @@ plugins {
 repositories {
     mavenCentral()
     spigotmc()
+    papermc()
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    compileOnly(spigot("1.21.8"))
+    compileOnly(paper("1.21.8"))
 }
 
 spigot {
