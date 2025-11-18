@@ -31,9 +31,29 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
 
 /**
  * The Spigot plugin that adds:
- * - [io.typst.spigradle.YamlGenerate] task for the 'plugin.yml' generation.
- * - [io.typst.spigradle.SubclassDetection] task for the main-class detection.
- * - Debug tasks for test your plugin.
+ *
+ * Extensions:
+ * - spigot([SpigotExtension]): extension for spigot environment
+ * - debugSpigot([DebugExtension]): extension for spigot(paper) debug
+ *   - jvmArgs: defaults to `
+ *
+ * Plugins:
+ * - `io.typst.spigradle.base`([SpigradlePlugin][io.typst.spigradle.SpigradlePlugin]): base plugin
+ * - `org.jetbrains.gradle.plugin.idea-ext`([IdeaExtPlugin]): idea ext plugin for generating the `Run Configuration`
+ *
+ * Tasks:
+ * - generatePluginYaml([YamlGenerate][io.typst.spigradle.YamlGenerate]): task for the 'plugin.yml' generation.
+ * - detectSpigotMain([SubclassDetection][io.typst.spigradle.SubclassDetection]): task for the main-class detection.
+ *
+ * Tasks for debug:
+ * - `debug${project.name.caseKebabToPascal()}`([Task][org.gradle.api.Task]): task for the debug jar with the server platform(paper). the debug dir is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
+ * - `cleanDebug${project.name.caseKebabToPascal()}`([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug dir
+ * - `cleanCache${platformName}`([Delete][org.gradle.api.tasks.Delete]): task to clean the global cache paper.jar
+ *
+ * Trivial tasks for debug:
+ * - `preparePluginDependencies`([PluginDependencyPrepareTask]): task for download the plugin dependencies.
+ * - `copyArtifactJar`([Copy][org.gradle.api.tasks.Copy]): task to copy the project artifact jar
+ * - `downloadPaper`([PaperDownloadTask]): task to download latest build of the version. the download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar
  */
 class SpigotPlugin : Plugin<Project> {
     companion object {

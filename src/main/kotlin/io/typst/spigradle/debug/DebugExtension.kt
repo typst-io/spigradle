@@ -20,6 +20,14 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
+/**
+ * The debug extension for each plugin
+ *
+ * There is default value each plugin, if you want to add a custom arg with the default then:
+ * ```
+ * jvmArgs.add("-myCustomArg")
+ * ```
+ */
 open class DebugExtension(project: Project) {
     val version: Property<String> = project.objects.property(String::class.java)
     val eula: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)

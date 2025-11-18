@@ -31,6 +31,16 @@ fun Project.applySpigradlePlugin() = pluginManager.apply(SpigradlePlugin::class)
 fun Project.getPluginMainPathFile(type: String) =
     layout.buildDirectory.file("spigradle/${type}_main").get().asFile
 
+/**
+ * The base plugin applies:
+ *
+ * plugins:
+ *   - java
+ *
+ * groovy extensions:
+ *   - dependencies
+ *   - repositories
+ */
 class SpigradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
