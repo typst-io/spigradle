@@ -35,7 +35,8 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  * Extensions:
  * - spigot([SpigotExtension]): extension for spigot environment
  * - debugSpigot([DebugExtension]): extension for spigot(paper) debug
- *   - jvmArgs: defaults to `
+ *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name}`
+ *     - programArgs: defaults to `nogui`
  *
  * Plugins:
  * - `io.typst.spigradle.base`([SpigradlePlugin][io.typst.spigradle.SpigradlePlugin]): base plugin
