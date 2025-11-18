@@ -118,7 +118,7 @@ class SpigotPlugin : Plugin<Project> {
                 })
                 outputDir.set(ctx.getDebugArtifactDir(this@setupSpigotDebug))
             }
-        DebugTask.register(this, ctx).configure {
+        DebugTask.register(this, ctx.copy(downloadTask = downloadPaper)).configure {
             dependsOn(downloadPaper, preparePluginDependencies)
         }
     }

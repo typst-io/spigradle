@@ -32,8 +32,6 @@ import org.jetbrains.gradle.ext.Remote
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.attribute.PosixFilePermission
 
 private fun escb(xs: String): String =
     "\"${xs}\""
@@ -44,13 +42,13 @@ private fun escs(xs: String): String =
 internal object DebugTask {
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
         // TODO: download, copyPlugin, writeFile(eula.txt), JavaExec
-        val jarFile = ctx.jarTask.flatMap { it.archiveFile }
-        val downloadTask = if (ctx.downloadURI.isNotEmpty()) {
+        val archiveFile = ctx.jarTask.flatMap { it.archiveFile }
+        val downloadTask = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
             project.tasks.register(ctx.downloadTaskName, Copy::class.java) {
                 group = ctx.taskGroupName
 
                 dependsOn(ctx.jarTask)
-                from(jarFile)
+                from(archiveFile)
                 into(ctx.getDebugArtifactDir(project))
             }
         } else null
@@ -58,19 +56,19 @@ internal object DebugTask {
             group = ctx.taskGroupName
 
             dependsOn(ctx.jarTask)
-            from(jarFile)
+            from(archiveFile)
             into(ctx.getDebugArtifactDir(project))
         }
-        val jarPath = ctx.getDownloadOutputFile(project).map { it.asFile.absolutePath }
+        val jar = ctx.getDownloadOutputFile(project)
         project.tasks.register("cleanDebug${project.name.caseKebabToPascal()}", Delete::class.java) {
             group = ctx.taskGroupName
-            description = "Clean the debug folder of ${project.name}: ${ctx.getDebugDir(project).absolutePath}"
+            description = "Clean the debug folder of the project: \$PROJECT_HOME/spigradle-debug/\$platform"
 
             delete(ctx.getDebugDir(project))
         }
         project.tasks.register("cleanCache${ctx.platformName.capitalized()}", Delete::class.java) {
             group = ctx.taskGroupName
-            description = "Clean the global cache of ${ctx.platformName}: ${ctx.getDownloadBaseDir(project)}"
+            description = "Clean the global cache of the project: \$GRADLE_USER_HOME/spigradle-debug-jars/\$platform"
 
             delete(ctx.getDownloadBaseDir(project))
         }
@@ -83,48 +81,47 @@ internal object DebugTask {
                 }
             }
         }
+        val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
+        val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
+        val javaExe = project.providers.provider {
+            toolchains.launcherFor {
+                languageVersion.set(javaExt.toolchain.languageVersion.get())
+            }.get().executablePath
+        }
+        val createJavaDebugScriptTask =
+            project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
+                group = ctx.taskGroupName
+
+                dir.set(ctx.getDebugDir(project))
+                javaPath.set(javaExe.map { it.asFile.absolutePath })
+                jvmArgs.set(ctx.jvmArgs)
+                programArgs.set(ctx.programArgs)
+                jarFile.set(jar.map { it.asFile.absolutePath })
+            }
         return project.tasks.register(ctx.getRunDebugTaskName(project)) {
             group = ctx.taskGroupName
 
             if (downloadTask != null) {
                 dependsOn(downloadTask)
             }
-            dependsOn(copyArtifactJarTask)
+            dependsOn(copyArtifactJarTask, createJavaDebugScriptTask)
 
-            val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
-            val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
-            val javaExe = project.providers.provider {
-                toolchains.launcherFor {
-                    languageVersion.set(javaExt.toolchain.languageVersion.get())
-                }.get().executablePath.asFile.absolutePath
-            }
             val os = System.getProperty("os.name").lowercase()
-            val debugDirPath = ctx.getDebugDir(project).absolutePath
+            val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath
 
-            val jvmArgs = ctx.jvmArgs.orNull?.joinToString(" ") ?: ""
-            val programArgs = ctx.programArgs.orNull?.joinToString(" ") ?: ""
             val cmds = if (os.startsWith("windows")) {
                 val scriptPath = File(debugDirPath, "starter.bat").absolutePath
                 val cmds = listOf(
                     "cmd", "/c",
                     "start", "\"${project.name}\"",
                     "/D", debugDirPath,
-                    scriptPath,
-                    escb(javaExe.get()),
-                    escb(jvmArgs),
-                    escb(jarPath.get()),
-                    escb(programArgs),
+                    scriptPath
                 )
                 cmds
             } else {
-
                 val debugDirEscaped = escs(debugDirPath)
-                val javaEsc = escs(javaExe.get())
-
                 val script =
-                    "cd '$debugDirEscaped' && ./starter.sh '$javaEsc' '${escs(jvmArgs)}' '${escs(jarPath.get())}' '${
-                        escs(programArgs)
-                    }'"
+                    "cd '$debugDirEscaped' && ./starter"
                 listOf("sh", "-lc", script)
             }
 
@@ -132,48 +129,10 @@ internal object DebugTask {
                 if (ctx.eula?.get() == false) {
                     throw GradleException("Please set 'eula.set(true)' in the debug extension!")
                 }
-                val debugDir = ctx.getDebugDir(project)
+                val debugDir = ctx.getDebugDir(project).asFile
                 if (ctx.eula?.get() == true) {
                     val eulaTxt = debugDir.resolve("eula.txt")
                     eulaTxt.writeText("eula=true")
-                }
-                debugDir.resolve("starter.bat").apply {
-                    if (!isFile) {
-                        writeText(
-                            """
-                            @echo off
-                            REM %1 = javaExe, %2 = jvmArgs, %3 = jarPath, %4 = programArgs
-                            "%~1" %~2 -jar "%~3" %4
-                            pause:
-                        """.trimIndent()
-                        )
-                    }
-                }
-                debugDir.resolve("starter.sh").apply {
-                    if (!isFile) {
-                        writeText(
-                            """
-                            #!/usr/bin/env bash
-                            # $1 = javaExe, $2 = jvmArgs, $3 = jarPath, $4 = programArgs
-                            "%~1" %~2 -jar "%~3" %4
-                        """.trimIndent()
-                        )
-                        try {
-                            Files.setPosixFilePermissions(
-                                toPath(),
-                                setOf(
-                                    PosixFilePermission.OWNER_EXECUTE,
-                                    PosixFilePermission.OWNER_READ,
-                                    PosixFilePermission.GROUP_EXECUTE,
-                                    PosixFilePermission.GROUP_READ,
-                                    PosixFilePermission.OTHERS_EXECUTE,
-                                    PosixFilePermission.OTHERS_READ,
-                                )
-                            )
-                        } catch (th: Throwable) {
-                            // ignore
-                        }
-                    }
                 }
             }
 

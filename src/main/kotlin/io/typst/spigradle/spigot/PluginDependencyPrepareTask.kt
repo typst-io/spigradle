@@ -39,10 +39,10 @@ open class PluginDependencyPrepareTask : DefaultTask() {
         description = "Prepare plugin dependencies"
     }
 
-    @Input
+    @get:Input
     val pluginNames: ListProperty<String> = project.objects.listProperty(String::class.java)
 
-    @OutputDirectory
+    @get:OutputDirectory
     val outputDir: DirectoryProperty = project.objects.directoryProperty()
 
     @TaskAction

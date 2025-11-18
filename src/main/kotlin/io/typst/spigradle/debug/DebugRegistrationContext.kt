@@ -19,9 +19,12 @@ package io.typst.spigradle.debug
 import io.typst.spigradle.capitalized
 import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import java.io.File
 
@@ -35,6 +38,7 @@ data class DebugRegistrationContext(
     val programArgs: ListProperty<String>,
     val overwrite: Boolean = false,
     val eula: Provider<Boolean>? = null,
+    val downloadTask: TaskProvider<out Task>? = null,
 ) {
     val taskGroupName: String get() = "$platformName debug"
     val downloadTaskName: String get() = "download${platformName.capitalized()}"
@@ -44,13 +48,12 @@ data class DebugRegistrationContext(
     }
 
     fun getDebugArtifactDir(project: Project): File {
-        return File(getDebugDir(project), debugArtifactRelativeDir)
+        return File(getDebugDir(project).asFile, debugArtifactRelativeDir)
     }
 
-    fun getDebugDir(project: Project): File {
+    fun getDebugDir(project: Project): Directory {
         return project.layout.projectDirectory
             .dir(".gradle/spigradle-debug/${platformName}")
-            .asFile
     }
 
     fun getDownloadBaseDir(project: Project): File {

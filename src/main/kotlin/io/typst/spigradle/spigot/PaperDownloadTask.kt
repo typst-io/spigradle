@@ -34,10 +34,10 @@ open class PaperDownloadTask : DefaultTask() {
         description = "Download a paper stable jar"
     }
 
-    @Input
+    @get:Input
     val version: Property<String> = project.objects.property(String::class.java)
 
-    @OutputFile
+    @get:OutputFile
     val outputFile: RegularFileProperty = project.objects.fileProperty()
 
     @Suppress("UNCHECKED_CAST")
