@@ -99,13 +99,6 @@ You can configure all properties of `plugin.yml` in [nukkit {} block](#configura
 
 The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.
 
-```java
-import io.typst.spigradle.annotations.NukkitPlugin;
-
-@NukkitPlugin
-public class SamplePlugin extends PluginBase { }
-```  
-
 ## Configuration
 
 ### nukkit - [NukkitExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.nukkit/-nukkit-extension/index.html)

@@ -99,13 +99,6 @@ You can configure all properties of `plugin.yml` in [bungee {} block](#configura
 
 The plugin automatically finds the main class extends [Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html), and set the 'main' property to the class found.
 
-```java
-import io.typst.spigradle.annotations.BungeePlugin;
-
-@BungeePlugin
-public class SamplePlugin extends Plugin { }
-```  
-
 ## Configuration
 
 ### bungee - [BungeeExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.bungee/-bungee-extension/index.html)
