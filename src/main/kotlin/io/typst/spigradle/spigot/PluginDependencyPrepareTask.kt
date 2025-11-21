@@ -26,13 +26,26 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 import java.net.URI
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.util.jar.JarFile
+import java.util.jar.JarInputStream
 
+/**
+ * Prepare plugin dependencies:
+ *
+ * 1. Copy it from the classpath configured in Gradle(e.g. JAR file dependency),
+ * 2. Or download it by searching for the most popular resource on SpigotMC
+ *
+ * Into `outputDir` (e.g. plugins), as `name.jar` (the name defined in plugin.yml).
+ *
+ * This task does not overwrite existing files; you can also place the file manually.
+ */
 open class PluginDependencyPrepareTask : DefaultTask() {
     init {
         group = "spigradle debug"
@@ -48,13 +61,15 @@ open class PluginDependencyPrepareTask : DefaultTask() {
     @TaskAction
     fun prepare() {
         if (pluginNames.get().isEmpty()) {
+            logger.log(LogLevel.LIFECYCLE, "SKIPPED: no dependencies configured")
             return
         }
 
         // skip if all exist
         if (pluginNames.get().all {
-            outputDir.get().asFile.resolve("${name}.jar").isFile
-        }) {
+                outputDir.get().asFile.resolve("${it}.jar").isFile
+            }) {
+            logger.log(LogLevel.LIFECYCLE, "SKIPPED: All files exists, skipping write ${pluginNames.get()}")
             return
         }
 
@@ -74,15 +89,19 @@ open class PluginDependencyPrepareTask : DefaultTask() {
 
         // TODO: match minecraft version
         // TODO: cache?
+        // TODO: overwrite when getting from classpath?
+        val maxSize = pluginNames.get().maxBy { it.length }.length
         for (name in pluginNames.get()) {
             val file = outputDir.get().asFile.resolve("${name}.jar")
             if (file.isFile) {
+                project.logger.log(LogLevel.LIFECYCLE, "SKIPPED ${name.padEnd(maxSize)} : file already exists, skipping write.")
                 continue
             }
 
             // method 1: from classpath
             val theFile = pluginFiles[name]
             if (theFile != null) {
+                project.logger.log(LogLevel.LIFECYCLE, "SUCCESS ${name.padEnd(maxSize)} : copied from classpath ${theFile.absolutePath}")
                 Files.copy(theFile.toPath(), file.toPath())
                 continue
             }
@@ -94,19 +113,41 @@ open class PluginDependencyPrepareTask : DefaultTask() {
             if (idValue != null) {
                 val downloadUri = URI("https://api.spiget.org/v2/resources/$idValue/download")
                 val bytes = fetchHttpGetAsByteArray(downloadUri).body()
-                Files.write(file.toPath(), bytes)
+
+                val yaml = readPluginYaml(ByteArrayInputStream(bytes))
+                val pluginName = parsePluginName(yaml ?: "")
+
+                if (pluginName == name) {
+                    Files.write(file.toPath(), bytes)
+                    project.logger.log(LogLevel.LIFECYCLE, "SUCCESS ${name.padEnd(maxSize)} : downloaded from SpigotMC $downloadUri")
+                } else {
+                    project.logger.log(
+                        LogLevel.WARN,
+                        "FAILED  ${name.padEnd(maxSize)} : downloaded from SpigotMC but plugin.yml name mismatch '${name}', received '${pluginName}' (maybe the wrong name is configured in `depends/softDepends`), from $downloadUri"
+                    )
+                }
             } else {
-                project.logger.log(LogLevel.WARN, "Couldn't find the plugin: $name")
+                project.logger.log(
+                    LogLevel.WARN,
+                    "FAILED  ${name.padEnd(maxSize)} : not found on classpath nor in Spiget search results $uri"
+                )
             }
         }
     }
 
     companion object {
-        fun readPluginYaml(jar: File, charset: Charset = StandardCharsets.UTF_8): String? {
-            return JarFile(jar).use { jf ->
-                val e = jf.getJarEntry("plugin.yml") ?: return null
-                jf.getInputStream(e).bufferedReader(charset).use { it.readText() }
+        fun readPluginYaml(input: InputStream, charset: Charset = StandardCharsets.UTF_8): String? {
+            return JarInputStream(input).use { jin ->
+                generateSequence { jin.nextJarEntry }
+                    .firstOrNull { !it.isDirectory && it.name == "plugin.yml" }
+                    ?: return null
+
+                jin.bufferedReader(charset).readText()
             }
+        }
+
+        fun readPluginYaml(jar: File, charset: Charset = StandardCharsets.UTF_8): String? {
+            return readPluginYaml(FileInputStream(jar), charset)
         }
 
         fun parsePluginName(xs: String): String? {
