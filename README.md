@@ -149,7 +149,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
     compileOnly(paper("1.21.8"))
 }
 
