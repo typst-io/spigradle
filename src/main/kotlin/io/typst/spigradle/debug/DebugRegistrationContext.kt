@@ -23,6 +23,7 @@ import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
@@ -36,6 +37,7 @@ data class DebugRegistrationContext(
     val jarTask: Provider<Jar>,
     val jvmArgs: ListProperty<String>,
     val programArgs: ListProperty<String>,
+    val jvmDebugPort: Property<Int>,
     val overwrite: Boolean = false,
     val eula: Provider<Boolean>? = null,
     val downloadTask: TaskProvider<out Task>? = null,

@@ -63,18 +63,13 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
                         """.trimIndent()
         )
         val shFile = dir.resolve("starter")
-        shFile.writeText(
-            """
-                            #!/usr/bin/env bash
-                            "$javaFilePath" $jvmArgsStr -jar "$jarFilePath" $programArgsStr
-                        """.trimIndent()
-        )
         try {
             Files.setPosixFilePermissions(
                 shFile.toPath(),
                 setOf(
                     PosixFilePermission.OWNER_EXECUTE,
                     PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.OWNER_WRITE,
                     PosixFilePermission.GROUP_EXECUTE,
                     PosixFilePermission.GROUP_READ,
                     PosixFilePermission.OTHERS_EXECUTE,
@@ -84,5 +79,11 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
         } catch (th: Throwable) {
             // ignore
         }
+        shFile.writeText(
+            """
+                            #!/usr/bin/env bash
+                            "$javaFilePath" $jvmArgsStr -jar "$jarFilePath" $programArgsStr
+                        """.trimIndent()
+        )
     }
 }

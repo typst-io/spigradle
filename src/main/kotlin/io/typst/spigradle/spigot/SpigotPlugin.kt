@@ -97,6 +97,7 @@ class SpigotPlugin : Plugin<Project> {
             project.tasks.named("jar", Jar::class.java),
             paperExt.jvmArgs,
             paperExt.programArgs,
+            paperExt.jvmDebugPort,
             false,
             paperExt.eula
         )

@@ -21,6 +21,7 @@ import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Delete
@@ -28,9 +29,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.gradle.ext.Remote
-import org.jetbrains.gradle.ext.runConfigurations
-import org.jetbrains.gradle.ext.settings
+import org.jetbrains.gradle.ext.*
 import java.io.File
 
 private fun escb(xs: String): String =
@@ -40,8 +39,53 @@ private fun escs(xs: String): String =
     xs.replace("'", "'\\''")
 
 internal object DebugTask {
+    internal fun findAvailableTerminal(workDir: String, scriptPath: String): List<String>? {
+        if (isCommandAvailable("gnome-terminal")) {
+            return listOf(
+                "gnome-terminal", "--", "bash", "-c",
+                "cd \"$workDir\" && \"$scriptPath\"; exec bash"
+            )
+        }
+        if (isCommandAvailable("konsole")) {
+            return listOf(
+                "konsole", "--hold", "-e", "bash", "-c",
+                "cd \"$workDir\" && \"$scriptPath\""
+            )
+        }
+        if (isCommandAvailable("xfce4-terminal")) {
+            return listOf(
+                "xfce4-terminal", "--hold", "-e",
+                "bash -c 'cd \"$workDir\" && \"$scriptPath\"'"
+            )
+        }
+        if (isCommandAvailable("xterm")) {
+            return listOf(
+                "xterm", "-hold", "-e", "bash", "-c",
+                "cd \"$workDir\" && \"$scriptPath\""
+            )
+        }
+        if (isCommandAvailable("x-terminal-emulator")) {
+            return listOf(
+                "x-terminal-emulator", "-e", "bash", "-c",
+                "cd \"$workDir\" && \"$scriptPath\"; exec bash"
+            )
+        }
+
+        return null
+    }
+
+    internal fun isCommandAvailable(command: String): Boolean {
+        return try {
+            val process = ProcessBuilder("which", command)
+                .redirectErrorStream(true)
+                .start()
+            process.waitFor() == 0
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
-        // TODO: download, copyPlugin, writeFile(eula.txt), JavaExec
         val archiveFile = ctx.jarTask.flatMap { it.archiveFile }
         val downloadTask = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
             project.tasks.register(ctx.downloadTaskName, Copy::class.java) {
@@ -72,15 +116,6 @@ internal object DebugTask {
 
             delete(ctx.getDownloadBaseDir(project))
         }
-        val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
-        ideaModel.project.settings {
-            runConfigurations {
-                create("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
-                    transport = Remote.RemoteTransport.SOCKET
-                    port = 5005
-                }
-            }
-        }
         val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
         val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
         val javaExe = project.providers.provider {
@@ -98,6 +133,34 @@ internal object DebugTask {
                 programArgs.set(ctx.programArgs)
                 jarFile.set(jar.map { it.asFile.absolutePath })
             }
+        val debugTasks = mutableListOf<TaskProvider<out Task>>()
+        if (downloadTask != null) {
+            debugTasks += downloadTask
+        }
+        debugTasks += copyArtifactJarTask
+        debugTasks += createJavaDebugScriptTask
+        val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
+        ideaModel.project.settings {
+            runConfigurations {
+                register("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
+                    transport = Remote.RemoteTransport.SOCKET
+                    port = ctx.jvmDebugPort.get()
+                }
+                register("Run${project.name.caseKebabToPascal()}", JarApplication::class.java) {
+                    jarPath = jar.get().asFile.absolutePath
+                    workingDirectory = ctx.getDebugDir(project).asFile.absolutePath
+                    jvmArgs = ctx.jvmArgs.get().joinToString(" ")
+                    programParameters = ctx.programArgs.get().joinToString(" ")
+                    beforeRun {
+                        for (task in debugTasks) {
+                            register(task.name, GradleTask::class.java) {
+                                this.task = task.get()
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return project.tasks.register(ctx.getRunDebugTaskName(project)) {
             group = ctx.taskGroupName
 
@@ -109,22 +172,28 @@ internal object DebugTask {
             val os = System.getProperty("os.name").lowercase()
             val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath
 
-            val cmds = if (os.startsWith("windows")) {
+            val cmds = if ("windows" in os) {
                 val scriptPath = File(debugDirPath, "starter.bat").absolutePath
-                val cmds = listOf(
+                listOf(
                     "cmd", "/c",
                     "start", "\"${project.name}\"",
                     "/D", debugDirPath,
                     scriptPath
                 )
-                cmds
-            } else {
+            } else if ("mac" in os) {
                 val scriptPath = File(debugDirPath, "starter").absolutePath
-                val cmds = listOf(
-                    "/bin/sh", "-c",
-                    "cd \"$debugDirPath\" && \"$scriptPath\" &"
-                )
-                cmds
+                // single quote 사용, single quote 자체는 이스케이프
+                val escapedDir = debugDirPath.replace("'", "'\\''")
+                val escapedScript = scriptPath.replace("'", "'\\''")
+                val appleScript = """
+                    tell application "Terminal"
+                        do script "cd '$escapedDir' && '$escapedScript'"
+                        activate
+                    end tell
+                """.trimIndent()
+                listOf("osascript", "-e", appleScript)
+            } else {
+                emptyList()
             }
 
             doFirst {
@@ -139,10 +208,37 @@ internal object DebugTask {
             }
 
             doLast {
-                val process = ProcessBuilder(cmds).inheritIO().start()
-                val processCode = process.waitFor()
-                if (processCode != 0) {
-                    throw GradleException("Process exit code: $processCode")
+                var theCmds = cmds
+                if (cmds.isEmpty()) {
+                    val scriptPath = File(debugDirPath, "starter").absolutePath
+
+                    val terminalCmd = findAvailableTerminal(debugDirPath, scriptPath)
+
+                    if (terminalCmd != null) {
+                        theCmds = terminalCmd
+                    } else {
+                        // nohup + setsid
+                        theCmds = listOf(
+                            "/bin/sh", "-c",
+                            "cd \"$debugDirPath\" && nohup setsid \"$scriptPath\" > /dev/null 2>&1 &"
+                        )
+                        logger.log(LogLevel.LIFECYCLE, "No terminal emulator found. Server started in background. You could also use the IDEA run configuration `Run\$ProjectName`.")
+                    }
+                }
+
+                val process = ProcessBuilder(theCmds)
+                    .directory(File(debugDirPath))
+                    .redirectErrorStream(true)
+                    .start()
+
+                val exited = process.waitFor(3, java.util.concurrent.TimeUnit.SECONDS)
+                if (exited) {
+                    val exitCode = process.exitValue()
+                    if (exitCode != 0) {
+                        throw GradleException("Process exit code: $exitCode")
+                    }
+                } else {
+                    logger.log(LogLevel.LIFECYCLE, "Server launched successfully.")
                 }
             }
         }
