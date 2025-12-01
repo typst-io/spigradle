@@ -230,8 +230,8 @@ configure<SpigotExtension> {
 
 ```groovy
 debugSpigot {
-    // task named `debugPaper`
-    // IDEA Run configuration named `DebugPaper`
+    // task named `debug$ProjectName`
+    // IDEA Run configuration named `Debug$ProjectName`/`Run$ProjectName`
     version.set("1.21.8")
     eula.set(true)
     // if you want to specify the port(default 5005):

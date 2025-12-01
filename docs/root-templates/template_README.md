@@ -51,10 +51,12 @@ spigot {
 }
 
 debugSpigot {
-    // run task named `debugPaper`
-    // debug run configuration named `DebugPaper`
+    // run task named `debug\$ProjectName`
+    // debug run configuration named `Debug\$ProjectName`/`Run\$ProjectName`
     version.set("1.21.8")
     eula.set(true)
+    // if you want to specify the port(default 5005):
+    // jvmDebugPort.set(int)
 }
 ```
 
