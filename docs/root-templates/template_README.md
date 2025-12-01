@@ -8,6 +8,8 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 
 [Here are migration tips for breaking changes](docs/spigot_plugin.md#3x---2x)
 
+[Ask any questions about Spigradle here](https://context7.com/typst-io/spigradle?tab=chat)
+
 # Benefits
 
 - [Description file](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
