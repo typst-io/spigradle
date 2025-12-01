@@ -8,7 +8,7 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides you to
 
 - Generate 'plugin.yml' with the main detected automatically
 
-- Debug feature: task `debug${ProjectName}`, idea Run Configuration `Debug${ProjectName}`
+- Debug feature: task `debug$ProjectName`, idea Run Configuration `Debug$ProjectName`/`Run$ProjectName`
 
 - Shortcuts for [dependency](../README.md#dependencies) and [repository](../README.md#repositories).
 
@@ -234,6 +234,8 @@ debugSpigot {
     // IDEA Run configuration named `DebugPaper`
     version.set("1.21.8")
     eula.set(true)
+    // if you want to specify the port(default 5005):
+    // jvmDebugPort.set(int)
 }
 ```
 
@@ -266,9 +268,11 @@ org.gradle.api.tasks
 
 *Depends on: `downloadPaper, preparePluginDependencies, createJavaDebugScript`
 
-Run the server with the project artifacts and it's dependencies.
+Run the server in a new terminal window with the project artifacts and its dependencies.
 
 To attach debugger, run the run configuration `Debug${ProjectName}` generated from Spigradle.
+
+Alternatively, you can use the IDEA run configuration `Run$ProjectName`, which lets you run the app and attach the debugger with just one click.
 
 The server path: `MY_PROJECT/.gradle/spigradle-debug/paper/`
 

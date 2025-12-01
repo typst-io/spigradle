@@ -78,10 +78,18 @@ The project publishes four Gradle plugins:
   - `downloadPaper` - Downloads server JAR
   - `preparePluginDependencies` - Downloads plugin dependencies
   - `copyArtifactJar` - Copies plugin JAR to debug folder
+  - `createJavaDebugScript` - Generates starter scripts for Windows/Unix
   - `cleanDebug${projectName}` - Cleans project debug folder
   - `cleanCache${platformName}` - Cleans global cache
+- IDEA Run Configurations:
+  - `Debug${projectName}` - Remote debug configuration (attaches to JVM debug port)
+  - `Run${projectName}` - JarApplication run configuration (runs server JAR directly)
 - Debug directory: `.gradle/spigradle-debug/${platform}`
 - Global cache: `$GRADLE_USER_HOME/spigradle-debug-jars/`
+- Debug Extension properties:
+  - `jvmDebugPort` - JVM debug port (default: 5005)
+  - `jvmArgs` - Custom JVM arguments
+  - `programArgs` - Custom program arguments
 
 #### Repository and Dependency Shortcuts
 - Defined in:
@@ -115,8 +123,10 @@ Located in `buildSrc/src/main/kotlin/`:
 - ASM 9.8 (bytecode manipulation)
 - SnakeYAML Engine 2.9 (YAML generation)
 - Gradle IDEA Ext 1.3 (IntelliJ run configurations)
+- Gradle Download Task 5.6.0 (downloading Paper/Spigot JARs)
 - Dokka 2.0.0 (API documentation)
 - JUnit 5.12.1 (testing with Gradle TestKit)
+- Spigot API 1.21.4-R0.1-SNAPSHOT (compile-only dependency)
 
 #### Compatibility
 - Gradle 8.0+ required
