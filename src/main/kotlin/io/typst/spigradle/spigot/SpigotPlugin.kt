@@ -35,7 +35,7 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  * Extensions:
  * - spigot([SpigotExtension]): extension for spigot environment
  * - debugSpigot([DebugExtension]): extension for spigot(paper) debug
- *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name}`
+ *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005`
  *     - programArgs: defaults to `nogui`
  *
  * Plugins:
@@ -84,8 +84,8 @@ class SpigotPlugin : Plugin<Project> {
 
     private fun Project.setupSpigotDebug() {
         val paperExt = extensions.create("debugSpigot", DebugExtension::class.java).apply {
-            jvmArgs.convention(provider {
-                listOf("-agentlib:jdwp=transport=dt_shmem,server=y,suspend=n,address=${project.name}")
+            jvmArgs.convention(jvmDebugPort.map { port ->
+                listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${port}")
             })
             programArgs.convention(listOf("nogui"))
         }

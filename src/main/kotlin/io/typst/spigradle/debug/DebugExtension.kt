@@ -31,6 +31,7 @@ import org.gradle.api.provider.Property
 open class DebugExtension(project: Project) {
     val version: Property<String> = project.objects.property(String::class.java)
     val eula: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    val jvmDebugPort: Property<Int> = project.objects.property(Int::class.java).convention(5005)
     val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
     val jvmArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
     val programArgs: ListProperty<String> = project.objects.listProperty(String::class.java)

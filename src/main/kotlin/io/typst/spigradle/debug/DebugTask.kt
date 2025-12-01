@@ -76,8 +76,8 @@ internal object DebugTask {
         ideaModel.project.settings {
             runConfigurations {
                 create("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
-                    transport = Remote.RemoteTransport.SHARED_MEM
-                    sharedMemoryAddress = project.name
+                    transport = Remote.RemoteTransport.SOCKET
+                    port = 5005
                 }
             }
         }
@@ -119,10 +119,12 @@ internal object DebugTask {
                 )
                 cmds
             } else {
-                val debugDirEscaped = escs(debugDirPath)
-                val script =
-                    "cd '$debugDirEscaped' && ./starter"
-                listOf("sh", "-lc", script)
+                val scriptPath = File(debugDirPath, "starter").absolutePath
+                val cmds = listOf(
+                    "/bin/sh", "-c",
+                    "cd \"$debugDirPath\" && \"$scriptPath\" &"
+                )
+                cmds
             }
 
             doFirst {
