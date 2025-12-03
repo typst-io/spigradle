@@ -11,7 +11,7 @@ Spigradle is a Gradle plugin for developing Spigot, Bungeecord, and NukkitX plug
 ### Building and Testing
 ```bash
 # Build the project
-./gradlew build
+./gradlew assemble
 
 # Run all tests (runs with 4 parallel forks)
 ./gradlew test
@@ -56,13 +56,22 @@ The project publishes four Gradle plugins:
 ### Core Components
 
 #### Main Class Detection
-- Uses ASM 9.8 to scan compiled bytecode
-- Detects subclasses of `org/bukkit/plugin/java/JavaPlugin`, BungeeCord Plugin, or Nukkit Plugin
+- Uses ASM 9.8 to scan compiled bytecode with optimized flags (`SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES`)
 - Task: `SubclassDetection` in `src/main/kotlin/io/typst/spigradle/SubclassDetection.kt`
+- Detection targets by platform:
+  - Spigot: `org/bukkit/plugin/java/JavaPlugin`
+  - BungeeCord: `net/md_5/bungee/api/plugin/Plugin`
+  - NukkitX: `cn/nukkit/plugin/PluginBase`
+- Detection algorithm:
+  1. Scans all `.class` files, extracts class name, superclass, interfaces, and modifiers
+  2. Builds directed graph of inheritance relationships in `DetectionContext`
+  3. Traverses graph to find classes that inherit from platform base class
+  4. Filters to find non-abstract, public class as main class
+  5. Writes result to output file in dot notation (e.g., `com.example.MyPlugin`)
 - Detection framework in `src/main/kotlin/io/typst/spigradle/detection/`
-  - `ClassDefinition.kt` - Represents class metadata
-  - `DetectionContext.kt` - Manages detection state
-  - `DirectedGraph.kt` - Graph utilities for class hierarchy
+  - `ClassDefinition.kt` - Represents class metadata (name, superclass, interfaces, modifiers)
+  - `DetectionContext.kt` - Manages detection state and inheritance graph
+  - `DirectedGraph.kt` - Graph utilities for class hierarchy traversal
 
 #### YAML Generation
 - Task: `YamlGenerate` in `src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
@@ -74,7 +83,7 @@ The project publishes four Gradle plugins:
 - Downloads Paper/Spigot server automatically via `PaperDownloadTask`
 - Creates IntelliJ IDEA run configurations using `gradle-idea-ext` plugin
 - Tasks created:
-  - `debug${projectName}` - Main debug task
+  - `debug${projectName}` - Main debug task (launches server in new terminal)
   - `downloadPaper` - Downloads server JAR
   - `preparePluginDependencies` - Downloads plugin dependencies
   - `copyArtifactJar` - Copies plugin JAR to debug folder
@@ -82,8 +91,12 @@ The project publishes four Gradle plugins:
   - `cleanDebug${projectName}` - Cleans project debug folder
   - `cleanCache${platformName}` - Cleans global cache
 - IDEA Run Configurations:
-  - `Debug${projectName}` - Remote debug configuration (attaches to JVM debug port)
-  - `Run${projectName}` - JarApplication run configuration (runs server JAR directly)
+  - `Debug${projectName}` ⭐ **Recommended** - Remote JVM Debug configuration
+    - Lightweight: Server runs in separate terminal, IDE stays responsive
+    - Workflow: Run `debug${projectName}` task first, then attach debugger
+  - `Run${projectName}` - JarApplication run configuration
+    - Heavy: Server process managed by IDE, increases memory usage
+    - Use only when absolute convenience is needed
 - Debug directory: `.gradle/spigradle-debug/${platform}`
 - Global cache: `$GRADLE_USER_HOME/spigradle-debug-jars/`
 - Debug Extension properties:
@@ -160,6 +173,12 @@ All new source files must include:
 - Edit templates in `docs/templates/` or `docs/root-templates/`
 - Run `./gradlew updateTemplateDocs` after changes
 - Generated files include edit warning comment
+- Key documentation files:
+  - `docs/templates/template_spigot_plugin.md` - Spigot plugin guide
+  - `docs/templates/template_bungeecord_plugin.md` - BungeeCord plugin guide
+  - `docs/templates/template_nukkit_plugin.md` - NukkitX plugin guide
+  - `docs/templates/template_multimodule.md` - Multi-module project guide
+  - `docs/templates/template_README.md` - Main README template
 
 ## Test Structure
 

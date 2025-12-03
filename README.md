@@ -41,7 +41,7 @@ spigot {
     apiVersion = '1.21'
 }
 
-debugSpigot { // task debug$ProjectName
+debugSpigot { // extension for debug${ProjectName} task
     version.set("1.21.8")
     eula.set(true)
 }
