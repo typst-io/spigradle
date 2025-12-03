@@ -72,6 +72,12 @@ tasks {
                 into(project.rootDir)
                 configure()
             }
+            copy {
+                from(project.layout.buildDirectory.map {
+                    it.asFile.resolve("dokka").resolve("html")
+                })
+                into(docsDir.resolve("dokka"))
+            }
         }
     }
 
