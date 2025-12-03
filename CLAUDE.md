@@ -205,6 +205,9 @@ Tests use Gradle TestKit for functional testing:
 - Extensions use Gradle Property API for lazy evaluation
 - `spigot { }`, `debugSpigot { }`, `bungee { }`, `nukkit { }` blocks in build files
 - Configuration encoded to YAML via `encodeToMap()` methods
+- **Important:** `debugSpigot` is an EXTENSION (configuration block), NOT a task
+  - The actual debug task is named `debug${ProjectName}` (e.g., `debugMyPlugin`)
+  - `debugSpigot { }` configures the debug task, but is not itself executable
 
 ### Task Registration
 - Uses `project.tasks.register()` for lazy task creation

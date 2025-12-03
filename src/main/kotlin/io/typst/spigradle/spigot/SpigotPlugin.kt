@@ -32,9 +32,9 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
 /**
  * A Spigot plugin that provides:
  *
- * Extensions:
+ * Extensions (configuration blocks, NOT tasks):
  * - spigot([SpigotExtension]): extension for the Spigot environment
- * - debugSpigot([DebugExtension]): extension for Spigot (Paper) debugging
+ * - debugSpigot([DebugExtension]): extension for Spigot (Paper) debugging (configures `debug${ProjectName}` task)
  *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}`
  *     - programArgs: defaults to `nogui`
  *

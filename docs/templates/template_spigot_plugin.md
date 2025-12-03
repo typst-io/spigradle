@@ -135,7 +135,7 @@ For more details, see the [Main Class Detection](../README.md#main-class-detecti
 
 ## Configuration
 
-### spigot - [SpigotExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
+### spigot extension - [SpigotExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
 
 The description of your plugin for a `plugin.yml`.
 
@@ -223,12 +223,14 @@ configure<SpigotExtension> {
 
 </details>
 
-### debugSpigot - [DebugExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
+### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
+
+> **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debug\${ProjectName}` (e.g., `debugMyPlugin`).
 
 ```groovy
 debugSpigot {
-    // task named `debug\$ProjectName`
-    // IDEA Run configuration named `Debug\$ProjectName`/`Run\$ProjectName`
+    // This extension configures the debug\${ProjectName} task
+    // and IDEA Run configurations: Debug\${ProjectName}, Run\${ProjectName}
     version.set("1.21.8")
     eula.set(true)
     // if you want to specify the port(default 5005):
@@ -304,7 +306,7 @@ Spigradle automatically creates two run configurations:
 
 **Configuration:**
 
-See [debugSpigot](#debugspigot---debugextension) for configuration options like version, EULA acceptance, JVM arguments, and debug port.
+See [debugSpigot extension](#debugspigot-extension---debugextension) for configuration options like version, EULA acceptance, JVM arguments, and debug port.
 
 ## Why not spigot-annotations?
 

@@ -23,6 +23,9 @@ import org.gradle.api.provider.Property
 /**
  * Configuration extension for the Spigot debug system.
  *
+ * **Important:** `debugSpigot` is a configuration extension block, NOT a Gradle task.
+ * The actual task that runs the debug server is named `debug${ProjectName}` (e.g., `debugMyPlugin`).
+ *
  * This extension allows you to configure the local Paper/Spigot server used for debugging
  * your plugin. It controls server download, EULA acceptance, JVM settings, and debug options.
  *
@@ -35,6 +38,11 @@ import org.gradle.api.provider.Property
  *     jvmArgs.add("-Xmx2G")
  *     programArgs.add("--nogui")
  * }
+ * ```
+ *
+ * **Running the debug server:**
+ * ```bash
+ * ./gradlew debugMyPlugin  // NOT debugSpigot!
  * ```
  *
  * **Note:** To add custom arguments while keeping defaults:

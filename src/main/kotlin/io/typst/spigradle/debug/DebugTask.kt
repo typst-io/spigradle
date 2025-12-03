@@ -88,6 +88,9 @@ internal object DebugTask {
     /**
      * Registers debug-related tasks and IntelliJ IDEA run configurations.
      *
+     * **Important:** There is NO task named `debugSpigot`. The `debugSpigot { }` block in build files
+     * is a configuration extension ([DebugExtension]). The actual debug task is named `debug${ProjectName}`.
+     *
      * ## Tasks Created
      *
      * - **`download${PlatformName}`** (optional) - [io.typst.spigradle.DownloadTask] or [Copy]
