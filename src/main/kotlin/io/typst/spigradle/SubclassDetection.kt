@@ -33,7 +33,53 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Finds the main class that extends the given super-class.
+ * Finds the main class that extends the given super-class using bytecode analysis.
+ *
+ * This task uses ASM (a bytecode manipulation framework) to scan compiled `.class` files
+ * and detect which class extends or implements a specified super-class. It's primarily
+ * used to automatically detect plugin main classes (e.g., classes extending `JavaPlugin`
+ * for Spigot, `Plugin` for BungeeCord).
+ *
+ * ## How it works
+ *
+ * The task performs the following steps:
+ *
+ * 1. **Bytecode Scanning**: Scans all `.class` files in [classDirectories] using ASM's [ClassReader]
+ *    - Uses optimized flags: `SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES` for faster processing
+ *    - Only extracts class metadata (name, superclass, access modifiers)
+ *
+ * 2. **Class Hierarchy Building**: For each class file, [SubclassDetector] visitor extracts:
+ *    - Class name (e.g., `com/example/MyPlugin`)
+ *    - Superclass name (e.g., `org/bukkit/plugin/java/JavaPlugin`)
+ *    - Access modifiers (public, abstract, final, etc.)
+ *
+ * 3. **Detection Context**: All discovered classes are registered in [DetectionContext],
+ *    which maintains a directed graph of class inheritance relationships
+ *
+ * 4. **Main Class Resolution**: Uses `DetectionContext.findMainClass(parentName)` to find
+ *    a valid subclass by traversing the inheritance graph:
+ *    - Must be a non-abstract, public class
+ *    - Must directly or indirectly extend/implement [superClassName]
+ *    - Prefers direct subclasses over deeper inheritance
+ *
+ * 5. **Result Writing**: The fully-qualified class name (in dot notation, e.g.,
+ *    `com.example.MyPlugin`) is written to [outputFile]
+ *
+ * ## Incremental Processing
+ *
+ * This task supports Gradle's incremental build feature. It processes only changed
+ * `.class` files and stops scanning early once a valid main class is found.
+ *
+ * ## Usage in Spigradle
+ *
+ * Spigradle automatically registers this task for each platform:
+ * - Spigot: Detects subclasses of `org/bukkit/plugin/java/JavaPlugin`
+ * - BungeeCord: Detects subclasses of `net/md_5/bungee/api/plugin/Plugin`
+ * - NukkitX: Detects subclasses of `cn/nukkit/plugin/PluginBase`
+ *
+ * The detected main class is then used in `plugin.yml`/`bungee.yml` generation.
+ *
+ * ## Example Usage
  *
  * Groovy Example:
  *
@@ -47,18 +93,19 @@ import java.util.concurrent.atomic.AtomicReference
  * }
  * ```
  *
- * ```kotiln
+ * Kotlin Example:
+ *
+ * ```kotlin
  * import io.typst.spigradle.SubclassDetection
  *
  * tasks {
- *   val findSubclass(type: SubclassDetection) {
+ *   val findSubclass by registering(SubclassDetection::class) {
  *     superClassName.set("com.my.sample.SuperType")
  *     classDirectories.from(sourceSets["main"].output.classesDirs)
  *     outputFile.set(file("result.txt"))
  *   }
  * }
  * ```
- *
  * @since 1.3.0
  */
 open class SubclassDetection : DefaultTask() {
@@ -88,6 +135,7 @@ open class SubclassDetection : DefaultTask() {
 
     @TaskAction
     fun inspect(inputChanges: InputChanges) {
+        // TODO: read byte array instead of ASM?
         val contextR = AtomicReference(DetectionContext())
         val options = ClassReader.SKIP_CODE and ClassReader.SKIP_DEBUG and ClassReader.SKIP_FRAMES
 

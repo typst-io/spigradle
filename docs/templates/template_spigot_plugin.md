@@ -2,7 +2,7 @@
 
 doc: [SpigotPlugin.kt](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
 
-The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides you to:
+The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the following features:
 
 - Generate 'plugin.yml' with the main detected automatically
 
@@ -114,9 +114,24 @@ You can configure all properties of `plugin.yml` in [spigot {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class
-extends [JavaPlugin]((https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html)), and set the '
-main' property to the class found.
+The plugin automatically detects your main plugin class using bytecode analysis (ASM). It scans compiled `.class` files to find classes that extend [JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
+
+**How it works:**
+- Scans compiled bytecode (not source code) for faster and more reliable detection
+- Finds non-abstract, public classes extending `org.bukkit.plugin.java.JavaPlugin`
+- Supports complex inheritance hierarchies
+- Incremental: only scans changed files for faster builds
+- Automatically sets the `main` property in `plugin.yml`
+
+**Manual override:**
+If you need to manually specify the main class:
+```groovy
+spigot {
+    main.set("com.example.MyCustomMain")
+}
+```
+
+For more details, see the [Main Class Detection](../README.md#main-class-detection) section.
 
 ## Configuration
 
@@ -236,21 +251,60 @@ extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bu
 *Depends on: `detectSpigotMain`*
 
 Generates the description file 'plugin.yml'.
-org.gradle.api.tasks
 
 ### `debug\${ProjectName}` - [Exec](https://docs.gradle.org/current/javadoc/org/gradle/api/DefaultTask.html)
 
-*Depends on: `downloadPaper, preparePluginDependencies, createJavaDebugScript`
+*Depends on: `downloadPaper`, `preparePluginDependencies`, `createJavaDebugScript`*
 
-Run the server in a new terminal window with the project artifacts and its dependencies.
+Runs a local Paper server with your plugin for debugging. This task orchestrates the complete debug workflow:
 
-To attach debugger, run the run configuration `Debug\${ProjectName}` generated from Spigradle.
+**What it does:**
 
-Alternatively, you can use the IDEA run configuration `Run\$ProjectName`, which lets you run the app and attach the debugger with just one click.
+1. **Downloads Paper server** (via `downloadPaper`) - Fetches the specified Paper version from PaperMC API if not already cached
+2. **Prepares plugin dependencies** (via `preparePluginDependencies`) - Resolves plugins listed in `depends`/`softDepends`:
+  - First tries to copy from your project's `compileClasspath`
+  - Falls back to downloading from SpigotMC (via Spiget API) if not found
+3. **Copies your plugin JAR** (via `copyArtifactJar`) - Copies the built plugin to the debug server's plugins folder
+4. **Creates starter scripts** (via `createJavaDebugScript`) - Generates platform-specific scripts:
+  - `starter.bat` for Windows
+  - `starter` for Unix/Linux/Mac
+5. **Launches the server** - Opens a new terminal window and runs the server
 
-The server path: `MY_PROJECT/.gradle/spigradle-debug/paper/`
+**IntelliJ IDEA Run Configurations:**
 
-The paper.jar path: `GRADLE_USER_HOME/spigradle-debug-jars/paper/VERSION/paper.jar`
+Spigradle automatically creates two run configurations:
+
+1. **`Debug\${ProjectName}` - Remote JVM Debug** ⭐ **Recommended**
+   - **Type:** Remote JVM Debug configuration
+   - **Purpose:** Attaches debugger to an already-running server process
+   - **Recommended workflow:**
+     1. Run `debug\${ProjectName}` task via IntelliJ's terminal or "Run Gradle Task"
+     2. Server starts in a new terminal window with remote debugging enabled on port 5005
+     3. Click the "🐞 Debug" button on this configuration to attach the debugger
+   - **Advantages:**
+     - **Keeps IntelliJ lightweight** - server runs in separate terminal, not managed by IDE
+     - Clean separation between server output and IDE
+     - Better performance - IDE doesn't handle server I/O
+   - **When to use:** Standard debugging workflow (recommended for regular use)
+
+2. **`Run\${ProjectName}` - JarApplication**
+   - **Type:** JarApplication run configuration
+   - **Purpose:** All-in-one server launch directly from IntelliJ
+   - **Usage:**
+     - Click the "▶ Run" button to start the server normally
+     - Click the "🐞 Debug" button to start the server AND attach debugger in one step
+   - **Note:** Makes IntelliJ heavier as it manages the server process directly
+   - **When to use:** Only when you want absolute convenience and don't mind the performance impact
+
+**Directory structure:**
+
+- Server directory: `MY_PROJECT/.gradle/spigradle-debug/paper/`
+- Global JAR cache: `GRADLE_USER_HOME/spigradle-debug-jars/paper/VERSION/paper.jar`
+- Plugin dependencies: `MY_PROJECT/.gradle/spigradle-debug/paper/plugins/`
+
+**Configuration:**
+
+See [debugSpigot](#debugspigot---debugextension) for configuration options like version, EULA acceptance, JVM arguments, and debug port.
 
 ## Why not spigot-annotations?
 
@@ -281,7 +335,7 @@ Replacement on build.gradle:
 
 ```groovy
 spigot {
-    // The 'name' and 'version' will be set to project.version and project.name, 
+    // The 'name' and 'version' will be set to project.version and project.name,
     // But we may set those manually for the example
     name.set('Manual name')
     version.set('Manual version')

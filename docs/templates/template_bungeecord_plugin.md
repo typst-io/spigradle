@@ -1,8 +1,8 @@
 # Bungeecord Plugin
 
-The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin provides you to:
+The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin allows you to:
 
-- Generate 'plugin.yml' with less configuration.
+- Generate 'bungee.yml' with less configuration.
 
 - Shortcuts for dependency and repository.
 
@@ -97,7 +97,24 @@ You can configure all properties of `plugin.yml` in [bungee {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html), and set the 'main' property to the class found.
+The plugin automatically detects your main plugin class using bytecode analysis (ASM). It scans compiled `.class` files to find classes that extend [Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
+
+**How it works:**
+- Scans compiled bytecode (not source code) for faster and more reliable detection
+- Finds non-abstract, public classes extending `net.md_5.bungee.api.plugin.Plugin`
+- Supports complex inheritance hierarchies
+- Incremental: only scans changed files for faster builds
+- Automatically sets the `main` property in `bungee.yml`
+
+**Manual override:**
+If you need to manually specify the main class:
+```groovy
+bungee {
+    main.set("com.example.MyCustomMain")
+}
+```
+
+For more details, see the [Main Class Detection](../README.md#main-class-detection) section.
 
 ## Configuration
 
@@ -182,7 +199,7 @@ Kotlin with property delegation
 
 ```kotlin
 tasks {
-    val runBungee by existing(JavaExec::clas) {
+    val runBungee by existing(JavaExec::class) {
         jvmArgs("-Xmx8G")
     }
     // Do something with 'runBungee'

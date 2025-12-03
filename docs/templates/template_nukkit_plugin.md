@@ -1,6 +1,6 @@
 # Nukkit Plugin
 
-The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin provides you to:
+The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin allows you to:
 
 - Generate 'plugin.yml' with less configuration.
 
@@ -97,7 +97,24 @@ You can configure all properties of `plugin.yml` in [nukkit {} block](#configura
 
 ## Main class detection
 
-The plugin automatically finds the main class extends [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html), and set the 'main' property to the class found.
+The plugin automatically detects your main plugin class using bytecode analysis (ASM). It scans compiled `.class` files to find classes that extend [PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
+
+**How it works:**
+- Scans compiled bytecode (not source code) for faster and more reliable detection
+- Finds non-abstract, public classes extending `cn.nukkit.plugin.PluginBase`
+- Supports complex inheritance hierarchies
+- Incremental: only scans changed files for faster builds
+- Automatically sets the `main` property in `plugin.yml`
+
+**Manual override:**
+If you need to manually specify the main class:
+```groovy
+nukkit {
+    main.set("com.example.MyCustomMain")
+}
+```
+
+For more details, see the [Main Class Detection](../README.md#main-class-detection) section.
 
 ## Configuration
 
@@ -223,7 +240,7 @@ Kotlin with property delegation
 
 ```kotlin
 tasks {
-    val runNukkit by existing(JavaExec::clas) {
+    val runNukkit by existing(JavaExec::class) {
         jvmArgs("-Xmx8G")
     }
     // Do something with 'runNukkit'

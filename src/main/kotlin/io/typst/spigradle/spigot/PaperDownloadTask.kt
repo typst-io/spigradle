@@ -28,15 +28,45 @@ import org.gradle.api.tasks.TaskAction
 import java.net.URI
 import java.nio.file.Files
 
+/**
+ * Downloads a Paper (or Spigot) server JAR from PaperMC's download API.
+ *
+ * This task automates the process of downloading a specific version of the Paper server
+ * for local development and debugging. It performs the following steps:
+ *
+ * 1. Queries the PaperMC API at `https://fill.papermc.io/v3/projects/paper/versions/{version}/builds`
+ *    to get the list of available builds for the specified version
+ * 2. Selects the first (latest stable) build from the response
+ * 3. Extracts the download URL for the server JAR
+ * 4. Downloads the JAR file and writes it to the configured output location
+ *
+ * The downloaded JAR is cached in the global Spigradle cache directory
+ * (`$GRADLE_USER_HOME/spigradle-debug-jars/`) and used by the debug system to run
+ * a local server for plugin testing.
+ *
+ * @throws IllegalStateException if the API response doesn't match the expected schema
+ * @see io.typst.spigradle.debug.DebugTask
+ */
 open class PaperDownloadTask : DefaultTask() {
     init {
         group = "spigradle debug"
         description = "Download a paper stable jar"
     }
 
+    /**
+     * The Minecraft version to download (e.g., "1.21.4", "1.20.6").
+     *
+     * This version string is used to query the PaperMC API for available builds.
+     */
     @get:Input
     val version: Property<String> = project.objects.property(String::class.java)
 
+    /**
+     * The output file location where the downloaded Paper JAR will be saved.
+     *
+     * Typically points to the global Spigradle cache directory at
+     * `$GRADLE_USER_HOME/spigradle-debug-jars/`.
+     */
     @get:OutputFile
     val outputFile: RegularFileProperty = project.objects.fileProperty()
 

@@ -43,7 +43,6 @@ import java.nio.charset.Charset
  * task generateYaml(type: YamlGenerate) {
  *   properties.put('someProperty', 'AnyTypeOfValue')
  *   encoding = 'UTF-16'
- *   yamlOptions.put('WRITE_DOC_START_MARKER', true)
  *   outputFiles.from file('result.yml')
  * }
  * ```
@@ -57,7 +56,6 @@ import java.nio.charset.Charset
  *   val generateYaml by registering(YamlGenerate) {
  *     properties.put("someProperty", "AnyTypeOfValue")
  *     encoding.set("UTF-16")
- *     yamlOptions.put("WRITE_DOC_START_MARKER", true)
  *     outputFiles.from(file("result.yml"))
  *   }
  * }

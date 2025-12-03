@@ -66,7 +66,7 @@ The project publishes four Gradle plugins:
 
 #### YAML Generation
 - Task: `YamlGenerate` in `src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
-- Generates `plugin.yml`, `bungee.yml`, or `nukkit.yml`
+- Generates `plugin.yml`(for Spigot, Nukkit), `bungee.yml`
 - Uses SnakeYAML Engine 2.9 for serialization
 - Each extension provides `encodeToMap()` to convert configuration to YAML
 

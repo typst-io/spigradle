@@ -37,14 +37,35 @@ import java.nio.file.Files
 import java.util.jar.JarInputStream
 
 /**
- * Prepare plugin dependencies:
+ * Prepares plugin dependencies for the debug server environment.
  *
- * 1. Copy it from the classpath configured in Gradle(e.g. JAR file dependency),
- * 2. Or download it by searching for the most popular resource on SpigotMC
+ * This task automatically resolves and provisions plugin dependencies needed by the Spigot plugin
+ * being developed. It attempts to acquire each dependency plugin through two methods:
  *
- * Into `outputDir` (e.g. plugins), as `name.jar` (the name defined in plugin.yml).
+ * 1. **From Gradle classpath**: If the dependency is already configured in the project's
+ *    `compileClasspath` as a JAR artifact, it will be copied directly.
+ * 2. **From SpigotMC**: If not found in the classpath, the task searches for the plugin on
+ *    SpigotMC (via the Spiget API) and downloads the most popular matching resource.
  *
- * This task does not overwrite existing files; you can also place the file manually.
+ * Each dependency is saved into the [outputDir] (typically `plugins/`) with the filename
+ * `{name}.jar`, where `{name}` matches the plugin name declared in its `plugin.yml`.
+ *
+ * **Execution flow:**
+ * 1. Skips execution if no plugin names are configured
+ * 2. Skips execution if all plugin JARs already exist in [outputDir]
+ * 3. Scans the project's `compileClasspath` to find JARs with matching plugin.yml names
+ * 4. For each plugin in [pluginNames]:
+ *    - Skips if the file already exists
+ *    - Copies from classpath if found there
+ *    - Otherwise, searches SpigotMC via Spiget API and downloads the most popular match
+ *    - Validates the downloaded plugin.yml name matches the expected name
+ *    - Logs SUCCESS, SKIPPED, or FAILED status for each plugin
+ *
+ * **Important behaviors:**
+ * - This task does NOT overwrite existing files; you can manually place plugin JARs if needed
+ * - Plugin names are sourced from the `depends` and `softDepends` configuration in your plugin.yml
+ * - The task validates that downloaded plugins have the correct name in their plugin.yml
+ * - Uses the `compileClasspath` configuration to search for plugin JARs
  */
 open class PluginDependencyPrepareTask : DefaultTask() {
     init {
@@ -52,9 +73,22 @@ open class PluginDependencyPrepareTask : DefaultTask() {
         description = "Prepare plugin dependencies"
     }
 
+    /**
+     * List of plugin names to prepare (e.g., `["Vault", "WorldEdit"]`).
+     *
+     * These names should match the plugin names defined in each dependency's `plugin.yml`.
+     * Typically populated from the `depends` and `softDepends` configuration of the
+     * project's Spigot plugin.
+     */
     @get:Input
     val pluginNames: ListProperty<String> = project.objects.listProperty(String::class.java)
 
+    /**
+     * The output directory where plugin dependency JARs will be placed.
+     *
+     * This is typically the `plugins/` directory in the debug server folder
+     * (e.g., `.gradle/spigradle-debug/spigot/plugins/`).
+     */
     @get:OutputDirectory
     val outputDir: DirectoryProperty = project.objects.directoryProperty()
 

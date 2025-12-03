@@ -30,31 +30,46 @@ import org.gradle.kotlin.dsl.getByName
 import org.jetbrains.gradle.ext.IdeaExtPlugin
 
 /**
- * The Spigot plugin that adds:
+ * A Spigot plugin that provides:
  *
  * Extensions:
- * - spigot([SpigotExtension]): extension for spigot environment
- * - debugSpigot([DebugExtension]): extension for spigot(paper) debug
- *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005`
+ * - spigot([SpigotExtension]): extension for the Spigot environment
+ * - debugSpigot([DebugExtension]): extension for Spigot (Paper) debugging
+ *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}`
  *     - programArgs: defaults to `nogui`
  *
  * Plugins:
- * - `io.typst.spigradle.base`([SpigradlePlugin][io.typst.spigradle.SpigradlePlugin]): base plugin
- * - `org.jetbrains.gradle.plugin.idea-ext`([IdeaExtPlugin]): idea ext plugin for generating the `Run Configuration`
+ * - `io.typst.spigradle.base`([io.typst.spigradle.SpigradlePlugin]): base plugin
+ * - `org.jetbrains.gradle.plugin.idea-ext`([IdeaExtPlugin]): IDEA extension plugin for generating `Run Configuration`s
  *
  * Tasks:
- * - generatePluginYaml([YamlGenerate][io.typst.spigradle.YamlGenerate]): task for the 'plugin.yml' generation.
- * - detectSpigotMain([SubclassDetection][io.typst.spigradle.SubclassDetection]): task for the main-class detection.
+ * - generateSpigotDescription([io.typst.spigradle.YamlGenerate]): task to generate `plugin.yml`.
+ * - detectSpigotMain([io.typst.spigradle.SubclassDetection]): task to detect the main class.
  *
- * Tasks for debug:
- * - `debug${project.name.caseKebabToPascal()}`([Task][org.gradle.api.Task]): task for the debug jar with the server platform(paper). the debug dir is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
- * - `cleanDebug${project.name.caseKebabToPascal()}`([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug dir
- * - `cleanCache${platformName}`([Delete][org.gradle.api.tasks.Delete]): task to clean the global cache paper.jar
+ * Tasks for debugging:
+ * - `debug${project.name.caseKebabToPascal()}`([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
+ *     - dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript
+ * - `cleanDebug${project.name.caseKebabToPascal()}`([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
+ * - `cleanCachePaper`([Delete][org.gradle.api.tasks.Delete]): task to clean the global cached `paper.jar` file
  *
- * Trivial tasks for debug:
- * - `preparePluginDependencies`([PluginDependencyPrepareTask]): task for download the plugin dependencies.
- * - `copyArtifactJar`([Copy][org.gradle.api.tasks.Copy]): task to copy the project artifact jar
- * - `downloadPaper`([PaperDownloadTask]): task to download latest build of the version. the download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar
+ * Trivial tasks for debugging:
+ * - `preparePluginDependencies`([PluginDependencyPrepareTask]): task to download the plugin dependencies
+ * - `copyArtifactJar`([org.gradle.api.tasks.Copy]): task to copy the project artifact JAR
+ * - `downloadPaper`([PaperDownloadTask]): task to download the latest build of the version. The download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar`
+ * - `createJavaDebugScript`([io.typst.spigradle.debug.CreateJavaDebugScriptTask]): writes a script file to run the server on Windows/Unix
+ *
+ *
+ *
+ * IDEA run configurations:
+ * - `Debug$ProjectName`: `Remote JVM Debug` configuration
+ *     - port: [DebugExtension.jvmDebugPort]
+ * - `Run$ProjectName`: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
+ *     - beforeRun: gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`
+ *
+ * Groovy extensions:
+ * - POST_WORLD: Load.POST_WORLD
+ * - POSTWORLD: Load.POST_WORLD
+ * - STARTUP: Load.STARTUP
  */
 class SpigotPlugin : Plugin<Project> {
     companion object {

@@ -85,6 +85,78 @@ internal object DebugTask {
         }
     }
 
+    /**
+     * Registers debug-related tasks and IntelliJ IDEA run configurations.
+     *
+     * ## Tasks Created
+     *
+     * - **`download${PlatformName}`** (optional) - [io.typst.spigradle.DownloadTask] or [Copy]
+     *   - Downloads or copies the platform server JAR
+     *
+     * - **`copyArtifactJar`** - [Copy]
+     *   - Copies your plugin JAR to the debug server's plugins folder
+     *
+     * - **`cleanDebug${ProjectName}`** - [Delete]
+     *   - Cleans the project-specific debug folder at `.gradle/spigradle-debug/${platform}`
+     *
+     * - **`cleanCache${PlatformName}`** - [Delete]
+     *   - Cleans the global JAR cache at `$GRADLE_USER_HOME/spigradle-debug-jars/`
+     *
+     * - **`createJavaDebugScript`** - [CreateJavaDebugScriptTask]
+     *   - Generates platform-specific starter scripts (starter.bat/starter)
+     *
+     * - **`debug${ProjectName}`** - [Task]
+     *   - Main debug task that orchestrates the debug workflow
+     *   - **Dependencies:** `download${PlatformName}`, `copyArtifactJar`, `createJavaDebugScript`
+     *
+     * ## IntelliJ IDEA Run Configurations
+     *
+     * Two run configurations are automatically created:
+     *
+     * ### 1. `Debug${ProjectName}` - Remote JVM Debug Configuration ⭐ **Recommended**
+     *
+     * **Purpose:** Attach debugger to an already-running server (lightweight)
+     *
+     * **Recommended workflow:**
+     * 1. Run `debug${ProjectName}` task in a terminal or IntelliJ's "Run Gradle Task" window
+     * 2. Server starts in a new terminal window with remote debugging enabled (port 5005 by default)
+     * 3. Click the "Debug" button on the `Debug${ProjectName}` configuration to attach the debugger
+     *
+     * **Type:** Remote JVM Debug (connects to existing process)
+     *
+     * **Advantages:**
+     * - Keeps IntelliJ IDE lightweight (server runs in separate terminal)
+     * - Clean separation between server process and IDE
+     * - Server output visible in dedicated terminal
+     *
+     * **Configuration:**
+     * - Transport: Socket
+     * - Port: Value from `debugSpigot.jvmDebugPort` (default: 5005)
+     *
+     * ### 2. `Run${ProjectName}` - JarApplication Run Configuration
+     *
+     * **Purpose:** All-in-one server launch from IntelliJ (convenience over performance)
+     *
+     * **Usage:**
+     * - Click the "Run" button to start the server normally
+     * - Click the "Debug" button to start the server and attach debugger in one step
+     *
+     * **Type:** JarApplication (runs the server JAR directly from IntelliJ)
+     *
+     * **Note:** This makes IntelliJ heavier as it manages the server process directly.
+     * Use this only when you want absolute convenience and don't mind the performance impact.
+     *
+     * **Configuration:**
+     * - JAR Path: Downloaded server JAR
+     * - Working Directory: Debug server directory
+     * - JVM Args: Configured via `debugSpigot.jvmArgs`
+     * - Program Args: Configured via `debugSpigot.programArgs`
+     * - Before Run: Automatically executes download, copy, and script creation tasks
+     *
+     * @param project The Gradle project
+     * @param ctx Debug registration context with platform-specific settings
+     * @return TaskProvider for the main debug task
+     */
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
         val archiveFile = ctx.jarTask.flatMap { it.archiveFile }
         val downloadTask = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {

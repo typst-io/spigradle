@@ -26,9 +26,9 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 
 /**
- * Spigot configuration for the 'plugin.yml' description, and debug settings.
+ * Spigot configuration for the `plugin.yml` description.
  *
- * Groovy Example:
+ * Groovy example:
  * ```groovy
  * spigot {
  *   authors 'Me', 'Someone'
@@ -41,13 +41,13 @@ import org.gradle.kotlin.dsl.property
  *       aliases 'giv', 'i'
  *       description 'Give command.'
  *       permission 'test.foo'
- *       permissionMessage 'You do not have the permission!'
+ *       permissionMessage 'You do not have permission!'
  *       usage '/<command> [item] [amount]'
  *     }
  *   }
  *   permissions {
  *     'test.foo' {
- *       description 'Allows foo command'
+ *       description 'Allows the foo command'
  *       defaults 'true'
  *     }
  *     'test.*' {
@@ -62,7 +62,7 @@ import org.gradle.kotlin.dsl.property
  * }
  * ```
  *
- * Kotlin Example:
+ * Kotlin example:
  * ```kotlin
  * import io.typst.spigradle.Load
  *
@@ -77,13 +77,13 @@ import org.gradle.kotlin.dsl.property
  *       aliases = listOf("giv", "i")
  *       description = "Give command."
  *       permission = "test.foo"
- *       permissionMessage = "You do not have the permission!"
+ *       permissionMessage = "You do not have permission!"
  *       usage = "/<command> [item] [amount]"
  *     }
  *   }
  *   permissions {
  *     register("test.foo") {
- *       description = "Allows foo command"
+ *       description = "Allows the foo command"
  *       defaults = "true"
  *     }
  *     register("test.*") {
@@ -95,7 +95,12 @@ import org.gradle.kotlin.dsl.property
  * }
  * ```
  *
- * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+ * See also: https://www.spigotmc.org/wiki/plugin-yml/
+ *
+ * @property main Defaults to main class detected by the `detectSpigotMain` task ([io.typst.spigradle.SubclassDetection])
+ * @property name Defaults to `project.name.caseKebabToPascal()`
+ * @property version Defaults to `project.version`
+ * @property description Defaults to `project.description
  */
 //@JsonPropertyOrder(
 //    "main", "name", "version", "description", "website",
