@@ -1,6 +1,6 @@
 # Spigot plugin
 
-doc: [SpigotPlugin.kt](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
+kdoc(javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
 
 The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the following features:
 

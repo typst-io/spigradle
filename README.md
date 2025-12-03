@@ -24,7 +24,7 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ```groovy
 plugins {
-    id 'io.typst.spigradle' version '3.5.0'
+    id 'io.typst.spigradle' version '3.5.1'
 }
 
 repositories {
@@ -157,7 +157,7 @@ spigot {
 
 For a contributor, internal usage:
 
-- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/3.5.0/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
+- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/3.5.1/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
 - **Detection framework**: `io.typst.spigradle.detection` package
   - `ClassDefinition` - Represents class metadata
   - `DetectionContext` - Manages detection state and class graph
@@ -234,7 +234,7 @@ Spigradle provides shortcuts for common Minecraft plugin dependencies. Each shor
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:$version                      | 3.5.0   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                      | 3.5.1   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

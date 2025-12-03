@@ -174,6 +174,17 @@ internal object DebugTask {
             dependsOn(ctx.jarTask)
             from(archiveFile)
             into(ctx.getDebugArtifactDir(project))
+
+            doFirst {
+                if (ctx.eula?.get() == false) {
+                    throw GradleException("Please set 'eula.set(true)' in the debug extension!")
+                }
+                val debugDir = ctx.getDebugDir(project).asFile
+                if (ctx.eula?.get() == true) {
+                    val eulaTxt = debugDir.resolve("eula.txt")
+                    eulaTxt.writeText("eula=true")
+                }
+            }
         }
         val jar = ctx.getDownloadOutputFile(project)
         project.tasks.register("cleanDebug${project.name.caseKebabToPascal()}", Delete::class.java) {
@@ -266,17 +277,6 @@ internal object DebugTask {
                 listOf("osascript", "-e", appleScript)
             } else {
                 emptyList()
-            }
-
-            doFirst {
-                if (ctx.eula?.get() == false) {
-                    throw GradleException("Please set 'eula.set(true)' in the debug extension!")
-                }
-                val debugDir = ctx.getDebugDir(project).asFile
-                if (ctx.eula?.get() == true) {
-                    val eulaTxt = debugDir.resolve("eula.txt")
-                    eulaTxt.writeText("eula=true")
-                }
             }
 
             doLast {

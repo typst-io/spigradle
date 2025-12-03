@@ -39,31 +39,29 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  *     - programArgs: defaults to `nogui`
  *
  * Plugins:
- * - `io.typst.spigradle.base`([io.typst.spigradle.SpigradlePlugin]): base plugin
- * - `org.jetbrains.gradle.plugin.idea-ext`([IdeaExtPlugin]): IDEA extension plugin for generating `Run Configuration`s
+ * - io.typst.spigradle.base([io.typst.spigradle.SpigradlePlugin]): base plugin
+ * - org.jetbrains.gradle.plugin.idea-ext([IdeaExtPlugin]): IDEA extension plugin for generating `Run Configuration`s
  *
  * Tasks:
  * - generateSpigotDescription([io.typst.spigradle.YamlGenerate]): task to generate `plugin.yml`.
  * - detectSpigotMain([io.typst.spigradle.SubclassDetection]): task to detect the main class.
  *
  * Tasks for debugging:
- * - `debug${project.name.caseKebabToPascal()}`([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
+ * - debug${project.name.caseKebabToPascal()}([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
  *     - dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript
- * - `cleanDebug${project.name.caseKebabToPascal()}`([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
- * - `cleanCachePaper`([Delete][org.gradle.api.tasks.Delete]): task to clean the global cached `paper.jar` file
+ * - cleanDebug${project.name.caseKebabToPascal()}([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
+ * - cleanCachePaper([Delete][org.gradle.api.tasks.Delete]): task to clean the global cached `paper.jar` file
  *
  * Trivial tasks for debugging:
- * - `preparePluginDependencies`([PluginDependencyPrepareTask]): task to download the plugin dependencies
- * - `copyArtifactJar`([org.gradle.api.tasks.Copy]): task to copy the project artifact JAR
- * - `downloadPaper`([PaperDownloadTask]): task to download the latest build of the version. The download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar`
- * - `createJavaDebugScript`([io.typst.spigradle.debug.CreateJavaDebugScriptTask]): writes a script file to run the server on Windows/Unix
- *
- *
+ * - preparePluginDependencies([PluginDependencyPrepareTask]): task to download the plugin dependencies
+ * - copyArtifactJar([org.gradle.api.tasks.Copy]): task to copy the project artifact JAR, writes `eula.txt`.
+ * - downloadPaper([PaperDownloadTask]): task to download the latest build of the version. The download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar`
+ * - createJavaDebugScript([io.typst.spigradle.debug.CreateJavaDebugScriptTask]): writes a script file to run the server on Windows/Unix
  *
  * IDEA run configurations:
- * - `Debug$ProjectName`: `Remote JVM Debug` configuration
+ * - Debug$ProjectName: `Remote JVM Debug` configuration
  *     - port: [DebugExtension.jvmDebugPort]
- * - `Run$ProjectName`: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
+ * - Run$ProjectName: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
  *     - beforeRun: gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`
  *
  * Groovy extensions:
