@@ -44,7 +44,8 @@ tasks {
             expand(
                 "GRADLE_VERSION" to gradle.gradleVersion,
                 "SPIGRADLE_VERSION" to project.version,
-                "KOTLIN_VERSION" to "2.1.20"
+                "KOTLIN_VERSION" to "2.1.20",
+                "SHADOW_JAR_VERSION" to "9.2.2",
             )
             filter { line ->
                 if (line.contains(Regex("^#[#]?[#]? "))) """
