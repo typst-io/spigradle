@@ -862,7 +862,7 @@ dependencies {
 
 ### Shadowing Dependencies
 
-For Bukkit plugin, use the `library` option in plugin.yml instead of shadowJar:
+For Bukkit plugin, use the `libraries` option in plugin.yml instead of shadowJar:
 
 **Groovy DSL:**
 ```groovy

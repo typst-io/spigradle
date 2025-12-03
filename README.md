@@ -28,6 +28,7 @@ plugins {
 }
 
 repositories {
+    mavenCentral()
     papermc()
 }
 
