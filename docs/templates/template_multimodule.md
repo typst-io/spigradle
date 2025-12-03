@@ -87,7 +87,7 @@ rootProject.name = 'my-plugin'
 include('common', 'spigot', 'bungee', 'api') // api is optional
 
 rootProject.children.forEach { project ->
-    project.name = "my-plugin-${project.name}"
+    project.name = "my-plugin-\${project.name}"
 }
 ```
 
@@ -98,7 +98,7 @@ rootProject.name = "my-plugin"
 include("common", "spigot", "bungee", "api") // api is optional
 
 rootProject.children.forEach { project ->
-    project.name = "my-plugin-${project.name}"
+    project.name = "my-plugin-\${project.name}"
 }
 ```
 
@@ -694,7 +694,7 @@ rootProject.name = "my-plugin"
 include("common", "spigot", "bungee", "api")
 
 rootProject.children.forEach { project ->
-    project.name = "my-plugin-${project.name}"
+    project.name = "my-plugin-\${project.name}"
 }
 ```
 
@@ -856,7 +856,7 @@ Kotlin DSL:
 val gsonVersion: String by project
 
 dependencies {
-    implementation("com.google.code.gson:gson:$gsonVersion")
+    implementation("com.google.code.gson:gson:\$gsonVersion")
 }
 ```
 
