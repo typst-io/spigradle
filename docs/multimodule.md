@@ -520,7 +520,7 @@ Groovy DSL:
 ```groovy
 // spigot/build.gradle
 dependencies {
-    api project(':api')           // Expose API to consumers
+    api project(':my-plugin-api')           // Expose API to consumers
     implementation project(':my-plugin-common')  // Hide implementation
 }
 ```
@@ -529,7 +529,7 @@ Kotlin DSL:
 ```kotlin
 // spigot/build.gradle.kts
 dependencies {
-    api(project(":api"))           // Expose API to consumers
+    api(project(":my-plugin-api"))           // Expose API to consumers
     implementation(project(":my-plugin-common"))  // Hide implementation
 }
 ```
@@ -823,7 +823,7 @@ implementation(project(":my-plugin-common"))
 Groovy DSL:
 ```groovy
 // Exposes the dependency to consumers (requires java-library plugin)
-api project(':api')
+api project(':my-plugin-api')
 ```
 
 Kotlin DSL:
