@@ -58,6 +58,7 @@ tasks {
                 name.replace(Regex("^template_"), "")
             }
         }
+        dependsOn(tasks.dokkaGenerate)
         doLast {
             val docsDir = project.rootDir.resolve("docs")
             copy {

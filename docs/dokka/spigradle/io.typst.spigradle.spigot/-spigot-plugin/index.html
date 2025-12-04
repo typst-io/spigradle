@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>SpigotPlugin</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
+        <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
+      if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    } else {
+      } else {
         const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    }
+      }
     </script>
 <script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
@@ -25,20 +25,18 @@
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
 <script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
 </head>
 <body>
-    <div class="root">
-    <nav class="navigation theme-dark" id="navigation-wrapper">
-            <a class="library-name--link" href="../../../index.html">
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../index.html" tabindex="1">
                     spigradle
             </a>
         <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
@@ -48,8 +46,8 @@
         <div class="library-version" id="library-version">
 3.5.1        </div>
         <div class="navigation-controls">
-        <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active=""
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
                         data-filter=":/main">jvm</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
@@ -59,9 +57,9 @@
                         aria-expanded="false"
                         aria-label="Toggle source sets"
                 ></button>
-                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
-                    <div class="dropdown--header"><span>Platform filter</span>
-                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
@@ -76,7 +74,7 @@
                 </ul>
                 <div class="dropdown--overlay"></div>
             </div>
-        </div>
+        </ul>
             <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
                     type="button">Switch theme
             </button>
@@ -84,39 +82,41 @@
                 API
             </div>
         </div>
-    </nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
-                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
-                        data-role="dropdown-listbox">
-                        <div class="dropdown--header">
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
                             <span>
                                     spigradle
                             </span>
-                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
-                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
-                            </button>
-                        </div>
-                        <div class="sidebar--inner" id="sideMenu"></div>
-                    </ul>
-                    <div class="dropdown--overlay"></div>
-                </div>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div id="main">
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
 <div class="main-content" data-page-type="classlike" id="content" pageIds="spigradle::io.typst.spigradle.spigot/SpigotPlugin///PointingToDeclaration//-251573632">
   <div class="breadcrumbs"><a href="../../../index.html">spigradle</a><span class="delimiter">/</span><a href="../index.html">io.typst.spigradle.spigot</a><span class="delimiter">/</span><span class="current">SpigotPlugin</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Spigot</span><wbr></wbr><span><span>Plugin</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">SpigotPlugin</a> : <a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Plugin.html">Plugin</a><span class="token operator">&lt;</span><a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html">Project</a><span class="token operator">&gt; </span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/typst-io/spigradle/tree/master/src/main/kotlin/io/typst/spigradle/spigot/SpigotPlugin.kt#L72">source</a>)</span></span></div><p class="paragraph">A Spigot plugin that provides:</p><p class="paragraph">Extensions (configuration blocks, NOT tasks):</p><ul><li><p class="paragraph">spigot(<a href="../-spigot-extension/index.html">SpigotExtension</a>): extension for the Spigot environment</p></li><li><p class="paragraph">debugSpigot(<a href="../../io.typst.spigradle.debug/-debug-extension/index.html">DebugExtension</a>): extension for Spigot (Paper) debugging (configures <code class="lang-kotlin">debug${ProjectName}</code> task)</p></li><ul><li><p class="paragraph">jvmArgs: defaults to <code class="lang-kotlin">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}</code></p></li><li><p class="paragraph">programArgs: defaults to <code class="lang-kotlin">nogui</code></p></li></ul></ul><p class="paragraph">Plugins:</p><ul><li><p class="paragraph">io.typst.spigradle.base(<a href="../../io.typst.spigradle/-spigradle-plugin/index.html">io.typst.spigradle.SpigradlePlugin</a>): base plugin</p></li><li><p class="paragraph">org.jetbrains.gradle.plugin.idea-ext(<span data-unresolved-link="org.jetbrains.gradle.ext/IdeaExtPlugin///PointingToDeclaration/">IdeaExtPlugin</span>): IDEA extension plugin for generating <code class="lang-kotlin">Run Configuration</code>s</p></li></ul><p class="paragraph">Tasks:</p><ul><li><p class="paragraph">generateSpigotDescription(<a href="../../io.typst.spigradle/-yaml-generate/index.html">io.typst.spigradle.YamlGenerate</a>): task to generate <code class="lang-kotlin">plugin.yml</code>.</p></li><li><p class="paragraph">detectSpigotMain(<a href="../../io.typst.spigradle/-subclass-detection/index.html">io.typst.spigradle.SubclassDetection</a>): task to detect the main class.</p></li></ul><p class="paragraph">Tasks for debugging:</p><ul><li><p class="paragraph">debug${project.name.caseKebabToPascal()}(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Task.html">Task</a>): task to start the server in a new terminal window with the server platform (Paper). The debug directory is <code class="lang-kotlin">$PROJECT_HOME/.gradle/spigradle-debug/${platform}</code></p></li><ul><li><p class="paragraph">dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript</p></li></ul><li><p class="paragraph">cleanDebug${project.name.caseKebabToPascal()}(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Delete.html">Delete</a>): task to clean the project's debug directory</p></li><li><p class="paragraph">cleanCachePaper(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Delete.html">Delete</a>): task to clean the global cached <code class="lang-kotlin">paper.jar</code> file</p></li></ul><p class="paragraph">Trivial tasks for debugging:</p><ul><li><p class="paragraph">preparePluginDependencies(<a href="../-plugin-dependency-prepare-task/index.html">PluginDependencyPrepareTask</a>): task to download the plugin dependencies</p></li><li><p class="paragraph">copyArtifactJar(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Copy.html">org.gradle.api.tasks.Copy</a>): task to copy the project artifact JAR, writes <code class="lang-kotlin">eula.txt</code>.</p></li><li><p class="paragraph">downloadPaper(<a href="../-paper-download-task/index.html">PaperDownloadTask</a>): task to download the latest build of the version. The download path is <code class="lang-kotlin">$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar</code></p></li><li><p class="paragraph">createJavaDebugScript(<a href="../../io.typst.spigradle.debug/-create-java-debug-script-task/index.html">io.typst.spigradle.debug.CreateJavaDebugScriptTask</a>): writes a script file to run the server on Windows/Unix</p></li></ul><p class="paragraph">IDEA run configurations:</p><ul><li><p class="paragraph">Debug$ProjectName: <code class="lang-kotlin">Remote JVM Debug</code> configuration</p></li><ul><li><p class="paragraph">port: <a href="../../io.typst.spigradle.debug/-debug-extension/jvm-debug-port.html">DebugExtension.jvmDebugPort</a></p></li></ul><li><p class="paragraph">Run$ProjectName: <code class="lang-kotlin">JAR Application</code> configuration that you can run or debug from the Run/Debug button UI</p></li><ul><li><p class="paragraph">beforeRun: gradle tasks <code class="lang-kotlin">downloadPaper</code>, <code class="lang-kotlin">copyArtifactJar</code>, <code class="lang-kotlin">createJavaDebugScript</code></p></li></ul></ul><p class="paragraph">Groovy extensions:</p><ul><li><p class="paragraph">POST_WORLD: Load.POST_WORLD</p></li><li><p class="paragraph">POSTWORLD: Load.POST_WORLD</p></li><li><p class="paragraph">STARTUP: Load.STARTUP</p></li></ul></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">SpigotPlugin</a> : <a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Plugin.html">Plugin</a><span class="token operator">&lt;</span><a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html">Project</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/typst-io/spigradle/tree/master/src/main/kotlin/io/typst/spigradle/spigot/SpigotPlugin.kt#L72">source</a>)</span></span></div><p class="paragraph">A Spigot plugin that provides:</p><p class="paragraph">Extensions (configuration blocks, NOT tasks):</p><ul><li><p class="paragraph">spigot(<a href="../-spigot-extension/index.html">SpigotExtension</a>): extension for the Spigot environment</p></li><li><p class="paragraph">debugSpigot(<a href="../../io.typst.spigradle.debug/-debug-extension/index.html">DebugExtension</a>): extension for Spigot (Paper) debugging (configures <code class="lang-kotlin">debug${ProjectName}</code> task)</p></li><ul><li><p class="paragraph">jvmArgs: defaults to <code class="lang-kotlin">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}</code></p></li><li><p class="paragraph">programArgs: defaults to <code class="lang-kotlin">nogui</code></p></li></ul></ul><p class="paragraph">Plugins:</p><ul><li><p class="paragraph">io.typst.spigradle.base(<a href="../../io.typst.spigradle/-spigradle-plugin/index.html">io.typst.spigradle.SpigradlePlugin</a>): base plugin</p></li><li><p class="paragraph">org.jetbrains.gradle.plugin.idea-ext(<span data-unresolved-link="org.jetbrains.gradle.ext/IdeaExtPlugin///PointingToDeclaration/">IdeaExtPlugin</span>): IDEA extension plugin for generating <code class="lang-kotlin">Run Configuration</code>s</p></li></ul><p class="paragraph">Tasks:</p><ul><li><p class="paragraph">generateSpigotDescription(<a href="../../io.typst.spigradle/-yaml-generate/index.html">io.typst.spigradle.YamlGenerate</a>): task to generate <code class="lang-kotlin">plugin.yml</code>.</p></li><li><p class="paragraph">detectSpigotMain(<a href="../../io.typst.spigradle/-subclass-detection/index.html">io.typst.spigradle.SubclassDetection</a>): task to detect the main class.</p></li></ul><p class="paragraph">Tasks for debugging:</p><ul><li><p class="paragraph">debug${project.name.caseKebabToPascal()}(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/Task.html">Task</a>): task to start the server in a new terminal window with the server platform (Paper). The debug directory is <code class="lang-kotlin">$PROJECT_HOME/.gradle/spigradle-debug/${platform}</code></p></li><ul><li><p class="paragraph">dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript</p></li></ul><li><p class="paragraph">cleanDebug${project.name.caseKebabToPascal()}(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Delete.html">Delete</a>): task to clean the project's debug directory</p></li><li><p class="paragraph">cleanCachePaper(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Delete.html">Delete</a>): task to clean the global cached <code class="lang-kotlin">paper.jar</code> file</p></li></ul><p class="paragraph">Trivial tasks for debugging:</p><ul><li><p class="paragraph">preparePluginDependencies(<a href="../-plugin-dependency-prepare-task/index.html">PluginDependencyPrepareTask</a>): task to download the plugin dependencies</p></li><li><p class="paragraph">copyArtifactJar(<a href="https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Copy.html">org.gradle.api.tasks.Copy</a>): task to copy the project artifact JAR, writes <code class="lang-kotlin">eula.txt</code>.</p></li><li><p class="paragraph">downloadPaper(<a href="../-paper-download-task/index.html">PaperDownloadTask</a>): task to download the latest build of the version. The download path is <code class="lang-kotlin">$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar</code></p></li><li><p class="paragraph">createJavaDebugScript(<a href="../../io.typst.spigradle.debug/-create-java-debug-script-task/index.html">io.typst.spigradle.debug.CreateJavaDebugScriptTask</a>): writes a script file to run the server on Windows/Unix</p></li></ul><p class="paragraph">IDEA run configurations:</p><ul><li><p class="paragraph">Debug$ProjectName: <code class="lang-kotlin">Remote JVM Debug</code> configuration</p></li><ul><li><p class="paragraph">port: DebugExtension.jvmDebugPort</p></li></ul><li><p class="paragraph">Run$ProjectName: <code class="lang-kotlin">JAR Application</code> configuration that you can run or debug from the Run/Debug button UI</p></li><ul><li><p class="paragraph">beforeRun: gradle tasks <code class="lang-kotlin">downloadPaper</code>, <code class="lang-kotlin">copyArtifactJar</code>, <code class="lang-kotlin">createJavaDebugScript</code></p></li></ul></ul><p class="paragraph">Groovy extensions:</p><ul><li><p class="paragraph">POST_WORLD: Load.POST_WORLD</p></li><li><p class="paragraph">POSTWORLD: Load.POST_WORLD</p></li><li><p class="paragraph">STARTUP: Load.STARTUP</p></li></ul></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
-        <h2 class="">Constructors</h2>
+        <h2 class="tableheader">Constructors</h2>
         <div class="table"><a data-name="1131797080%2FConstructors%2F-251573632" anchor-label="SpigotPlugin" id="1131797080%2FConstructors%2F-251573632" data-filterable-set=":/main"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":/main" data-filterable-set=":/main">
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":/main" data-filterable-set=":/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-spigot-plugin.html"><span>Spigot</span><wbr></wbr><span><span>Plugin</span></span></a></div>
@@ -133,9 +133,9 @@
         </div>
       </div>
       <div data-togglable="TYPE">
-        <h2 class="">Types</h2>
+        <h2 class="tableheader">Types</h2>
         <div class="table"><a data-name="176021942%2FClasslikes%2F-251573632" anchor-label="Companion" id="176021942%2FClasslikes%2F-251573632" data-filterable-set=":/main"></a>
-          <div class="table-row" data-filterable-current=":/main" data-filterable-set=":/main">
+          <div class="table-row table-row_content" data-filterable-current=":/main" data-filterable-set=":/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
@@ -152,9 +152,9 @@
         </div>
       </div>
       <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
+        <h2 class="tableheader">Functions</h2>
         <div class="table"><a data-name="1067562361%2FFunctions%2F-251573632" anchor-label="apply" id="1067562361%2FFunctions%2F-251573632" data-filterable-set=":/main"></a>
-          <div class="table-row" data-filterable-current=":/main" data-filterable-set=":/main">
+          <div class="table-row table-row_content" data-filterable-current=":/main" data-filterable-set=":/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="apply.html"><span><span>apply</span></span></a></div>
@@ -174,17 +174,21 @@
   </div>
 </div>
     <div class="footer">
-        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
-        <span>© 2025 Copyright</span>
-        <span class="pull-right">
-            <span>Generated by </span>
-            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
-                <span>dokka</span>
-            </a>
-        </span>
-    </div>
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2025 Copyright</div>
+                </div>
             </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
