@@ -48,7 +48,7 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  *
  * Tasks for debugging:
  * - debug${project.name.caseKebabToPascal()}([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
- *     - dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript
+ *     - dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript, `preparePluginDependencies`
  * - cleanDebug${project.name.caseKebabToPascal()}([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
  * - cleanCachePaper([Delete][org.gradle.api.tasks.Delete]): task to clean the global cached `paper.jar` file
  *
@@ -62,7 +62,7 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  * - Debug$ProjectName: `Remote JVM Debug` configuration
  *     - port: [DebugExtension.jvmDebugPort]
  * - Run$ProjectName: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
- *     - beforeRun: gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`
+ *     - beforeRun: gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`, `preparePluginDependencies`
  *
  * Groovy extensions:
  * - POST_WORLD: Load.POST_WORLD
@@ -132,9 +132,7 @@ class SpigotPlugin : Plugin<Project> {
                 })
                 outputDir.set(ctx.getDebugArtifactDir(this@setupSpigotDebug))
             }
-        DebugTask.register(this, ctx.copy(downloadTask = downloadPaper)).configure {
-            dependsOn(downloadPaper, preparePluginDependencies)
-        }
+        DebugTask.register(this, ctx.copy(downloadTask = downloadPaper, extraTasks = listOf(preparePluginDependencies)))
     }
 
     private fun Project.setupGroovyExtensions() {

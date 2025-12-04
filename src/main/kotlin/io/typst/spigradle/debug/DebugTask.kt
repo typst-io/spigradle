@@ -225,6 +225,7 @@ internal object DebugTask {
         }
         debugTasks += copyArtifactJarTask
         debugTasks += createJavaDebugScriptTask
+        debugTasks += ctx.extraTasks
         val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
         ideaModel.project.settings {
             runConfigurations {
@@ -297,7 +298,10 @@ internal object DebugTask {
                             "/bin/sh", "-c",
                             "cd \"$debugDirPath\" && nohup setsid \"$scriptPath\" > /dev/null 2>&1 &"
                         )
-                        logger.log(LogLevel.LIFECYCLE, "No terminal emulator found. Server started in background. You could also use the IDEA run configuration `Run\$ProjectName`.")
+                        logger.log(
+                            LogLevel.LIFECYCLE,
+                            "No terminal emulator found. Server started in background. You could also use the IDEA run configuration `Run\$ProjectName`."
+                        )
                     }
                 }
 

@@ -41,6 +41,7 @@ data class DebugRegistrationContext(
     val overwrite: Boolean = false,
     val eula: Provider<Boolean>? = null,
     val downloadTask: TaskProvider<out Task>? = null,
+    val extraTasks: Iterable<TaskProvider<out Task>> = emptyList(),
 ) {
     val taskGroupName: String get() = "$platformName debug"
     val downloadTaskName: String get() = "download${platformName.capitalized()}"
