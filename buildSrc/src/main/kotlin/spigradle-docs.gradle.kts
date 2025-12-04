@@ -58,7 +58,6 @@ tasks {
                 name.replace(Regex("^template_"), "")
             }
         }
-        dependsOn(tasks.dokkaGenerate)
         doLast {
             val docsDir = project.rootDir.resolve("docs")
             copy {
@@ -72,12 +71,6 @@ tasks {
                 include("*.md")
                 into(project.rootDir)
                 configure()
-            }
-            copy {
-                from(project.layout.buildDirectory.map {
-                    it.asFile.resolve("dokka").resolve("html")
-                })
-                into(docsDir.resolve("dokka"))
             }
         }
     }
