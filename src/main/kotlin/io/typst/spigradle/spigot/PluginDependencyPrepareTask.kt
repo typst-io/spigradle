@@ -16,13 +16,17 @@
 
 package io.typst.spigradle.spigot
 
+import io.typst.spigradle.ContentSource
 import io.typst.spigradle.YamlValue
 import io.typst.spigradle.fetchHttpGetAsByteArray
 import io.typst.spigradle.fetchHttpGetAsString
 import org.gradle.api.DefaultTask
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -43,7 +47,7 @@ import java.util.jar.JarInputStream
  * being developed. It attempts to acquire each dependency plugin through two methods:
  *
  * 1. **From Gradle classpath**: If the dependency is already configured in the project's
- *    `compileClasspath` as a JAR artifact, it will be copied directly.
+ *    `compileClasspath` as a file-based dependency(file() or fileTree()), it will be copied directly.
  * 2. **From SpigotMC**: If not found in the classpath, the task searches for the plugin on
  *    SpigotMC (via the Spiget API) and downloads the most popular matching resource.
  *
@@ -83,6 +87,10 @@ open class PluginDependencyPrepareTask : DefaultTask() {
     @get:Input
     val pluginNames: ListProperty<String> = project.objects.listProperty(String::class.java)
 
+    @get:Input
+    val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java)
+        .convention(false)
+
     /**
      * The output directory where plugin dependency JARs will be placed.
      *
@@ -94,83 +102,189 @@ open class PluginDependencyPrepareTask : DefaultTask() {
 
     @TaskAction
     fun prepare() {
-        if (pluginNames.get().isEmpty()) {
+        val thePluginNames = pluginNames.get()
+        val downloadSoftDepends = downloadSoftDepends.get()
+        if (thePluginNames.isEmpty()) {
             logger.log(LogLevel.LIFECYCLE, "SKIPPED: no dependencies configured")
             return
         }
 
-        // skip if all exist
-        if (pluginNames.get().all {
-                outputDir.get().asFile.resolve("${it}.jar").isFile
-            }) {
-            logger.log(LogLevel.LIFECYCLE, "SKIPPED: All files exists, skipping write ${pluginNames.get()}")
-            return
-        }
-
+        // fetch all plugins from classpath
         val runtimeCp = project.configurations.named("compileClasspath")
         val pluginFiles = mutableMapOf<String, File>()
-        val set = runtimeCp.get().resolve()
-        for (file in set) {
+
+        val artifacts = runtimeCp.get().incoming
+            .artifactView {
+                isLenient = true
+            }
+            .artifacts
+            .resolvedArtifacts
+            .get()
+        for (artifact in artifacts) {
+            val file = artifact.file
             if (!file.name.endsWith(".jar")) {
                 continue
             }
-            val yaml = readPluginYaml(file) ?: continue
-            val pluginName = parsePluginName(yaml)
+            val componentId = artifact.variant.owner
+            val isFromRepository = componentId is ModuleComponentIdentifier
+            val isFromProject = componentId is ProjectComponentIdentifier
+            val isLocalFile = !isFromRepository && !isFromProject  // 로컬 파일 종속성
+            if (!isLocalFile) {
+                continue
+            }
+            val yamlText = readPluginYaml(file) ?: continue
+            val yaml = YamlValue.parse(yamlText)
+            val pluginName = yaml.get("name").value?.toString()
             if (pluginName != null) {
                 pluginFiles[pluginName] = file
             }
         }
 
-        // TODO: match minecraft version
-        // TODO: cache?
-        // TODO: overwrite when getting from classpath?
-        val maxSize = pluginNames.get().maxBy { it.length }.length
-        for (name in pluginNames.get()) {
-            val file = outputDir.get().asFile.resolve("${name}.jar")
-            if (file.isFile) {
-                project.logger.log(LogLevel.LIFECYCLE, "SKIPPED ${name.padEnd(maxSize)} : file already exists, skipping write.")
-                continue
+        // resolve the all plugin dependencies recursively
+        val allPluginDependencies = mutableMapOf<String, SpigotPluginDependency>()
+        val allPluginDepends = thePluginNames.toMutableList()
+
+        var index = 0
+        while (index < allPluginDepends.size) {
+            val name = allPluginDepends[index]
+            if (name !in allPluginDependencies) {
+                val outputFile = outputDir.get().asFile.resolve("${name}.jar")
+                val classpathFile = pluginFiles[name]
+                val dependency =
+                    parsePluginDependency(outputFile, local = false)
+                        ?: parsePluginDependency(classpathFile, local = true)
+                        ?: downloadPluginDependency(name)
+                if (dependency != null) {
+                    val depends = if (downloadSoftDepends) {
+                        dependency.depends + dependency.softDepends
+                    } else dependency.depends
+
+                    allPluginDepends.addAll(depends)
+                    allPluginDependencies[dependency.name] = dependency
+                }
             }
+            index++
+        }
 
-            // method 1: from classpath
-            val theFile = pluginFiles[name]
-            if (theFile != null) {
-                project.logger.log(LogLevel.LIFECYCLE, "SUCCESS ${name.padEnd(maxSize)} : copied from classpath ${theFile.absolutePath}")
-                Files.copy(theFile.toPath(), file.toPath())
-                continue
-            }
+        val allPluginDependSet = allPluginDepends.toSet()
+        logger.log(LogLevel.LIFECYCLE, "Preparing dependencies: ${allPluginDependSet.joinToString(", ", "[", "]")}")
 
-            // method 2: spiget
-            val uri = URI("https://api.spiget.org/v2/search/resources/${name}?field=name&sort=-downloads")
-            val yaml = YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()
-            val idValue = yaml?.firstOrNull()?.get("id")?.value?.toString()
-            if (idValue != null) {
-                val downloadUri = URI("https://api.spiget.org/v2/resources/$idValue/download")
-                val bytes = fetchHttpGetAsByteArray(downloadUri).body()
+        // skip if all exist
+        if (allPluginDependSet.all {
+                outputDir.get().asFile.resolve("${it}.jar").isFile
+            }) {
+            logger.log(LogLevel.LIFECYCLE, "SKIPPED: All files exists, skipping write $thePluginNames")
+            return
+        }
 
-                val yaml = readPluginYaml(ByteArrayInputStream(bytes))
-                val pluginName = parsePluginName(yaml ?: "")
+        val maxSize = allPluginDependSet.maxBy { it.length }.length
+        for (name in allPluginDependSet) {
+            val dependency = allPluginDependencies[name]
+            if (dependency != null) {
+                val outputFile = outputDir.get().asFile.resolve("${name}.jar")
+                when (val source = dependency.contentSource) {
+                    is ContentSource.Exist -> {
+                        project.logger.log(
+                            LogLevel.LIFECYCLE,
+                            "SKIPPED ${name.padEnd(maxSize)} : file already exists, skipping write."
+                        )
+                    }
 
-                if (pluginName == name) {
-                    Files.write(file.toPath(), bytes)
-                    project.logger.log(LogLevel.LIFECYCLE, "SUCCESS ${name.padEnd(maxSize)} : downloaded from SpigotMC $downloadUri")
-                } else {
-                    project.logger.log(
-                        LogLevel.WARN,
-                        "FAILED  ${name.padEnd(maxSize)} : downloaded from SpigotMC but plugin.yml name mismatch '${name}', received '${pluginName}' (maybe the wrong name is configured in `depends/softDepends`), from $downloadUri"
-                    )
+                    is ContentSource.LocalFile -> {
+                        Files.copy(source.file.toPath(), outputFile.toPath())
+                        project.logger.log(
+                            LogLevel.LIFECYCLE,
+                            "SUCCESS ${name.padEnd(maxSize)} : copied from classpath ${source.file.absolutePath}."
+                        )
+                    }
+
+                    is ContentSource.Memory -> {
+                        Files.write(outputFile.toPath(), source.bytes)
+                        project.logger.log(
+                            LogLevel.LIFECYCLE,
+                            "SUCCESS ${name.padEnd(maxSize)} : downloaded from SpigotMC ${source.uri}."
+                        )
+                    }
                 }
             } else {
                 project.logger.log(
                     LogLevel.WARN,
-                    "FAILED  ${name.padEnd(maxSize)} : not found on classpath nor in Spiget search results $uri"
+                    "FAILED  ${name.padEnd(maxSize)} : not found on the classpath or in Spiget search results. you can either put the JAR manually or declare it as a file dependency in Gradle."
                 )
             }
         }
     }
 
+    internal fun downloadPluginDependency(name: String): SpigotPluginDependency? {
+        val uri = URI("https://api.spiget.org/v2/search/resources/${name}?field=name&sort=-downloads")
+        val results = YamlValue.parse(fetchHttpGetAsString(uri).body()).asList() ?: emptyList()
+
+        for (resultYaml in results) {
+            project.logger.log(
+                LogLevel.DEBUG, "Spiget query result: $resultYaml"
+            )
+            val idValue = resultYaml.get("id").value?.toString() ?: continue
+            val downloadUri = URI("https://api.spiget.org/v2/resources/$idValue/download")
+            project.logger.log(
+                LogLevel.LIFECYCLE, "Downloading $name from SpigotMC, uri=${downloadUri}"
+            )
+            val downloadFetchResult = fetchHttpGetAsByteArray(downloadUri)
+            val bytes = downloadFetchResult.body()
+
+            val yaml = readPluginYaml(ByteArrayInputStream(bytes))
+            val dependency = if (yaml != null) {
+                parsePluginDependency(yaml, ContentSource.Memory(bytes, downloadUri))
+            } else null
+
+            if (dependency?.name == name) {
+                return dependency
+            }
+        }
+        return null
+    }
+
+    internal fun parsePluginDependency(xs: String, source: ContentSource): SpigotPluginDependency? {
+        val yaml = YamlValue.parse(xs)
+        val name = yaml.get("name").value?.toString()
+        val depends = yaml.get("depend").asList()?.mapNotNull { it.value?.toString() } ?: emptyList()
+        val softDepends = yaml.get("softdepend").asList()?.mapNotNull { it.value?.toString() } ?: emptyList()
+        return if (name != null) {
+            SpigotPluginDependency(name, depends.toSet(), softDepends.toSet(), source)
+        } else null
+    }
+
+    internal fun parsePluginDependency(
+        input: InputStream,
+        source: ContentSource,
+        charset: Charset = StandardCharsets.UTF_8,
+    ): SpigotPluginDependency? {
+        return JarInputStream(input).use { jin ->
+            generateSequence { jin.nextJarEntry }
+                .firstOrNull { !it.isDirectory && it.name == "plugin.yml" }
+                ?: return null
+
+            val text = jin.bufferedReader(charset).readText()
+            parsePluginDependency(text, source)
+        }
+    }
+
+    // NOTE: file optional for convenience
+    internal fun parsePluginDependency(
+        file: File?,
+        local: Boolean,
+        charset: Charset = StandardCharsets.UTF_8,
+    ): SpigotPluginDependency? {
+        if (file == null || !file.isFile) {
+            return null
+        }
+        val source = if (local) {
+            ContentSource.LocalFile(file)
+        } else ContentSource.Exist(file)
+        return parsePluginDependency(FileInputStream(file), source, charset)
+    }
+
     companion object {
-        fun readPluginYaml(input: InputStream, charset: Charset = StandardCharsets.UTF_8): String? {
+        internal fun readPluginYaml(input: InputStream, charset: Charset = StandardCharsets.UTF_8): String? {
             return JarInputStream(input).use { jin ->
                 generateSequence { jin.nextJarEntry }
                     .firstOrNull { !it.isDirectory && it.name == "plugin.yml" }
@@ -180,12 +294,8 @@ open class PluginDependencyPrepareTask : DefaultTask() {
             }
         }
 
-        fun readPluginYaml(jar: File, charset: Charset = StandardCharsets.UTF_8): String? {
+        internal fun readPluginYaml(jar: File, charset: Charset = StandardCharsets.UTF_8): String? {
             return readPluginYaml(FileInputStream(jar), charset)
-        }
-
-        fun parsePluginName(xs: String): String? {
-            return YamlValue.parse(xs).get("name").value?.toString()
         }
     }
 }

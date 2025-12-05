@@ -130,6 +130,7 @@ class SpigotPlugin : Plugin<Project> {
                         spigot.depends + spigot.softDepends
                     } else spigot.depends
                 })
+                downloadSoftDepends.set(paperExt.downloadSoftDepends)
                 outputDir.set(ctx.getDebugArtifactDir(this@setupSpigotDebug))
             }
         DebugTask.register(this, ctx.copy(downloadTask = downloadPaper, extraTasks = listOf(preparePluginDependencies)))
