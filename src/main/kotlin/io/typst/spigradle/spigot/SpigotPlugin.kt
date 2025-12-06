@@ -63,6 +63,7 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  *     - port: [DebugExtension.jvmDebugPort]
  * - Run$ProjectName: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
  *     - beforeRun: gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`, `preparePluginDependencies`
+ *     - NOTE: You need to click the Refresh Gradle Project button in IDEA if you change the debugSpigot extension.
  *
  * Groovy extensions:
  * - POST_WORLD: Load.POST_WORLD

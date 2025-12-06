@@ -295,7 +295,7 @@ Spigradle automatically creates two run configurations:
    - **Usage:**
      - Click the "▶ Run" button to start the server normally
      - Click the "🐞 Debug" button to start the server AND attach debugger in one step
-   - **Note:** Makes IntelliJ heavier as it manages the server process directly
+   - **Note:** Makes IntelliJ heavier as it manages the server process directly; You need to click the `Sync All Gradle Projects` button in IDEA if you change the debugSpigot extension.
    - **When to use:** Only when you want absolute convenience and don't mind the performance impact
 
 **Directory structure:**
