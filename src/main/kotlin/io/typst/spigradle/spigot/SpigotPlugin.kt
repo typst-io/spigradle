@@ -112,6 +112,7 @@ class SpigotPlugin : Plugin<Project> {
             paperExt.jvmArgs,
             paperExt.programArgs,
             paperExt.jvmDebugPort,
+            paperExt.javaHome.map { it.file("bin/java") },
             false,
             paperExt.eula
         )

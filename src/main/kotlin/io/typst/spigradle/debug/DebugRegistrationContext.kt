@@ -38,6 +38,7 @@ data class DebugRegistrationContext(
     val jvmArgs: ListProperty<String>,
     val programArgs: ListProperty<String>,
     val jvmDebugPort: Property<Int>,
+    val javaExecutable: Provider<RegularFile>,
     val overwrite: Boolean = false,
     val eula: Provider<Boolean>? = null,
     val downloadTask: TaskProvider<out Task>? = null,

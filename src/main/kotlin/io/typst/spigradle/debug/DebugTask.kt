@@ -22,11 +22,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.gradle.ext.*
@@ -202,19 +200,12 @@ internal object DebugTask {
 
             delete(ctx.getDownloadBaseDir(project))
         }
-        val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
-        val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
-        val javaExe = project.providers.provider {
-            toolchains.launcherFor {
-                languageVersion.set(javaExt.toolchain.languageVersion.get())
-            }.get().executablePath
-        }
         val createJavaDebugScriptTask =
             project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
                 group = ctx.taskGroupName
 
                 dir.set(ctx.getDebugDir(project))
-                javaPath.set(javaExe.map { it.asFile.absolutePath })
+                javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
                 jvmArgs.set(ctx.jvmArgs)
                 programArgs.set(ctx.programArgs)
                 jarFile.set(jar.map { it.asFile.absolutePath })
@@ -251,10 +242,7 @@ internal object DebugTask {
         return project.tasks.register(ctx.getRunDebugTaskName(project)) {
             group = ctx.taskGroupName
 
-            if (downloadTask != null) {
-                dependsOn(downloadTask)
-            }
-            dependsOn(copyArtifactJarTask, createJavaDebugScriptTask)
+            dependsOn(debugTasks)
 
             val os = System.getProperty("os.name").lowercase()
             val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath

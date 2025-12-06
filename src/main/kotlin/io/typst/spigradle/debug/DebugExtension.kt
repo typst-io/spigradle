@@ -17,8 +17,12 @@
 package io.typst.spigradle.debug
 
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 
 /**
  * Configuration extension for the Spigot debug system.
@@ -35,8 +39,8 @@ import org.gradle.api.provider.Property
  *     version.set("1.21.8")
  *     eula.set(true)
  *     jvmDebugPort.set(5005)
- *     jvmArgs.add("-Xmx2G")
- *     programArgs.add("--nogui")
+ *     jvmArgs.append("-Xmx2G")       // use append() to preserve defaults
+ *     programArgs.append("--world myworld")
  * }
  * ```
  *
@@ -45,9 +49,9 @@ import org.gradle.api.provider.Property
  * ./gradlew debugMyPlugin  // NOT debugSpigot!
  * ```
  *
- * **Note:** To add custom arguments while keeping defaults:
+ * **Note:** To add custom arguments while keeping defaults (Gradle 8.7+):
  * ```groovy
- * jvmArgs.add("-myCustomArg")  // Adds to existing default args
+ * jvmArgs.append("-myCustomArg")  // Preserves existing defaults
  * ```
  *
  * @see io.typst.spigradle.debug.DebugTask
@@ -121,10 +125,11 @@ open class DebugExtension(project: Project) {
     val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
 
     /**
-     * Additional JVM arguments to pass to the server process.
+     * JVM arguments to pass to the server process.
      *
-     * These are added to the default JVM arguments which include debug agent configuration
-     * and memory settings.
+     * **Warning:** Each platform plugin sets different default values for this property.
+     * Using `add()`, `addAll()`, `set()`, or `empty()` will **discard** the platform-specific defaults.
+     * To preserve defaults while adding your own arguments, use `append()` or `appendAll()` (Gradle 8.7+).
      *
      * **Common examples:**
      * - `-Xmx2G` - Maximum heap size
@@ -133,8 +138,17 @@ open class DebugExtension(project: Project) {
      *
      * **Example:**
      * ```groovy
-     * jvmArgs.addAll(["-Xmx2G", "-Xms1G"])
+     * // Recommended (Gradle 8.7+): preserves platform defaults
+     * jvmArgs.append("-Xmx2G")
+     * jvmArgs.appendAll(["-Xms1G", "-XX:+UseG1GC"])
+     *
+     * // Caution: these discard platform defaults!
+     * jvmArgs.add("-Xmx2G")      // convention lost
+     * jvmArgs.set(["-Xmx2G"])    // convention lost
      * ```
+     *
+     * @see io.typst.spigradle.spigot.SpigotPlugin
+     * @see <a href="https://docs.gradle.org/8.7/release-notes.html">Gradle 8.7 Release Notes</a>
      */
     val jvmArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
 
@@ -143,15 +157,78 @@ open class DebugExtension(project: Project) {
      *
      * These arguments are passed directly to the server JAR when it starts.
      *
+     * **Warning:** Each platform plugin sets different default values for this property.
+     * Using `add()`, `addAll()`, `set()`, or `empty()` will **discard** the platform-specific defaults.
+     * To preserve defaults while adding your own arguments, use `append()` or `appendAll()` (Gradle 8.7+).
+     *
      * **Common examples:**
-     * - `--nogui` - Run without GUI (recommended for headless servers)
+     * - `nogui` - Run without GUI (recommended for headless servers)
      * - `--world world_name` - Specify world name
      * - `--port 25566` - Custom server port
      *
      * **Example:**
      * ```groovy
-     * programArgs.add("--nogui")
+     * // Recommended (Gradle 8.7+): preserves platform defaults
+     * programArgs.append("--world myworld")
+     *
+     * // Caution: these discard platform defaults!
+     * programArgs.add("--world myworld")  // convention lost
+     * programArgs.set(["nogui"])          // convention lost
      * ```
+     *
+     * @see <a href="https://docs.gradle.org/8.7/release-notes.html">Gradle 8.7 Release Notes</a>
      */
     val programArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+
+    /**
+     * The Java language version to use for running the debug server.
+     *
+     * This property is a convenience helper for resolving [javaHome].
+     * If [javaHome] is set directly, this property is ignored.
+     *
+     * **Default:** The Java toolchain language version configured in the project's
+     * `java.toolchain.languageVersion`.
+     *
+     * **Example:**
+     * ```groovy
+     * javaVersion.set(JavaLanguageVersion.of(21))
+     * ```
+     *
+     * @see javaHome
+     */
+    val javaVersion: Property<JavaLanguageVersion> = project.objects.property(JavaLanguageVersion::class.java)
+        .convention(project.provider {
+            val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
+            javaExt.toolchain.languageVersion.get()
+        })
+
+    /**
+     * The Java installation home directory to use for running the debug server.
+     *
+     * This value corresponds to `JAVA_HOME` and is used to locate the `java` executable
+     * at `{javaHome}/bin/java`.
+     *
+     * **Default:** Resolved from [javaVersion] using Gradle's Java Toolchain Service.
+     * If you set this property directly, the [javaVersion] value will be ignored.
+     *
+     * **Example:**
+     * ```groovy
+     * // Use a specific Java installation
+     * javaHome.set(layout.projectDirectory.dir("/path/to/jdk"))
+     *
+     * // Or let it be resolved from javaVersion (default behavior)
+     * javaVersion.set(JavaLanguageVersion.of(21))
+     * ```
+     *
+     * @see javaVersion
+     */
+    val javaHome: Property<Directory> = project.objects.directoryProperty()
+        .convention(javaVersion.flatMap { javaVersion ->
+            val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
+            toolchains.launcherFor {
+                languageVersion.set(javaVersion)
+            }.map {
+                it.metadata.installationPath
+            }
+        })
 }
