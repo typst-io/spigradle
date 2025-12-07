@@ -274,7 +274,7 @@ Runs a local Paper server with your plugin for debugging. This task orchestrates
 
 **IntelliJ IDEA Run Configurations:**
 
-Spigradle automatically creates two run configurations:
+Spigradle automatically creates two run configurations (NOTE: These are only generated if the plugin `org.jetbrains.gradle.plugin.idea-ext` is applied):
 
 1. **`Debug\${ProjectName}` - Remote JVM Debug** ⭐ **Recommended**
    - **Type:** Remote JVM Debug configuration

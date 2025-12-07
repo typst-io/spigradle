@@ -217,22 +217,30 @@ internal object DebugTask {
         debugTasks += copyArtifactJarTask
         debugTasks += createJavaDebugScriptTask
         debugTasks += ctx.extraTasks
-        val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
-        ideaModel.project.settings {
-            runConfigurations {
-                register("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
-                    transport = Remote.RemoteTransport.SOCKET
-                    port = ctx.jvmDebugPort.get()
-                }
-                register("Run${project.name.caseKebabToPascal()}", JarApplication::class.java) {
-                    jarPath = jar.get().asFile.absolutePath
-                    workingDirectory = ctx.getDebugDir(project).asFile.absolutePath
-                    jvmArgs = ctx.jvmArgs.get().joinToString(" ")
-                    programParameters = ctx.programArgs.get().joinToString(" ")
-                    beforeRun {
-                        for (task in debugTasks) {
-                            register(task.name, GradleTask::class.java) {
-                                this.task = task.get()
+        project.rootProject.pluginManager.withPlugin("org.jetbrains.gradle.plugin.idea-ext") {
+            val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
+            ideaModel.project.settings {
+                runConfigurations {
+                    register("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
+                        transport = Remote.RemoteTransport.SOCKET
+                        port = ctx.jvmDebugPort.get()
+                    }
+                    val runConfName = "Run${project.name.caseKebabToPascal()}"
+                    register(runConfName, JarApplication::class.java) {
+                        val paperJarPath = jar.orNull?.asFile?.absolutePath
+                        if (paperJarPath != null) {
+                            jarPath = paperJarPath
+                        } else {
+                            project.logger.log(LogLevel.WARN, "[Spigradle] IDEA run configuration `${runConfName}` is missing the required setting 'debugSpigot#version', so its `Path to JAR` field is not configured.")
+                        }
+                        workingDirectory = ctx.getDebugDir(project).asFile.absolutePath
+                        jvmArgs = ctx.jvmArgs.get().joinToString(" ")
+                        programParameters = ctx.programArgs.get().joinToString(" ")
+                        beforeRun {
+                            for (task in debugTasks) {
+                                register(task.name, GradleTask::class.java) {
+                                    this.task = task.get()
+                                }
                             }
                         }
                     }

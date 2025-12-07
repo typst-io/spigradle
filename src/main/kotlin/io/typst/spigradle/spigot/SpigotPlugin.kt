@@ -23,6 +23,7 @@ import io.typst.spigradle.debug.DebugRegistrationContext
 import io.typst.spigradle.debug.DebugTask
 import io.typst.spigradle.groovyExtension
 import io.typst.spigradle.registerDescGenTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
@@ -58,7 +59,7 @@ import org.jetbrains.gradle.ext.IdeaExtPlugin
  * - downloadPaper([PaperDownloadTask]): task to download the latest build of the version. The download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar`
  * - createJavaDebugScript([io.typst.spigradle.debug.CreateJavaDebugScriptTask]): writes a script file to run the server on Windows/Unix
  *
- * IDEA run configurations:
+ * IDEA run configurations (NOTE: These are only generated if the plugin `org.jetbrains.gradle.plugin.idea-ext` applied):
  * - Debug$ProjectName: `Remote JVM Debug` configuration
  *     - port: [DebugExtension.jvmDebugPort]
  * - Run$ProjectName: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
@@ -89,11 +90,6 @@ class SpigotPlugin : Plugin<Project> {
                 desc.encodeToMap()
             }
             setupGroovyExtensions()
-
-            // debug
-            if (!project.rootProject.pluginManager.hasPlugin("org.jetbrains.gradle.plugin.idea-ext")) {
-                project.rootProject.pluginManager.apply(IdeaExtPlugin::class.java)
-            }
             setupSpigotDebug()
         }
     }
@@ -136,6 +132,29 @@ class SpigotPlugin : Plugin<Project> {
                 })
                 downloadSoftDepends.set(paperExt.downloadSoftDepends)
                 outputDir.set(ctx.getDebugArtifactDir(this@setupSpigotDebug))
+                // for up-to-date check
+                inputs.property("javaVersion", paperExt.version)
+
+                doFirst {
+                    // NOTE: minJavaVer required consistent maintenance
+                    // REFERENCE: https://docs.papermc.io/paper/getting-started/#requirements
+                    val paperVersion = paperExt.version.get().split(".")
+                    val paperMinorVersion = paperVersion[1].toInt()
+                    val paperFixVersion = paperVersion.getOrNull(2)?.toInt() ?: 0
+                    val minimumJavaVersion = if (paperMinorVersion <= 11) {
+                        8
+                    } else if (paperMinorVersion <= 16 && paperFixVersion <= 4) {
+                        11
+                    } else if (paperMinorVersion <= 16) {
+                        16
+                    } else {
+                        21
+                    }
+                    val javaVersion = paperExt.javaVersion.orNull?.asInt()
+                    if (javaVersion != null && javaVersion < minimumJavaVersion) {
+                        throw GradleException("Paper ${paperExt.version.get()} requires at least Java ${minimumJavaVersion}! Please set the `java.toolchain.languageVersion`, or `debugSpigot.javaVersion` to JavaLanguageVersion(21), or kotlin.jvmToolchain(21) if Kotlin!")
+                    }
+                }
             }
         DebugTask.register(this, ctx.copy(downloadTask = downloadPaper, extraTasks = listOf(preparePluginDependencies)))
     }

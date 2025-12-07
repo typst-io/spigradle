@@ -3,7 +3,8 @@
 # matched with the version of kotlin-dsl `embeddedKotlinVersion`
 kotlin = "2.0.21"
 dokka = "2.1.0"
-asm = "9.8"
+# NOTE: required consistent maintenance
+asm = "9.9"
 ideaExt = "1.3"
 spigot = "1.21.4-R0.1-SNAPSHOT"
 junit = "5.12.1"

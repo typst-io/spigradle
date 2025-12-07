@@ -199,7 +199,10 @@ open class DebugExtension(project: Project) {
     val javaVersion: Property<JavaLanguageVersion> = project.objects.property(JavaLanguageVersion::class.java)
         .convention(project.provider {
             val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
-            javaExt.toolchain.languageVersion.get()
+            val toolchainSpec = javaExt.toolchain
+            val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
+            val launcherProvider = javaToolchains.launcherFor(toolchainSpec)
+            launcherProvider.get().metadata.languageVersion
         })
 
     /**

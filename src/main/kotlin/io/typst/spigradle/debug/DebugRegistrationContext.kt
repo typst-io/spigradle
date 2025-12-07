@@ -31,7 +31,7 @@ import java.io.File
 
 data class DebugRegistrationContext(
     val platformName: String,
-    val platformVersion: Provider<String>,
+    val platformVersion: Property<String>,
     val downloadURI: String,
     val debugArtifactRelativeDir: String,
     val jarTask: Provider<Jar>,
