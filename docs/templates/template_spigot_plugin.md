@@ -22,6 +22,8 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the fo
 
 - [Configuration](#configuration)
 
+- [Use external dependencies](#use-external-dependencies)
+
 - [Tasks](#tasks)
 
 - [Why not spigot-annotations?](#why-not-spigot-annotations)
@@ -53,6 +55,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '$IDEA_EXT_VERSION' // optional, allows Spigradle generates Run Configurations for debug
 }
 ```
 
@@ -61,6 +64,7 @@ Kotlin DSL
 ```kotlin
 plugins {
     id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional, allows Spigradle generates Run Configurations for debug
 }
 ```
 
@@ -235,6 +239,26 @@ debugSpigot {
     eula.set(true)
     // if you want to specify the port(default 5005):
     // jvmDebugPort.set(int)
+}
+```
+
+## Use external dependencies
+
+Declaring dependencies to `libraries` in `plugin.yml` is the recommended approach instead of shading jar.
+
+```kotlin
+// Declare the dependencies here
+val libs = listOf(
+    "org.ahocorasick:ahocorasick:0.6.3",
+)
+
+dependencies {
+    compileOnly(libs)
+}
+
+spigot {
+    // ...
+    libraries = libs
 }
 ```
 

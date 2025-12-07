@@ -46,6 +46,7 @@ tasks {
                 "SPIGRADLE_VERSION" to project.version,
                 "KOTLIN_VERSION" to "2.1.20",
                 "SHADOW_JAR_VERSION" to "9.2.2",
+                "IDEA_EXT_VERSION" to "1.3",
             )
             filter { line ->
                 if (line.contains(Regex("^#[#]?[#]? "))) """

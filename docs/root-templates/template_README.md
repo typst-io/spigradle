@@ -16,9 +16,13 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ## Quick Start
 
-```groovy
+```kotlin
+import io.typst.spigradle.spigot.*
+import io.typst.spigradle.*
+
 plugins {
-    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
+    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional, allows Spigradle generates Run Configurations for debug
 }
 
 repositories {
@@ -27,12 +31,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly paper('1.21.8')
+    compileOnly(paper("1.21.8"))
 }
 
 spigot {
-    depends = ['ProtocolLib']
-    apiVersion = '1.21'
+    depends = listOf("ProtocolLib", "Vault")
+    apiVersion = "1.21"
 }
 
 debugSpigot { // extension for debug\${ProjectName} task
