@@ -91,7 +91,9 @@ class SpigotPlugin : Plugin<Project> {
             setupGroovyExtensions()
 
             // debug
-            project.rootProject.pluginManager.apply(IdeaExtPlugin::class.java)
+            if (!project.rootProject.pluginManager.hasPlugin("org.jetbrains.gradle.plugin.idea-ext")) {
+                project.rootProject.pluginManager.apply(IdeaExtPlugin::class.java)
+            }
             setupSpigotDebug()
         }
     }
