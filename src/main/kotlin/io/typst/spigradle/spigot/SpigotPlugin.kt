@@ -71,11 +71,6 @@ class SpigotPlugin : Plugin<Project> {
         val platformName: String = "spigot"
         val genDescTask: String = "generate${platformName.capitalized()}Description"
         val mainDetectTask: String = "detect${platformName.capitalized()}Main"
-        val SPIGOT_TYPE = PluginConvention(
-            serverName = "spigot",
-            descFile = "plugin.yml",
-            mainSuperClass = "org/bukkit/plugin/java/JavaPlugin"
-        )
 
         private fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
@@ -95,7 +90,6 @@ class SpigotPlugin : Plugin<Project> {
                 21
             }
         }
-    }
 
         fun createModuleRegistrationContext(
             project: Project,

@@ -27,7 +27,7 @@ import java.io.File
 abstract class VersionTask : DefaultTask() {
     companion object {
         fun getVersionFile(project: Project) = File("${project.projectDir}/version.txt")
-        fun readVersion(project: Project) = getVersionFile(project).readText()
+        fun readVersion(project: Project) = getVersionFile(project).readText().trimEnd('\r', '\n')
     }
 
     @get:Input
