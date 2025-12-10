@@ -27,10 +27,6 @@ abstract class Command : Named {
     abstract val permissionMessage: Property<String>
     abstract val aliases: ListProperty<String>
 
-    fun aliases(vararg aliases: String) {
-        this.aliases.set(aliases.toList())
-    }
-
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "description" to description.orNull,

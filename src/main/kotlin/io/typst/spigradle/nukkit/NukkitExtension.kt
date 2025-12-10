@@ -19,7 +19,6 @@ package io.typst.spigradle.nukkit
 import io.typst.spigradle.caseKebabToPascal
 import io.typst.spigradle.spigot.Command
 import io.typst.spigradle.spigot.Permission
-import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -116,104 +115,6 @@ abstract class NukkitExtension @Inject constructor(private val project: Project)
 
     abstract val commands: NamedDomainObjectContainer<Command>
     abstract val permissions: NamedDomainObjectContainer<Permission>
-
-    /**
-     * Groovy DSL helper for the [main] lazy property.
-     */
-    fun main(xs: String) {
-        main.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [name] lazy property.
-     */
-    fun name(xs: String) {
-        name.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [version] lazy property.
-     */
-    fun version(xs: String) {
-        version.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [description] lazy property.
-     */
-    fun description(xs: String) {
-        description.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [website] property.
-     */
-    fun website(xs: String) {
-        website.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [authors] configuration.
-     */
-    fun authors(vararg authors: String) {
-        this.authors.set(authors.toList())
-    }
-
-    /**
-     * Groovy DSL helper for the [api] configuration.
-     */
-    fun api(vararg apis: String) {
-        this.api.set(apis.toList())
-    }
-
-    /**
-     * Groovy DSL helper for the [load] property.
-     */
-    fun load(xs: String) {
-        load.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [prefix] property.
-     */
-    fun prefix(xs: String) {
-        prefix.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [depend] configuration.
-     */
-    fun depends(vararg depend: String) {
-        this.depend.set(depend.toList())
-    }
-
-    /**
-     * Groovy DSL helper for the [softDepend] configuration.
-     */
-    fun softDepends(vararg softDepend: String) {
-        this.softDepend.set(softDepend.toList())
-    }
-
-    /**
-     * Groovy DSL helper for the [loadBefore] configuration.
-     */
-    fun loadBefore(vararg loadBefore: String) {
-        this.loadBefore.set(loadBefore.toList())
-    }
-
-    /**
-     * DSL helper for [commands] configuration.
-     */
-    fun commands(configure: Action<in NamedDomainObjectContainer<Command>>) {
-        configure.execute(commands)
-    }
-
-    /**
-     * DSL helper for [permissions] configuration.
-     */
-    fun permissions(configure: Action<in NamedDomainObjectContainer<Permission>>) {
-        configure.execute(permissions)
-    }
 
     fun toMap(): Map<String, Any> {
         return listOf(

@@ -64,55 +64,6 @@ abstract class BungeeExtension @Inject constructor(project: Project) {
     abstract val depend: ListProperty<String>
     abstract val softDepend: ListProperty<String>
 
-    /**
-     * Groovy DSL helper for the [main] lazy property.
-     */
-    fun main(xs: String) {
-        main.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [name] lazy property.
-     */
-    fun name(xs: String) {
-        name.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [version] lazy property.
-     */
-    fun version(xs: String) {
-        version.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [description] lazy property.
-     */
-    fun description(xs: String) {
-        description.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [author] property.
-     */
-    fun author(xs: String) {
-        author.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [depend] configuration.
-     */
-    fun depends(vararg depend: String) {
-        this.depend.set(depend.toList())
-    }
-
-    /**
-     * Groovy DSL helper for the [softDepend] configuration.
-     */
-    fun softDepends(vararg softDepend: String) {
-        this.softDepend.set(softDepend.toList())
-    }
-
     fun toMap(): Map<String, Any> {
         return listOf(
             "main" to main.orNull,
