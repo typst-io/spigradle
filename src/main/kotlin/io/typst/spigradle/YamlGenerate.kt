@@ -116,7 +116,7 @@ internal fun Project.getMainDetectivePropertiesProvider(
             val detectResult = runCatching {
                 detectResultFile.get().asFile.readText()
             }.getOrNull() ?: runCatching {
-                detectResultFile.get().asFile.resolve("plugin_main").readText()
+                detectResultFile.get().asFile.parentFile.resolve("plugin_main").readText()
             }.getOrNull()
             val newMap = LinkedHashMap<String, Any>()
             if (detectResult != null) {
