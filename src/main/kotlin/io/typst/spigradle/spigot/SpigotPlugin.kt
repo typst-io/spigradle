@@ -71,6 +71,31 @@ class SpigotPlugin : Plugin<Project> {
         val platformName: String = "spigot"
         val genDescTask: String = "generate${platformName.capitalized()}Description"
         val mainDetectTask: String = "detect${platformName.capitalized()}Main"
+        val SPIGOT_TYPE = PluginConvention(
+            serverName = "spigot",
+            descFile = "plugin.yml",
+            mainSuperClass = "org/bukkit/plugin/java/JavaPlugin"
+        )
+
+        private fun getMinecraftMinimumJavaVersion(semVer: String): Int {
+            val versions = semVer.split(".")
+            val minor = versions[1].toInt()
+            val fix = versions.getOrNull(2)?.toInt() ?: 0
+            return if (minor <= 16) {
+                // https://www.minecraftforum.net/forums/minecraft-java-edition/discussion/3041524-help-will-this-laptop-play-java
+                8
+            } else if (minor <= 17) {
+                // https://www.minecraft.net/en-us/article/minecraft-snapshot-21w19a
+                16
+            } else if (minor <= 20 && fix <= 4) {
+                // https://www.minecraft.net/en-us/article/minecraft-1-18-pre-release-2
+                17
+            } else {
+                // https://www.minecraft.net/en-us/article/minecraft-snapshot-24w14a
+                21
+            }
+        }
+    }
 
         fun createModuleRegistrationContext(
             project: Project,
@@ -146,19 +171,8 @@ class SpigotPlugin : Plugin<Project> {
 
                 doFirst {
                     // NOTE: minJavaVer required consistent maintenance
-                    // REFERENCE: https://github.com/MultiMC/Launcher/wiki/Using-the-right-Java
-                    val paperVersion = paperExt.version.get().split(".")
-                    val paperMinorVersion = paperVersion[1].toInt()
-                    val paperFixVersion = paperVersion.getOrNull(2)?.toInt() ?: 0
-                    val minimumJavaVersion = if (paperMinorVersion <= 11) {
-                        8
-                    } else if (paperMinorVersion <= 16 && paperFixVersion <= 4) {
-                        11
-                    } else if (paperMinorVersion <= 16) {
-                        16
-                    } else {
-                        21
-                    }
+                    // REFERENCE: https://docs.papermc.io/paper/getting-started/#requirements
+                    val minimumJavaVersion = getMinecraftMinimumJavaVersion(paperExt.version.get())
                     val javaVersion = paperExt.javaVersion.orNull?.asInt()
                     if (javaVersion != null && javaVersion < minimumJavaVersion) {
                         // https://docs.gradle.org/current/userguide/reporting_problems.html
