@@ -19,7 +19,7 @@ package io.typst.spigradle.spigot
 import io.typst.spigradle.Dependency
 import io.typst.spigradle.VersionModifier
 
-enum class SpigotDependencies(
+internal enum class SpigotDependencies(
     val group: String,
     val publicName: String,
     val version: String,

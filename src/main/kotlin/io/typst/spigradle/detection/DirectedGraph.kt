@@ -18,7 +18,7 @@ package io.typst.spigradle.detection
 
 internal fun <A> emptyDirectedGraph(): DirectedGraph<A> = DirectedGraph(emptyMap())
 
-data class DirectedGraph<A>(val map: Map<A, Set<A>> = emptyMap()) {
+internal data class DirectedGraph<A>(val map: Map<A, Set<A>> = emptyMap()) {
     fun addNode(a: A): DirectedGraph<A> {
         val set = map[a] ?: emptySet()
         return copy(map = map + (a to set))

@@ -1,6 +1,5 @@
 package io.typst.spigradle
 
-import io.typst.spigradle.spigot.Load
 import io.typst.spigradle.spigot.SpigotExtension
 import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.kotlin.dsl.create
@@ -42,16 +41,18 @@ class GenerateYamlTaskTest {
         yamlTask.apply {
             properties.set(
                 project.getMainDetectivePropertiesProvider(
-                    extension.encodeToMap(),
-                    project.getPluginMainPathFile(SpigotPlugin.SPIGOT_TYPE.serverName)
+                    extension.toMap(),
+                    project.getMainDetectOutputFile(SpigotPlugin.platformName)
                 )
             )
             outputFiles.from(file)
             generate()
         }
-        assertEquals("main: SpigradleMain\n" +
-                "name: Test\n" +
-                "version: unspecified\n", file.readText())
+        assertEquals(
+            "main: SpigradleMain\n" +
+                    "name: Test\n" +
+                    "version: unspecified\n", file.readText()
+        )
     }
 
     @Test
@@ -61,35 +62,37 @@ class GenerateYamlTaskTest {
             name.set("Spigradle")
             version.set("1.1")
             description.set("This plugin does so much stuff it can't be contained!")
-            website = "https://github.com/spigradle/spigradle"
-            authors = listOf("EntryPoint")
-            apiVersion = "1.15"
-            load = Load.POST_WORLD
-            prefix = "Its prefix"
-            softDepends = listOf("ProtocolLib")
-            loadBefore = listOf("ABC")
-            libraries = listOf(
-                "com.squareup.okhttp3:okhttp:4.9.0",
-                "a:b:1.0.0"
+            website.set("https://github.com/spigradle/spigradle")
+            authors.set(listOf("EntryPoint"))
+            apiVersion.set("1.15")
+            load.set("POSTWORLD")
+            prefix.set("Its prefix")
+            softDepend.set(listOf("ProtocolLib"))
+            loadBefore.set(listOf("ABC"))
+            libraries.set(
+                listOf(
+                    "com.squareup.okhttp3:okhttp:4.9.0",
+                    "a:b:1.0.0"
+                )
             )
             commands.apply {
                 create("give").apply {
-                    description = "Give command."
-                    usage = "/<command> [test|stop]"
-                    permission = "test.foo"
-                    permissionMessage = "You do not have permission!"
-                    aliases = listOf("alias")
+                    description.set("Give command.")
+                    usage.set("/<command> [test|stop]")
+                    permission.set("test.foo")
+                    permissionMessage.set("You do not have permission!")
+                    aliases.set(listOf("alias"))
                 }
             }
             permissions.apply {
                 create("test.*").apply {
-                    description = "Wildcard permission"
-                    defaults = "op"
-                    children = mapOf("test.foo" to true)
+                    description.set("Wildcard permission")
+                    defaults.set("op")
+                    children.set(mapOf("test.foo" to true))
                 }
                 create("test.foo").apply {
-                    description = "Allows foo command"
-                    defaults = "true"
+                    description.set("Allows foo command")
+                    defaults.set("true")
                 }
             }
         }
@@ -97,8 +100,8 @@ class GenerateYamlTaskTest {
             outputFiles.from(file)
             properties.set(
                 project.getMainDetectivePropertiesProvider(
-                    ext.encodeToMap(),
-                    project.getPluginMainPathFile(SpigotPlugin.SPIGOT_TYPE.serverName)
+                    ext.toMap(),
+                    project.getMainDetectOutputFile(SpigotPlugin.platformName)
                 )
             )
             generate()

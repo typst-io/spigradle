@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-enum class Dependencies(
+internal enum class Dependencies(
     val group: String,
     val publicName: String,
     val version: String,

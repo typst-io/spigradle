@@ -16,6 +16,7 @@
 
 package io.typst.spigradle.debug
 
+import io.typst.spigradle.hasJavaPlugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.plugins.JavaPluginExtension
@@ -23,6 +24,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
+import org.gradle.jvm.toolchain.internal.DefaultJavaLanguageVersion
 
 /**
  * Configuration extension for the Spigot debug system.
@@ -198,11 +200,13 @@ open class DebugExtension(project: Project) {
      */
     val javaVersion: Property<JavaLanguageVersion> = project.objects.property(JavaLanguageVersion::class.java)
         .convention(project.provider {
-            val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
-            val toolchainSpec = javaExt.toolchain
-            val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
-            val launcherProvider = javaToolchains.launcherFor(toolchainSpec)
-            launcherProvider.get().metadata.languageVersion
+            if (project.hasJavaPlugin) {
+                val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
+                val toolchainSpec = javaExt.toolchain
+                val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
+                val launcherProvider = javaToolchains.launcherFor(toolchainSpec)
+                launcherProvider.get().metadata.languageVersion
+            } else DefaultJavaLanguageVersion.fromFullVersion(System.getProperty("java.version"))
         })
 
     /**

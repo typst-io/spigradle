@@ -16,8 +16,10 @@
 
 package io.typst.spigradle.debug
 
+import io.typst.spigradle.Download
 import io.typst.spigradle.capitalized
 import io.typst.spigradle.caseKebabToPascal
+import io.typst.spigradle.hasJavaPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -29,6 +31,7 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.gradle.ext.*
 import java.io.File
+import java.net.URI
 
 private fun escb(xs: String): String =
     "\"${xs}\""
@@ -91,7 +94,7 @@ internal object DebugTask {
      *
      * ## Tasks Created
      *
-     * - **`download${PlatformName}`** (optional) - [io.typst.spigradle.DownloadTask] or [Copy]
+     * - **`download${PlatformName}`** (optional) - [io.typst.spigradle.Download] or [Copy]
      *   - Downloads or copies the platform server JAR
      *
      * - **`copyArtifactJar`** - [Copy]
@@ -159,34 +162,39 @@ internal object DebugTask {
      * @return TaskProvider for the main debug task
      */
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
-        val archiveFile = ctx.jarTask.flatMap { it.archiveFile }
-        val downloadTask = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
-            project.tasks.register(ctx.downloadTaskName, Copy::class.java) {
+        val archiveFile = ctx.jarTask?.flatMap { it.archiveFile }
+        val download = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
+            project.tasks.register(ctx.downloadTaskName, Download::class.java) {
                 group = ctx.taskGroupName
 
-                dependsOn(ctx.jarTask)
-                from(archiveFile)
-                into(ctx.getDebugArtifactDir(project))
+                uri.set(URI.create(ctx.downloadURI))
+                outputFile.set(ctx.getDownloadOutputFile(project))
             }
         } else null
-        val copyArtifactJarTask = project.tasks.register("copyArtifactJar", Copy::class.java) {
-            group = ctx.taskGroupName
+        val copyArtifactJarTask = if (project.hasJavaPlugin) {
+            project.tasks.register("copyArtifactJar", Copy::class.java) {
+                group = ctx.taskGroupName
 
-            dependsOn(ctx.jarTask)
-            from(archiveFile)
-            into(ctx.getDebugArtifactDir(project))
-
-            doFirst {
-                if (ctx.eula?.get() == false) {
-                    throw GradleException("Please set 'eula.set(true)' in the debug extension!")
+                if (ctx.jarTask != null) {
+                    dependsOn(ctx.jarTask)
                 }
-                val debugDir = ctx.getDebugDir(project).asFile
-                if (ctx.eula?.get() == true) {
-                    val eulaTxt = debugDir.resolve("eula.txt")
-                    eulaTxt.writeText("eula=true")
+                if (archiveFile != null) {
+                    from(archiveFile)
+                }
+                into(ctx.getDebugArtifactDir(project))
+
+                doFirst {
+                    if (ctx.eula?.get() == false) {
+                        throw GradleException("Please set 'eula.set(true)' in the debug extension!")
+                    }
+                    val debugDir = ctx.getDebugDir(project).asFile
+                    if (ctx.eula?.get() == true) {
+                        val eulaTxt = debugDir.resolve("eula.txt")
+                        eulaTxt.writeText("eula=true")
+                    }
                 }
             }
-        }
+        } else null
         val jar = ctx.getDownloadOutputFile(project)
         project.tasks.register("cleanDebug${project.name.caseKebabToPascal()}", Delete::class.java) {
             group = ctx.taskGroupName
@@ -201,21 +209,27 @@ internal object DebugTask {
             delete(ctx.getDownloadBaseDir(project))
         }
         val createJavaDebugScriptTask =
-            project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
-                group = ctx.taskGroupName
+            if (project.hasJavaPlugin) {
+                project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
+                    group = ctx.taskGroupName
 
-                dir.set(ctx.getDebugDir(project))
-                javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
-                jvmArgs.set(ctx.jvmArgs)
-                programArgs.set(ctx.programArgs)
-                jarFile.set(jar.map { it.asFile.absolutePath })
-            }
+                    dir.set(ctx.getDebugDir(project))
+                    javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
+                    jvmArgs.set(ctx.jvmArgs)
+                    programArgs.set(ctx.programArgs)
+                    jarFile.set(jar.map { it.asFile.absolutePath })
+                }
+            } else null
         val debugTasks = mutableListOf<TaskProvider<out Task>>()
-        if (downloadTask != null) {
-            debugTasks += downloadTask
+        if (download != null) {
+            debugTasks += download
         }
-        debugTasks += copyArtifactJarTask
-        debugTasks += createJavaDebugScriptTask
+        if (copyArtifactJarTask != null) {
+            debugTasks += copyArtifactJarTask
+        }
+        if (createJavaDebugScriptTask != null) {
+            debugTasks += createJavaDebugScriptTask
+        }
         debugTasks += ctx.extraTasks
         project.rootProject.pluginManager.withPlugin("org.jetbrains.gradle.plugin.idea-ext") {
             val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
@@ -231,7 +245,10 @@ internal object DebugTask {
                         if (paperJarPath != null) {
                             jarPath = paperJarPath
                         } else {
-                            project.logger.log(LogLevel.WARN, "[Spigradle] IDEA run configuration `${runConfName}` is missing the required setting 'debugSpigot#version', so its `Path to JAR` field is not configured.")
+                            project.logger.log(
+                                LogLevel.WARN,
+                                "[Spigradle] IDEA run configuration `${runConfName}` is missing the required setting 'debugSpigot#version', so its `Path to JAR` field is not configured."
+                            )
                         }
                         workingDirectory = ctx.getDebugDir(project).asFile.absolutePath
                         jvmArgs = ctx.jvmArgs.get().joinToString(" ")

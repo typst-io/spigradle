@@ -8,11 +8,11 @@ import kotlin.test.Ignore
 class NukkitGradleTest {
     @Test
     fun kotlin() {
-        testGradleTaskWithResource("/nukkit/kotlin", NukkitPlugin.NUKKIT_TYPE.descGenTask)
+        testGradleTaskWithResource("/nukkit/kotlin", NukkitPlugin.genDescTask)
     }
 
     @Test
     fun groovy() {
-        testGradleTaskWithResource("/nukkit/groovy", NukkitPlugin.NUKKIT_TYPE.descGenTask)
+        testGradleTaskWithResource("/nukkit/groovy", NukkitPlugin.genDescTask)
     }
 }

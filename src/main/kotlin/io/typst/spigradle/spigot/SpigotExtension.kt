@@ -20,10 +20,10 @@ import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.kotlin.dsl.container
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
+import javax.inject.Inject
 
 /**
  * Spigot configuration for the `plugin.yml` description.
@@ -102,13 +102,8 @@ import org.gradle.kotlin.dsl.property
  * @property version Defaults to `project.version`
  * @property description Defaults to `project.description
  */
-//@JsonPropertyOrder(
-//    "main", "name", "version", "description", "website",
-//    "authors", "api-version", "load", "prefix", "depend",
-//    "softdepend", "loadbefore", "libraries", "commands",
-//    "permissions"
-//)
-open class SpigotExtension(project: Project) {
+abstract class SpigotExtension @Inject constructor(private val project: Project) {
+
     /**
      * The name of main class that extends [org.bukkit.plugin.java.JavaPlugin].
      *
@@ -116,7 +111,7 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    var main: Property<String> = project.objects.property()
+    abstract val main: Property<String>
 
     /**
      * The name of your plugin.
@@ -125,7 +120,7 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    var name: Property<String> =
+    val name: Property<String> =
         project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
 
     /**
@@ -135,50 +130,29 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    var version: Property<String> =
+    val version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
-    var description: Property<String> =
+    val description: Property<String> =
         project.objects.property<String>().convention(project.provider { project.description })
 
-    var website: String? = null
-    var authors: List<String> = emptyList()
-
-    // @SerialName("api-version")
-    var apiVersion: String? = null
+    abstract val website: Property<String>
+    abstract val authors: ListProperty<String>
+    abstract val apiVersion: Property<String>
 
     /**
      * The load order of your plugin.
      *
-     * Groovy Example:
-     * ```groovy
-     * spigot {
-     *   load = STARTUP // or POSTWORLD
-     * }
-     * ```
-     *
-     * Kotlin Example:
-     *
-     * ```kotlin
-     * import io.typst.spigradle.Load
-     *
-     * spigot {
-     *   load = Load.STARTUP // or Load.POST_WORLD
-     * }
+     * Available values:
+     * - POSTWORLD(default)
+     * - STARTUP
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
-     * ```
      */
-    var load: Load? = null
-    var prefix: String? = null
-
-    //    @SerialName("depend")
-    var depends: List<String> = emptyList()
-
-    //    @SerialName("softdepend")
-    var softDepends: List<String> = emptyList()
-
-    //    @SerialName("loadbefore")
-    var loadBefore: List<String> = emptyList()
+    abstract val load: Property<String>
+    abstract val prefix: Property<String>
+    abstract val depend: ListProperty<String>
+    abstract val softDepend: ListProperty<String>
+    abstract val loadBefore: ListProperty<String>
 
     /**
      * Runtime libraries of your plugin that will be loaded without shading(fat-jar) by Spigot 1.17 or higher.
@@ -187,7 +161,7 @@ open class SpigotExtension(project: Project) {
      *
      * See also: [Spigot & BungeeCord 1.17](https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317)
      */
-    var libraries: List<String> = emptyList()
+    abstract val libraries: ListProperty<String>
 
     /**
      * DSL container for the [commands] configuration.
@@ -215,7 +189,7 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    val commands: NamedDomainObjectContainer<Command> = project.run { container { objects.newInstance(it) } }
+    abstract val commands: NamedDomainObjectContainer<Command>
 
     /**
      * DSL container for the [permissions] configuration.
@@ -242,136 +216,33 @@ open class SpigotExtension(project: Project) {
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    val permissions: NamedDomainObjectContainer<Permission> = project.run { container { objects.newInstance(it) } }
+    abstract val permissions: NamedDomainObjectContainer<Permission>
 
-    /**
-     * Groovy DSL helper for the [main] lazy property.
-     */
-    fun main(xs: String) {
-        main.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [name] lazy property.
-     */
-    fun name(xs: String) {
-        name.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [version] lazy property.
-     */
-    fun version(xs: String) {
-        version.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [description] lazy property.
-     */
-    fun description(xs: String) {
-        description.set(xs)
-    }
-
-    /**
-     * Groovy DSL helper for the [website] property.
-     */
-    fun website(xs: String) {
-        website = xs
-    }
-
-    /**
-     * Groovy DSL helper for the [authors] configuration.
-     */
-    fun authors(vararg authors: String) {
-        this.authors = authors.toList()
-    }
-
-    /**
-     * Groovy DSL helper for the [apiVersion] property.
-     */
-    fun apiVersion(xs: String) {
-        apiVersion = xs
-    }
-
-    /**
-     * Groovy DSL helper for the [load] property.
-     */
-    fun load(x: Load) {
-        load = x
-    }
-
-    /**
-     * Groovy DSL helper for the [prefix] property.
-     */
-    fun prefix(xs: String) {
-        prefix = xs
-    }
-
-    /**
-     * Groovy DSL helper for the [depends] configuration.
-     */
-    fun depends(vararg depends: String) {
-        this.depends = depends.toList()
-    }
-
-    /**
-     * Groovy DSL helper for the [softDepends] configuration.
-     */
-    fun softDepends(vararg softDepends: String) {
-        this.softDepends = softDepends.toList()
-    }
-
-    /**
-     * Groovy DSL helper for the [loadBefore] configuration.
-     */
-    fun loadBefore(vararg loadBefore: String) {
-        this.loadBefore = loadBefore.toList()
-    }
-
-    /**
-     * Groovy DSL helper for the [libraries] configuration.
-     */
-    fun libraries(vararg libraries: String) {
-        this.libraries = libraries.toList()
-    }
-
-    /**
-     * DSL helper for [commands] configuration.
-     */
-    fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
-        configure.execute(commands)
-    }
-
-    /**
-     * DSL helper for [permissions] configuration.
-     */
-    fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
-        configure.execute(permissions)
-    }
-
-    fun encodeToMap(): Map<String, Any?> {
-        return linkedMapOf(
+    fun toMap(): Map<String, Any> {
+        return listOf(
             "main" to main.orNull,
             "name" to name.orNull,
             "version" to version.orNull,
             "description" to description.orNull,
-            "website" to website,
-            "authors" to authors.ifEmpty { null },
-            "api-version" to apiVersion,
-            "load" to load?.label,
-            "prefix" to prefix,
-            "depend" to depends.ifEmpty { null },
-            "softdepend" to softDepends.ifEmpty { null },
-            "loadbefore" to loadBefore.ifEmpty { null },
-            "libraries" to libraries.ifEmpty { null },
+            "website" to website.orNull,
+            "authors" to authors.orNull?.ifEmpty { null },
+            "api-version" to apiVersion.orNull,
+            "load" to load.orNull,
+            "prefix" to prefix.orNull,
+            "depend" to depend.orNull?.ifEmpty { null },
+            "softdepend" to softDepend.orNull?.ifEmpty { null },
+            "loadbefore" to loadBefore.orNull?.ifEmpty { null },
+            "libraries" to libraries.orNull?.ifEmpty { null },
             "commands" to commands.toList().associate {
-                it.name to it.serialize()
+                it.name to it.toMap()
             }.ifEmpty { null },
             "permissions" to permissions.toList().associate {
-                it.name to it.serialize()
+                it.name to it.toMap()
             }.ifEmpty { null },
-        ).filterValues {
-            it != null
-        }
+        ).flatMap { (k, v) ->
+            if (v != null) {
+                listOf(k to v)
+            } else emptyList()
+        }.toMap()
     }
 }

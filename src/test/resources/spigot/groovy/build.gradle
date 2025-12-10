@@ -18,31 +18,27 @@ java {
     }
 }
 
-import io.typst.spigradle.spigot.Load
-
 spigot {
-    description 'A sample plugin'
-    softDepends = ['Vault', 'PlaceholderAPI']
-    load Load.STARTUP
-    load STARTUP
-    load POSTWORLD
+    description = 'A sample plugin'
+    softDepend = ['Vault', 'PlaceholderAPI']
+    load = "POSTWORLD"
     commands {
         give {
-            aliases 'giv', 'i'
-            description 'A give command.'
-            permission 'sample.give'
-            permissionMessage 'You do not have the permission.'
+            aliases = ['giv', 'i']
+            description = 'A give command.'
+            permission = 'sample.give'
+            permissionMessage = 'You do not have the permission.'
         }
     }
     permissions {
         'sample.give' {
-            description 'Allows give command'
-            defaults 'true'
+            description = 'Allows give command'
+            defaults = 'true'
         }
         'sample.*' {
-            description 'Wildcard permission'
-            defaults 'op'
-            children 'test.foo': true
+            description = 'Wildcard permission'
+            defaults = 'op'
+            children = ['test.foo': true]
         }
     }
 }

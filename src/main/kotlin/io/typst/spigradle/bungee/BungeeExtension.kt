@@ -18,8 +18,10 @@ package io.typst.spigradle.bungee
 
 import io.typst.spigradle.caseKebabToPascal
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.property
+import javax.inject.Inject
 
 /**
  * Bungeecord configuration for the 'plugin.yml' description, and debug settings.
@@ -50,17 +52,17 @@ import org.gradle.kotlin.dsl.property
  *
  * See: [https://www.spigotmc.org/wiki/create-your-first-bungeecord-plugin-proxy-spigotmc/#making-it-load]
  */
-open class BungeeExtension(project: Project) {
-    var main: Property<String> = project.objects.property()
-    var name: Property<String> =
+abstract class BungeeExtension @Inject constructor(project: Project) {
+    abstract val main: Property<String>
+    val name: Property<String> =
         project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
-    var version: Property<String> =
+    val version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
-    var description: Property<String> =
+    val description: Property<String> =
         project.objects.property<String>().convention(project.provider { project.description })
-    var author: String? = null
-    var depends: List<String> = emptyList()
-    var softDepends: List<String> = emptyList()
+    abstract val author: Property<String>
+    abstract val depend: ListProperty<String>
+    abstract val softDepend: ListProperty<String>
 
     /**
      * Groovy DSL helper for the [main] lazy property.
@@ -90,29 +92,40 @@ open class BungeeExtension(project: Project) {
         description.set(xs)
     }
 
+    /**
+     * Groovy DSL helper for the [author] property.
+     */
     fun author(xs: String) {
-        this.author = xs
+        author.set(xs)
     }
 
-    fun depends(vararg depends: String) {
-        this.depends = depends.toList()
+    /**
+     * Groovy DSL helper for the [depend] configuration.
+     */
+    fun depends(vararg depend: String) {
+        this.depend.set(depend.toList())
     }
 
-    fun softDepends(vararg softDepends: String) {
-        this.softDepends = softDepends.toList()
+    /**
+     * Groovy DSL helper for the [softDepend] configuration.
+     */
+    fun softDepends(vararg softDepend: String) {
+        this.softDepend.set(softDepend.toList())
     }
 
-    fun encodeToMap(): Map<String, Any?> {
-        return linkedMapOf(
+    fun toMap(): Map<String, Any> {
+        return listOf(
             "main" to main.orNull,
             "name" to name.orNull,
             "version" to version.orNull,
             "description" to description.orNull,
-            "author" to author,
-            "depend" to depends.ifEmpty { null },
-            "softdepend" to softDepends.ifEmpty { null }
-        ).filterValues {
-            it != null
-        }
+            "author" to author.orNull,
+            "depend" to depend.orNull?.ifEmpty { null },
+            "softdepend" to softDepend.orNull?.ifEmpty { null }
+        ).flatMap { (k, v) ->
+            if (v != null) {
+                listOf(k to v)
+            } else emptyList()
+        }.toMap()
     }
 }

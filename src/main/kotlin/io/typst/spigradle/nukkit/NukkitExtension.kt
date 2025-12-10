@@ -18,15 +18,14 @@ package io.typst.spigradle.nukkit
 
 import io.typst.spigradle.caseKebabToPascal
 import io.typst.spigradle.spigot.Command
-import io.typst.spigradle.spigot.Load
 import io.typst.spigradle.spigot.Permission
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.kotlin.dsl.container
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
+import javax.inject.Inject
 
 /**
  * Nukkit configuration for the 'plugin.yml' description, and debug settings.
@@ -98,36 +97,25 @@ import org.gradle.kotlin.dsl.property
  *
  * See: [https://github.com/NukkitX/ExamplePlugin/blob/master/src/main/resources/plugin.yml#L1]
  */
-//@JsonPropertyOrder(
-//        "main", "name", "version", "description", "website",
-//        "authors", "api", "load", "prefix", "depend",
-//        "softdepend", "loadbefore", "commands", "permissions"
-//)
-open class NukkitExtension(project: Project) {
-    var main: Property<String> = project.objects.property()
-    var name: Property<String> =
+abstract class NukkitExtension @Inject constructor(private val project: Project) {
+    abstract val main: Property<String>
+    val name: Property<String> =
         project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
-    var version: Property<String> =
+    val version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
-    var description: Property<String> =
+    val description: Property<String> =
         project.objects.property<String>().convention(project.provider { project.description })
-    var website: String? = null
-    var authors: List<String> = emptyList()
-    var api: List<String> = emptyList()
-    var load: Load? = null
-    var prefix: String? = null
+    abstract val website: Property<String>
+    abstract val authors: ListProperty<String>
+    abstract val api: ListProperty<String>
+    abstract val load: Property<String>
+    abstract val prefix: Property<String>
+    abstract val depend: ListProperty<String>
+    abstract val softDepend: ListProperty<String>
+    abstract val loadBefore: ListProperty<String>
 
-    //    @SerialName("depend")
-    var depends: List<String> = emptyList()
-
-    //    @SerialName("softdepend")
-    var softDepends: List<String> = emptyList()
-
-    //    @SerialName("loadbefore")
-    var loadBefore: List<String> = emptyList()
-
-    val commands: NamedDomainObjectContainer<Command> = project.container { project.objects.newInstance(it) }
-    val permissions: NamedDomainObjectContainer<Permission> = project.container { project.objects.newInstance(it) }
+    abstract val commands: NamedDomainObjectContainer<Command>
+    abstract val permissions: NamedDomainObjectContainer<Permission>
 
     /**
      * Groovy DSL helper for the [main] lazy property.
@@ -157,74 +145,100 @@ open class NukkitExtension(project: Project) {
         description.set(xs)
     }
 
-    fun website(website: String) {
-        this.website = website
+    /**
+     * Groovy DSL helper for the [website] property.
+     */
+    fun website(xs: String) {
+        website.set(xs)
     }
 
-    fun authors(authors: Array<String>) {
-        this.authors = authors.toList()
+    /**
+     * Groovy DSL helper for the [authors] configuration.
+     */
+    fun authors(vararg authors: String) {
+        this.authors.set(authors.toList())
     }
 
+    /**
+     * Groovy DSL helper for the [api] configuration.
+     */
     fun api(vararg apis: String) {
-        this.api = apis.toList()
+        this.api.set(apis.toList())
     }
 
-    fun load(load: Load) {
-        this.load = load
+    /**
+     * Groovy DSL helper for the [load] property.
+     */
+    fun load(xs: String) {
+        load.set(xs)
     }
 
-    fun prefix(prefix: String) {
-        this.prefix = prefix
+    /**
+     * Groovy DSL helper for the [prefix] property.
+     */
+    fun prefix(xs: String) {
+        prefix.set(xs)
     }
 
-    fun depends(vararg depends: String) {
-        this.depends = depends.toList()
+    /**
+     * Groovy DSL helper for the [depend] configuration.
+     */
+    fun depends(vararg depend: String) {
+        this.depend.set(depend.toList())
     }
 
-    fun softDepends(vararg softDepends: String) {
-        this.softDepends = softDepends.toList()
+    /**
+     * Groovy DSL helper for the [softDepend] configuration.
+     */
+    fun softDepends(vararg softDepend: String) {
+        this.softDepend.set(softDepend.toList())
     }
 
+    /**
+     * Groovy DSL helper for the [loadBefore] configuration.
+     */
     fun loadBefore(vararg loadBefore: String) {
-        this.loadBefore = loadBefore.toList()
+        this.loadBefore.set(loadBefore.toList())
     }
 
     /**
      * DSL helper for [commands] configuration.
      */
-    fun commands(configure: Action<NamedDomainObjectContainer<Command>>) {
+    fun commands(configure: Action<in NamedDomainObjectContainer<Command>>) {
         configure.execute(commands)
     }
 
     /**
      * DSL helper for [permissions] configuration.
      */
-    fun permissions(configure: Action<NamedDomainObjectContainer<Permission>>) {
+    fun permissions(configure: Action<in NamedDomainObjectContainer<Permission>>) {
         configure.execute(permissions)
     }
 
-    fun encodeToMap(): Map<String, Any?> {
-        return linkedMapOf(
+    fun toMap(): Map<String, Any> {
+        return listOf(
             "main" to main.orNull,
             "name" to name.orNull,
             "version" to version.orNull,
             "description" to description.orNull,
-            "website" to website,
-            "authors" to authors.ifEmpty { null },
-            "api" to api.ifEmpty { null },
-            "load" to load?.label,
-            "prefix" to prefix,
-            "depend" to depends.ifEmpty { null },
-            "softdepend" to softDepends.ifEmpty { null },
-            "loadbefore" to loadBefore.ifEmpty { null },
-            "commands" to commands.map {
-                it.serialize()
+            "website" to website.orNull,
+            "authors" to authors.orNull?.ifEmpty { null },
+            "api" to api.orNull?.ifEmpty { null },
+            "load" to load.orNull,
+            "prefix" to prefix.orNull,
+            "depend" to depend.orNull?.ifEmpty { null },
+            "softdepend" to softDepend.orNull?.ifEmpty { null },
+            "loadbefore" to loadBefore.orNull?.ifEmpty { null },
+            "commands" to commands.toList().associate {
+                it.name to it.toMap()
             }.ifEmpty { null },
-            "permissions" to permissions.map {
-                it.serialize()
+            "permissions" to permissions.toList().associate {
+                it.name to it.toMap()
             }.ifEmpty { null },
-        ).filterValues {
-            it != null
-        }
+        ).flatMap { (k, v) ->
+            if (v != null) {
+                listOf(k to v)
+            } else emptyList()
+        }.toMap()
     }
 }

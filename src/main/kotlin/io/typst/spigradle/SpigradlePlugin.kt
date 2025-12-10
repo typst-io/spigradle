@@ -23,19 +23,12 @@ import io.typst.spigradle.spigot.SpigotRepositories
 import io.typst.spigradle.spigot.mockBukkit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.maven
-
-fun Project.applySpigradlePlugin() = pluginManager.apply(SpigradlePlugin::class)
-
-fun Project.getPluginMainPathFile(type: String) =
-    layout.buildDirectory.file("spigradle/${type}_main").get().asFile
 
 /**
  * The base plugin applies:
- *
- * plugins:
- *   - java
  *
  * groovy extensions:
  *   - dependencies
@@ -44,7 +37,6 @@ fun Project.getPluginMainPathFile(type: String) =
 class SpigradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
-            pluginManager.apply("java") // TODO: bad practice? https://docs.gradle.org/current/userguide/implementing_gradle_plugins_binary.html#reacting_to_plugins
             setupGroovyExtensions()
         }
     }

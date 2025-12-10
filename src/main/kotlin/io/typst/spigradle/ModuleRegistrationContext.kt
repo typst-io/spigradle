@@ -16,15 +16,15 @@
 
 package io.typst.spigradle
 
-/**
- * Created by JunHyung Im on 2020-08-25
- */
-data class PluginConvention(
-        val serverName: String,
-        val descFile: String,
-        val mainSuperClass: String = "",
-        val descGenTask: String = "generate${serverName.capitalized()}Description",
-        val mainDetectTask: String = "detect${serverName.capitalized()}Main",
-        val descExtension: String = serverName,
-        val taskGroup: String = serverName
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
+
+data class ModuleRegistrationContext<A>(
+    val platformName: String,
+    val descFileName: String,
+    val extension: A,
+    val mainDetectOutputFile: Provider<RegularFile>,
+    val descGenTask: String,
+    val mainDetectTask: String,
+    val mainSuperClass: String = "",
 )

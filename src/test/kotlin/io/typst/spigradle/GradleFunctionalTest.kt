@@ -96,9 +96,10 @@ class GradleFunctionalTest {
                     languageVersion.set(JavaLanguageVersion.of(21))
                 }
             }
+            
             detectSpigotMain {
                 doLast {
-                    assert outputFile.get().text == mainParam
+                    assert outputFile.get().getAsFile().text == mainParam
                 }
             }
         """.trimIndent()
@@ -150,7 +151,7 @@ class GradleFunctionalTest {
             }
             detectSpigotMain {
                 doLast {
-                    assert outputFile.get().text == mainParam
+                    assert outputFile.get().getAsFile().text == mainParam
                 }
             }
         """.trimIndent()
@@ -442,7 +443,7 @@ class GradleFunctionalTest {
             """
             import io.typst.spigradle.spigot.*
             plugins {
-                kotlin("jvm") version "1.6.10"
+                kotlin("jvm") version "2.2.20"
                 id("io.typst.spigradle")
             }
             repositories {

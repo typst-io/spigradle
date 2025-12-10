@@ -50,7 +50,7 @@ import java.nio.file.attribute.PosixFilePermission
  *
  * @see io.typst.spigradle.debug.DebugTask
  */
-open class CreateJavaDebugScriptTask : DefaultTask() {
+abstract class CreateJavaDebugScriptTask : DefaultTask() {
     init {
         group = "spigradle debug"
         description = "Writes script files to run the server jar for Windows/Unix"
@@ -62,7 +62,7 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
      * Typically points to the debug folder (e.g., `.gradle/spigradle-debug/spigot/`).
      */
     @get:OutputDirectory
-    val dir: DirectoryProperty = project.objects.directoryProperty()
+    abstract val dir: DirectoryProperty
 
     /**
      * The path to the Java executable to use for running the server.
@@ -70,7 +70,7 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
      * This should be the full path to the `java` binary from the configured JVM toolchain.
      */
     @get:Input
-    val javaPath: Property<String> = project.objects.property(String::class.java)
+    abstract val javaPath: Property<String>
 
     /**
      * JVM arguments to pass to the Java process.
@@ -81,7 +81,7 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
      * - `-agentlib:jdwp=...` (debug agent configuration)
      */
     @get:Input
-    val jvmArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+    abstract val jvmArgs: ListProperty<String>
 
     /**
      * Program arguments to pass to the server JAR.
@@ -89,7 +89,7 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
      * These are arguments specific to the Paper/Spigot server (e.g., `--nogui`, `--world world_name`).
      */
     @get:Input
-    val programArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+    abstract val programArgs: ListProperty<String>
 
     /**
      * The path to the server JAR file to execute.
@@ -97,7 +97,7 @@ open class CreateJavaDebugScriptTask : DefaultTask() {
      * Typically points to the downloaded Paper/Spigot JAR in the global cache.
      */
     @get:Input
-    val jarFile: Property<String> = project.objects.property(String::class.java)
+    abstract val jarFile: Property<String>
 
     @TaskAction
     fun create() {

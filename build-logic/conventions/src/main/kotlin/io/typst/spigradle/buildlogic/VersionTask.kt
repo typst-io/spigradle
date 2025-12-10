@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.build
+package io.typst.spigradle.buildlogic
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import org.gradle.kotlin.dsl.property
 import java.io.File
 
-open class VersionTask : DefaultTask() {
+abstract class VersionTask : DefaultTask() {
     companion object {
         fun getVersionFile(project: Project) = File("${project.projectDir}/version.txt")
         fun readVersion(project: Project) = getVersionFile(project).readText()
     }
 
-    @Input
-    @Option(option = "build-version", description = "Configure the version of Spigradle.")
-    val version = project.objects.property<String>()
+    @get:Input
+    @get:Option(option = "build-version", description = "Configure the version of Spigradle.")
+    abstract val version: Property<String>
 
     @TaskAction
     fun execute() {

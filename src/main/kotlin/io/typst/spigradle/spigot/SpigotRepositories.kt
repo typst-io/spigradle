@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-enum class SpigotRepositories(val address: String, val alias: String) {
+internal enum class SpigotRepositories(val address: String, val alias: String) {
     // @SerialName("purpurmc"), purpur
     PURPUR_MC("https://repo.purpurmc.org/snapshots", "purpurmc"),
 

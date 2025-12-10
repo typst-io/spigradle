@@ -17,49 +17,9 @@
 package io.typst.spigradle
 
 import groovy.lang.GroovyObject
-import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.ExtraPropertiesExtension
-import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.plugins.ide.idea.model.IdeaProject
-
-internal inline fun <T> notNull(any: T?, message: () -> String = { "" }): T {
-    return any ?: throw GradleException(message())
-}
-
-internal fun TaskContainer.findArtifactJar() =
-        listOf("shadowJar", "jar").asSequence()
-                .mapNotNull { findByName(it) }
-                .filter { it.enabled }
-                .filterIsInstance<Jar>()
-                .mapNotNull { it.archiveFile.orNull?.asFile }
-                .firstOrNull()
-
-internal fun lazyString(provider: () -> Any): Any = object {
-    override fun toString(): String {
-        return provider().toString()
-    }
-}
-
-internal fun <T : Task> TaskProvider<T>.applyToConfigure(configure: T.() -> Unit): TaskProvider<T> {
-    return apply { configure(configure) }
-}
-
-internal inline fun <T> Project.cachingProvider(crossinline provider: () -> T): Provider<T> {
-    var cache: T? = null
-    return provider {
-        if (cache == null) {
-            cache = provider()
-        }
-        cache
-    }
-}
 
 internal val Any.groovyExtension get() = (this as GroovyObject).getProperty("ext") as ExtraPropertiesExtension
+
+internal val Project.hasJavaPlugin: Boolean get() = pluginManager.hasPlugin("java")

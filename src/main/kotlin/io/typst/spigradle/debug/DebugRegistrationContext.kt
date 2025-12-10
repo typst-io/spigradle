@@ -29,12 +29,12 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import java.io.File
 
-data class DebugRegistrationContext(
+internal data class DebugRegistrationContext(
     val platformName: String,
     val platformVersion: Property<String>,
     val downloadURI: String,
     val debugArtifactRelativeDir: String,
-    val jarTask: Provider<Jar>,
+    val jarTask: Provider<Jar>?,
     val jvmArgs: ListProperty<String>,
     val programArgs: ListProperty<String>,
     val jvmDebugPort: Property<Int>,

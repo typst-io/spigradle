@@ -16,29 +16,28 @@
 
 package io.typst.spigradle.spigot
 
-import javax.inject.Inject
+import org.gradle.api.Named
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 
-// @JsonPropertyOrder("description", "usage", "permission", "permission-message")
-open class Command @Inject constructor(@Transient val name: String) {
-    var description: String? = null
-    var usage: String? = null
-    var permission: String? = null
-
-    // @SerialName("permission-message")
-    var permissionMessage: String? = null
-    var aliases = emptyList<String>()
+abstract class Command : Named {
+    abstract val description: Property<String>
+    abstract val usage: Property<String>
+    abstract val permission: Property<String>
+    abstract val permissionMessage: Property<String>
+    abstract val aliases: ListProperty<String>
 
     fun aliases(vararg aliases: String) {
-        this.aliases = aliases.toList()
+        this.aliases.set(aliases.toList())
     }
 
-    fun serialize(): Map<String, Any?> {
+    fun toMap(): Map<String, Any?> {
         return mapOf(
-            "description" to description,
-            "usage" to usage,
-            "permission" to permission,
-            "permission-message" to permissionMessage,
-            "aliases" to aliases.ifEmpty { null }
+            "description" to description.orNull,
+            "usage" to usage.orNull,
+            "permission" to permission.orNull,
+            "permission-message" to permissionMessage.orNull,
+            "aliases" to aliases.orNull?.ifEmpty { null }
         ).filterValues { it != null }
     }
 }

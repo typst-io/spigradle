@@ -16,21 +16,29 @@
 
 package io.typst.spigradle.spigot
 
-import javax.inject.Inject
+import org.gradle.api.Named
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 
-// @JsonPropertyOrder("description", "default", "children")
-open class Permission @Inject constructor(@Transient val name: String) {
-    var description: String? = null
+abstract class Permission : Named {
+    abstract val description: Property<String>
+    /**
+     * Available values:
+     * - true
+     * - false
+     * - op
+     * - not op
+     *
+     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     */
+    abstract val defaults: Property<String>
+    abstract val children: MapProperty<String, Boolean>
 
-    // @SerialName("default")
-    var defaults: String? = null
-    var children = emptyMap<String, Boolean>()
-
-    fun serialize(): Map<String, Any?> {
+    fun toMap(): Map<String, Any?> {
         return mapOf(
-            "description" to description,
-            "default" to defaults,
-            "children" to children.ifEmpty { null }
+            "description" to description.orNull,
+            "default" to defaults.orNull,
+            "children" to children.orNull?.ifEmpty { null }
         ).filterValues { it != null }
     }
 }

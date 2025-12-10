@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-data class Dependency(
+internal data class Dependency(
     val group: String,
     val name: String,
     val version: String,

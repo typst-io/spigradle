@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.nukkit
 
-enum class NukkitRepositories(val address: String, val alias: String) {
+internal enum class NukkitRepositories(val address: String, val alias: String) {
     OPEN_COLLAB_RELEASE("https://repo.opencollab.dev/maven-releases", "openCollabRelease"),
     OPEN_COLLAB_SNAPSHOT("https://repo.opencollab.dev/maven-snapshots", "openCollabSnapshot"),
     NUKKIT_X(OPEN_COLLAB_SNAPSHOT.address, "nukkitX"),

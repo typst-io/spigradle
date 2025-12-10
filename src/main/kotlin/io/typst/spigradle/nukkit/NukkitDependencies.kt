@@ -19,7 +19,7 @@ package io.typst.spigradle.nukkit
 import io.typst.spigradle.Dependency
 import io.typst.spigradle.VersionModifier
 
-enum class NukkitDependencies(
+internal enum class NukkitDependencies(
     val group: String,
     val publicName: String,
     val version: String,

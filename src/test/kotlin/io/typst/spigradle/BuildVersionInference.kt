@@ -16,14 +16,11 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.applySpigradlePlugin
 import io.typst.spigradle.spigot.SpigotDependencies
-import io.typst.spigradle.spigot.spigot
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class BuildVersionInference {
     @Test
@@ -54,7 +51,7 @@ class BuildVersionInference {
 
     fun prepareProject(): Project {
         val project = ProjectBuilder.builder().build()
-        project.applySpigradlePlugin()
+        project.pluginManager.apply(SpigradlePlugin::class.java)
         project.plugins.apply("java")
         return project
     }

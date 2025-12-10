@@ -1,6 +1,5 @@
-import gradle.kotlin.dsl.accessors._a878d13f580598fb4efe3d6e9a8b2361.javadoc
-
 plugins {
+    java
     id("org.jetbrains.dokka")
 }
 

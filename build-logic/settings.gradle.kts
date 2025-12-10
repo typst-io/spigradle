@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.spigot
+rootProject.name = "build-logic"
 
-enum class Load(val label: String) {
-    POST_WORLD("POSTWORLD"),
-    STARTUP("STARTUP")
+include(":conventions")
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }

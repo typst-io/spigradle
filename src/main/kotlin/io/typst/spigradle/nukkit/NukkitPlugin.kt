@@ -17,13 +17,10 @@
 package io.typst.spigradle.nukkit
 
 import groovy.lang.Closure
-import io.typst.spigradle.PluginConvention
-import io.typst.spigradle.applySpigradlePlugin
-import io.typst.spigradle.groovyExtension
-import io.typst.spigradle.registerDescGenTask
+import io.typst.spigradle.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.create
 
 /**
  * The Nukkit plugin that adds:
@@ -33,28 +30,39 @@ import org.gradle.kotlin.dsl.getByName
  */
 class NukkitPlugin : Plugin<Project> {
     companion object {
-        val NUKKIT_TYPE = PluginConvention(
-            serverName = "nukkit",
-            descFile = "plugin.yml",
-            mainSuperClass = "cn/nukkit/plugin/PluginBase"
-        )
-    }
+        val platformName = "nukkit"
+        val genDescTask: String = "generate${platformName.capitalized()}Description"
+        val mainDetectTask: String = "detect${platformName.capitalized()}Main"
 
-    val Project.nukkit get() = extensions.getByName<NukkitExtension>(NUKKIT_TYPE.descExtension)
-
-    override fun apply(project: Project) {
-        with(project) {
-            applySpigradlePlugin()
-            registerDescGenTask(NUKKIT_TYPE, NukkitExtension::class.java) { desc ->
-                desc.encodeToMap()
-            }
-            setupGroovyExtensions()
+        fun createModuleRegistrationContext(
+            project: Project,
+            extension: NukkitExtension,
+        ): ModuleRegistrationContext<NukkitExtension> {
+            return ModuleRegistrationContext(
+                platformName,
+                "plugin.yml",
+                extension,
+                project.getMainDetectOutputFile(platformName),
+                genDescTask,
+                mainDetectTask,
+                "cn/nukkit/plugin/PluginBase"
+            )
         }
     }
 
-    private fun Project.setupGroovyExtensions() {
-        val depExt = dependencies.groovyExtension
-        val repExp = repositories.groovyExtension
+    override fun apply(project: Project) {
+        project.pluginManager.apply(SpigradlePlugin::class.java)
+        val extension = project.extensions.create(platformName, NukkitExtension::class)
+        val ctx = createModuleRegistrationContext(project, extension)
+        registerDescGenTask(project, ctx) { desc ->
+            desc.toMap()
+        }
+        setupGroovyExtensions(project)
+    }
+
+    private fun setupGroovyExtensions(project: Project) {
+        val depExt = project.dependencies.groovyExtension
+        val repExp = project.repositories.groovyExtension
         for (dep in NukkitDependencies.values()) {
             depExt.set(dep.alias, object : Closure<Any>(this, this) {
                 fun doCall(vararg arguments: String) =
@@ -63,7 +71,7 @@ class NukkitPlugin : Plugin<Project> {
         }
         for (repo in NukkitRepositories.values()) {
             repExp.set(repo.alias, object : Closure<Any>(this, this) {
-                fun doCall() = repositories.maven { setUrl(repo.address) }
+                fun doCall() = project.repositories.maven { setUrl(repo.address) }
             })
         }
     }

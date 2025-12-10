@@ -18,7 +18,7 @@ package io.typst.spigradle.bungee
 
 import io.typst.spigradle.Dependency
 
-enum class BungeeDependencies(
+internal enum class BungeeDependencies(
     val group: String,
     val publicName: String,
     val version: String,

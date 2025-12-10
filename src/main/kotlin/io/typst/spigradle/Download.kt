@@ -63,7 +63,7 @@ import java.nio.file.Files
  *
  * @since 1.3.0
  */
-open class DownloadTask : DefaultTask() {
+open class Download : DefaultTask() {
     init {
         group = "spigradle"
         description = "Download a file into the given path from the given uri"

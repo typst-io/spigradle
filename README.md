@@ -27,7 +27,7 @@ import io.typst.spigradle.spigot.*
 import io.typst.spigradle.*
 
 plugins {
-    id("io.typst.spigradle") version "3.7.2"
+    id("io.typst.spigradle") version "4.0.0"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.3" // optional, allows Spigradle generates Run Configurations for debug
 }
 
@@ -162,7 +162,7 @@ spigot {
 
 For a contributor, internal usage:
 
-- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/3.7.2/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
+- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
 - **Detection framework**: `io.typst.spigradle.detection` package
   - `ClassDefinition` - Represents class metadata
   - `DetectionContext` - Manages detection state and class graph
@@ -239,7 +239,7 @@ Spigradle provides shortcuts for common Minecraft plugin dependencies. Each shor
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:$version                      | 3.7.2   | mavenCentral()           |
+| spigradle()       | io.typst:spigradle:$version                      | 4.0.0   | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 5.3.0                | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                | jitpack()                |

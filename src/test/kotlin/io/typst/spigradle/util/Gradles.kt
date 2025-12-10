@@ -15,7 +15,7 @@ fun Any.testGradleTaskWithResource(path: String, resultTaskName: String, taskNam
         .withTestKitDir(testKitHome)
         .withPluginClasspath()
         .withArguments(taskName, "--stacktrace")
-        .withGradleVersion("8.14.3") // This is the minimal version required to use Spigradle.
+        .withGradleVersion("9.0.0")
         .build()
     println(result.output)
     assertNotEquals(TaskOutcome.FAILED, result.task(":$resultTaskName")!!.outcome)

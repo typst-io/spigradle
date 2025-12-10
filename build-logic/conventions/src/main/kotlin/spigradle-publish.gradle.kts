@@ -1,7 +1,8 @@
-import io.typst.spigradle.build.VersionTask
+import io.typst.spigradle.buildlogic.VersionTask
 
 plugins {
     id("com.gradle.plugin-publish")
+    java
     `maven-publish`
 }
 

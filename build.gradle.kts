@@ -1,12 +1,10 @@
-import io.typst.spigradle.build.VersionTask
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import io.typst.spigradle.buildlogic.VersionTask
 
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
-    `spigradle-meta`
-    `spigradle-publish`
-    `spigradle-docs`
+    id("spigradle-docs")
+    id("spigradle-publish")
 }
 
 group = "io.typst"
@@ -25,7 +23,6 @@ dependencies {
     implementation(libs.asm)
     implementation(libs.snakeyamlEngine)
     implementation(libs.gradlePlugin.ideaExt)
-    compileOnly(libs.spigotApi)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.kotlin.test.junit5)
@@ -40,8 +37,8 @@ kotlin {
     compilerOptions {
         // Set lower API and language version to make the plugins compatible with Gradle 8.0+
         // See: https://docs.gradle.org/current/userguide/compatibility.html#kotlin
-        apiVersion = KotlinVersion.KOTLIN_1_8
-        languageVersion = KotlinVersion.KOTLIN_1_8
+        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
     }
     jvmToolchain(17)
 }
@@ -57,6 +54,5 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
         }
-        dependsOn(getByName("publishToMavenLocal"))
     }
 }

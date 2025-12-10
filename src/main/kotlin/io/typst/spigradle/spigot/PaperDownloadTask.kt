@@ -47,7 +47,7 @@ import java.nio.file.Files
  * @throws IllegalStateException if the API response doesn't match the expected schema
  * @see io.typst.spigradle.debug.DebugTask
  */
-open class PaperDownloadTask : DefaultTask() {
+abstract class PaperDownloadTask : DefaultTask() {
     init {
         group = "spigradle debug"
         description = "Download a paper stable jar"
@@ -59,7 +59,7 @@ open class PaperDownloadTask : DefaultTask() {
      * This version string is used to query the PaperMC API for available builds.
      */
     @get:Input
-    val version: Property<String> = project.objects.property(String::class.java)
+    abstract val version: Property<String>
 
     /**
      * The output file location where the downloaded Paper JAR will be saved.
@@ -68,7 +68,7 @@ open class PaperDownloadTask : DefaultTask() {
      * `$GRADLE_USER_HOME/spigradle-debug-jars/`.
      */
     @get:OutputFile
-    val outputFile: RegularFileProperty = project.objects.fileProperty()
+    abstract val outputFile: RegularFileProperty
 
     @Suppress("UNCHECKED_CAST")
     @TaskAction

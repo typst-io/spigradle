@@ -16,10 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.ContentSource
-import io.typst.spigradle.YamlValue
-import io.typst.spigradle.fetchHttpGetAsByteArray
-import io.typst.spigradle.fetchHttpGetAsString
+import io.typst.spigradle.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier
@@ -71,7 +68,7 @@ import java.util.jar.JarInputStream
  * - The task validates that downloaded plugins have the correct name in their plugin.yml
  * - Uses the `compileClasspath` configuration to search for plugin JARs
  */
-open class PluginDependencyPrepareTask : DefaultTask() {
+abstract class PluginDependencyPrepareTask : DefaultTask() {
     init {
         group = "spigradle debug"
         description = "Prepare plugin dependencies"
@@ -85,7 +82,7 @@ open class PluginDependencyPrepareTask : DefaultTask() {
      * project's Spigot plugin.
      */
     @get:Input
-    val pluginNames: ListProperty<String> = project.objects.listProperty(String::class.java)
+    abstract val pluginNames: ListProperty<String>
 
     @get:Input
     val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java)
@@ -98,7 +95,7 @@ open class PluginDependencyPrepareTask : DefaultTask() {
      * (e.g., `.gradle/spigradle-debug/spigot/plugins/`).
      */
     @get:OutputDirectory
-    val outputDir: DirectoryProperty = project.objects.directoryProperty()
+    abstract val outputDir: DirectoryProperty
 
     @TaskAction
     fun prepare() {
@@ -110,16 +107,18 @@ open class PluginDependencyPrepareTask : DefaultTask() {
         }
 
         // fetch all plugins from classpath
-        val runtimeCp = project.configurations.named("compileClasspath")
+        val runtimeCp = if (project.hasJavaPlugin) {
+            project.configurations.named("compileClasspath")
+        } else null
         val pluginFiles = mutableMapOf<String, File>()
 
-        val artifacts = runtimeCp.get().incoming
-            .artifactView {
+        val artifacts = runtimeCp?.get()?.incoming
+            ?.artifactView {
                 isLenient = true
             }
-            .artifacts
-            .resolvedArtifacts
-            .get()
+            ?.artifacts
+            ?.resolvedArtifacts
+            ?.get() ?: emptyList()
         for (artifact in artifacts) {
             val file = artifact.file
             if (!file.name.endsWith(".jar")) {

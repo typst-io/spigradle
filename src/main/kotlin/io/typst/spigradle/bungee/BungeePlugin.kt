@@ -17,13 +17,10 @@
 package io.typst.spigradle.bungee
 
 import groovy.lang.Closure
-import io.typst.spigradle.PluginConvention
-import io.typst.spigradle.applySpigradlePlugin
-import io.typst.spigradle.groovyExtension
-import io.typst.spigradle.registerDescGenTask
+import io.typst.spigradle.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.create
 
 /**
  * The Bungeecord plugin that adds:
@@ -33,28 +30,39 @@ import org.gradle.kotlin.dsl.getByName
  */
 class BungeePlugin : Plugin<Project> {
     companion object {
-        val BUNGEE_TYPE = PluginConvention(
-            serverName = "bungee",
-            descFile = "bungee.yml",
-            mainSuperClass = "net/md_5/bungee/api/plugin/Plugin"
-        )
-    }
+        val platformName: String = "bungee"
+        val genDescTask: String = "generate${platformName.capitalized()}Description"
+        val mainDetectTask: String = "detect${platformName.capitalized()}Main"
 
-    val Project.bungee get() = extensions.getByName<BungeeExtension>("bungee")
-
-    override fun apply(project: Project) {
-        with(project) {
-            applySpigradlePlugin()
-            setupGroovyExtension()
-            registerDescGenTask(BUNGEE_TYPE, BungeeExtension::class.java) { desc ->
-                desc.encodeToMap()
-            }
+        fun createModuleRegistrationContext(
+            project: Project,
+            extension: BungeeExtension,
+        ): ModuleRegistrationContext<BungeeExtension> {
+            return ModuleRegistrationContext(
+                platformName,
+                "bungee.yml",
+                extension,
+                project.getMainDetectOutputFile(platformName),
+                genDescTask,
+                mainDetectTask,
+                "net/md_5/bungee/api/plugin/Plugin"
+            )
         }
     }
 
-    private fun Project.setupGroovyExtension() {
-        val depExt = dependencies.groovyExtension
-        val repExp = repositories.groovyExtension
+    override fun apply(project: Project) {
+        project.pluginManager.apply(SpigradlePlugin::class.java)
+        val extension = project.extensions.create(platformName, BungeeExtension::class)
+        val ctx = createModuleRegistrationContext(project, extension)
+        registerDescGenTask(project, ctx) { desc ->
+            desc.toMap()
+        }
+        setupGroovyExtension(project)
+    }
+
+    private fun setupGroovyExtension(project: Project) {
+        val depExt = project.dependencies.groovyExtension
+        val repExp = project.repositories.groovyExtension
         for (dep in BungeeDependencies.values()) {
             depExt.set(dep.alias, object : Closure<Any>(this, this) {
                 fun doCall(vararg arguments: String) =
@@ -63,7 +71,7 @@ class BungeePlugin : Plugin<Project> {
         }
         for (repo in BungeeRepositories.values()) {
             repExp.set(repo.alias, object : Closure<Any>(this, this) {
-                fun doCall() = repositories.maven { setUrl(repo.address) }
+                fun doCall() = project.repositories.maven { setUrl(repo.address) }
             })
         }
     }

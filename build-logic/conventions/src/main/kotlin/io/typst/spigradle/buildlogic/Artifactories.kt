@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.build
+package io.typst.spigradle.buildlogic
 
 import groovy.lang.GroovyObject
 

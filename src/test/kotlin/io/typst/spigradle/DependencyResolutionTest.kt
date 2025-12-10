@@ -24,7 +24,8 @@ class DependencyResolutionTest {
 
     @BeforeTest
     fun setup() {
-        testProject = ProjectBuilder.builder().build()
+        testProject = ProjectBuilder.builder()
+            .build()
     }
 
     fun validate(dependencies: List<String>, repositories: List<String>, plugin: Class<*>) {
@@ -70,21 +71,21 @@ class DependencyResolutionTest {
             SpigotDependencies.PAPER_API.alias,
             SpigotDependencies.SPIGOT_API.alias
         )
-        val baseDeps = SpigotDependencies.values().filter {
+        val baseDeps = SpigotDependencies.entries.filter {
             it.alias !in apis && !it.local
         }
 
         // base
         validate(
             baseDeps.map { it.alias },
-            SpigotRepositories.values().map { it.alias },
+            SpigotRepositories.entries.map { it.alias },
             SpigotPlugin::class.java
         )
 
         // purpur
         validate(
             listOf(SpigotDependencies.PURPUR.alias),
-            SpigotRepositories.values().map {
+            SpigotRepositories.entries.map {
                 it.alias
             },
             SpigotPlugin::class.java
@@ -92,7 +93,7 @@ class DependencyResolutionTest {
         // spigot
         validate(
             listOf(SpigotDependencies.SPIGOT_API.alias),
-            SpigotRepositories.values().map {
+            SpigotRepositories.entries.map {
                 it.alias
             },
             SpigotPlugin::class.java
@@ -100,7 +101,7 @@ class DependencyResolutionTest {
         // paper
         validate(
             listOf(SpigotDependencies.PAPER_API.alias),
-            SpigotRepositories.values().map {
+            SpigotRepositories.entries.map {
                 it.alias
             },
             SpigotPlugin::class.java
@@ -110,12 +111,12 @@ class DependencyResolutionTest {
     @Test
     fun `validate bungee dependencies`() {
         validate(
-            BungeeDependencies.values()
+            BungeeDependencies.entries
                 .filter { !it.local }
                 .map {
                     it.alias
                 },
-            BungeeRepositories.values().map {
+            BungeeRepositories.entries.map {
                 it.alias
             },
             BungeePlugin::class.java
@@ -125,12 +126,12 @@ class DependencyResolutionTest {
     @Test
     fun `validate nukkit dependencies`() {
         validate(
-            NukkitDependencies.values()
+            NukkitDependencies.entries
                 .filter { !it.local }
                 .map {
                     it.alias
                 },
-            NukkitRepositories.values().map {
+            NukkitRepositories.entries.map {
                 it.alias
             },
             NukkitPlugin::class.java
@@ -140,11 +141,11 @@ class DependencyResolutionTest {
     @Test
     fun `validate common dependencies`() {
         validate(
-            Dependencies.values()
+            Dependencies.entries
                 .map {
                     it.alias
                 },
-            Repositories.values().map {
+            Repositories.entries.map {
                 it.alias
             },
             SpigradlePlugin::class.java
