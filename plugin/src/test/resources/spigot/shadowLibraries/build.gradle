@@ -1,0 +1,30 @@
+package spigot.shadowLibraries
+
+import io.typst.spigradle.spigot.*
+
+plugins {
+    id 'java'
+    id 'io.typst.spigradle'
+}
+
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
+dependencies {
+    implementation spigot()
+}
+
+def spigotKeyword = 'spigot'
+
+build.doLast {
+    def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')
+    def text = pluginFile.isFile() ? pluginFile.text : ""
+    if (!text.isEmpty() && !text.contains(spigotKeyword)) {
+        println(pluginFile.absolutePath)
+        println(text)
+    } else {
+        throw new GradleException("Error!")
+    }
+}

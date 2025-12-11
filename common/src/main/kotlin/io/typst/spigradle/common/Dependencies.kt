@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.common
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+enum class Dependencies(
+    val dependency: Dependency,
+) {
+    LOMBOK(
+        Dependency(
+            "org.projectlombok",
+            "lombok",
+            "1.18.38",
+            "lombok"
+        )
+    )
+    ;
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
+    fun format(version: String?): String {
+        return dependency.format(version)
     }
 }

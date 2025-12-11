@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.common
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+fun String.capitalized() = replaceFirstChar { it.uppercase() }
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
+fun String.caseKebabToPascal(): String {
+    val pieces = split("-")
+    return pieces.joinToString("") {
+        it.replaceFirstChar { it.uppercase() }
     }
 }

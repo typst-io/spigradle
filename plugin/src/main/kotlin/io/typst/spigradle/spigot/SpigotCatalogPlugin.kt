@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.spigot
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+import org.gradle.api.Plugin
+import org.gradle.api.initialization.Settings
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
+class SpigotCatalogPlugin : Plugin<Settings> {
+    override fun apply(settings: Settings) {
+        settings.dependencyResolutionManagement {
+            versionCatalogs {
+                create("spigot") {
+                    from("io.typst:spigot-catalog:4.0.0")
+                }
+            }
         }
     }
 }

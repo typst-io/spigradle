@@ -1,0 +1,20 @@
+package bungee.groovy
+
+plugins {
+    id 'java'
+    id 'io.typst.spigradle.bungee'
+}
+
+repositories {
+    mavenCentral()
+    sonatype()
+    minecraftLibraries()
+}
+
+dependencies {
+    compileOnly bungeecord()
+}
+
+bungee {
+    author = 'EntryPoint'
+}

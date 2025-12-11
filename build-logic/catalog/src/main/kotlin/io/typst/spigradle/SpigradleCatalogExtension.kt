@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+import io.typst.spigradle.common.Dependency
+import org.gradle.api.provider.ListProperty
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
-    }
+abstract class SpigradleCatalogExtension {
+    abstract val libraries: ListProperty<Dependency>
+    abstract val plugins: ListProperty<Dependency>
 }

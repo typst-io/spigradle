@@ -35,6 +35,31 @@ This processes files in `docs/templates/` and `docs/root-templates/`, expanding 
 ```
 Version is read from `version.txt` via `VersionTask.readVersion(project)`.
 
+## Project Structure
+
+This is a multi-module Gradle project with composite builds:
+
+```
+spigradle/
+├── plugin/                    # Main Gradle plugin module
+│   └── src/main/kotlin/io/typst/spigradle/
+├── spigot-catalog/            # Version Catalog for Spigot dependencies
+├── common/                    # Composite build: shared dependencies/repositories
+│   └── src/main/kotlin/io/typst/spigradle/common/
+└── build-logic/               # Composite build: convention plugins
+    ├── docs/                  # Dokka documentation configuration
+    ├── publish/               # Plugin publication configuration
+    ├── versioning/            # Version management
+    └── catalog/               # Version Catalog generation plugin
+```
+
+### Module Descriptions
+
+- **`plugin`**: Main Gradle plugin containing Spigot, Bungee, and Nukkit plugins. Published as `io.typst:spigradle`.
+- **`spigot-catalog`**: Generates a Gradle Version Catalog with Spigot-related dependencies.
+- **`common`**: Shared library (`io.typst:spigradle-common`) containing repository URLs, dependency coordinates, and extension interfaces. Can be used independently.
+- **`build-logic`**: Internal convention plugins for building the project.
+
 ## Architecture
 
 ### Plugin IDs and Implementation Classes
@@ -57,7 +82,7 @@ The project publishes four Gradle plugins:
 
 #### Main Class Detection
 - Uses ASM 9.8 to scan compiled bytecode with optimized flags (`SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES`)
-- Task: `SubclassDetection` in `src/main/kotlin/io/typst/spigradle/SubclassDetection.kt`
+- Task: `SubclassDetection` in `plugin/src/main/kotlin/io/typst/spigradle/SubclassDetection.kt`
 - Detection targets by platform:
   - Spigot: `org/bukkit/plugin/java/JavaPlugin`
   - BungeeCord: `net/md_5/bungee/api/plugin/Plugin`
@@ -68,13 +93,13 @@ The project publishes four Gradle plugins:
   3. Traverses graph to find classes that inherit from platform base class
   4. Filters to find non-abstract, public class as main class
   5. Writes result to output file in dot notation (e.g., `com.example.MyPlugin`)
-- Detection framework in `src/main/kotlin/io/typst/spigradle/detection/`
+- Detection framework in `plugin/src/main/kotlin/io/typst/spigradle/detection/`
   - `ClassDefinition.kt` - Represents class metadata (name, superclass, interfaces, modifiers)
   - `DetectionContext.kt` - Manages detection state and inheritance graph
   - `DirectedGraph.kt` - Graph utilities for class hierarchy traversal
 
 #### YAML Generation
-- Task: `YamlGenerate` in `src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
+- Task: `YamlGenerate` in `plugin/src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
 - Generates `plugin.yml`(for Spigot, Nukkit), `bungee.yml`
 - Uses SnakeYAML Engine 2.9 for serialization
 - Each extension provides `encodeToMap()` to convert configuration to YAML
@@ -91,7 +116,7 @@ The project publishes four Gradle plugins:
   - `cleanDebug${projectName}` - Cleans project debug folder
   - `cleanCache${platformName}` - Cleans global cache
 - IDEA Run Configurations:
-  - `Debug${projectName}` ⭐ **Recommended** - Remote JVM Debug configuration
+  - `Debug${projectName}` - Remote JVM Debug configuration (Recommended)
     - Lightweight: Server runs in separate terminal, IDE stays responsive
     - Workflow: Run `debug${projectName}` task first, then attach debugger
   - `Run${projectName}` - JarApplication run configuration
@@ -105,17 +130,19 @@ The project publishes four Gradle plugins:
   - `programArgs` - Custom program arguments
 
 #### Repository and Dependency Shortcuts
-- Defined in:
+- Common definitions in `common/src/main/kotlin/io/typst/spigradle/common/`:
   - `Repositories.kt` - Common repositories
   - `Dependencies.kt` - Common dependencies
-  - `spigot/*Repositories.kt`, `spigot/*Dependencies.kt` - Spigot-specific
-  - `bungee/*Repositories.kt`, `bungee/*Dependencies.kt` - Bungee-specific
-  - `nukkit/*Repositories.kt`, `nukkit/*Dependencies.kt` - Nukkit-specific
-- Groovy extensions registered via `setupGroovyExtensions()` to enable shorthand syntax
+  - `SpigotRepositories.kt`, `SpigotDependencies.kt` - Spigot-specific
+  - `BungeeRepositories.kt` - Bungee-specific
+  - `NukkitRepositories.kt`, `NukkitDependencies.kt` - Nukkit-specific
+- Plugin-specific extensions in `plugin/src/main/kotlin/io/typst/spigradle/`:
+  - `bungee/BungeeDependencies.kt` - Bungee dependency extensions
 
 ### Package Organization
 
-- `io.typst.spigradle` - Core plugin, tasks, utilities
+- `io.typst.spigradle.common` (common module) - Shared repository/dependency definitions
+- `io.typst.spigradle` (plugin module) - Core plugin, tasks, utilities
 - `io.typst.spigradle.spigot` - Spigot extensions, tasks, models (SpigotExtension, Command, Permission, Load)
 - `io.typst.spigradle.bungee` - Bungeecord extensions and models
 - `io.typst.spigradle.nukkit` - NukkitX extensions and models
@@ -124,12 +151,13 @@ The project publishes four Gradle plugins:
 
 ### Build Configuration
 
-#### BuildSrc Convention Plugins
-Located in `buildSrc/src/main/kotlin/`:
+#### Build-Logic Convention Plugins
+Located in `build-logic/`:
 
-- `spigradle-meta.gradle.kts` - Generates `SpigradleMeta.kt` with VERSION constant
-- `spigradle-publish.gradle.kts` - Configures plugin publication with all four plugin IDs
-- `spigradle-docs.gradle.kts` - Dokka configuration and `updateTemplateDocs` task
+- `docs/` - Contains `spigradle-docs.gradle.kts`: Dokka configuration and `updateTemplateDocs` task
+- `publish/` - Contains `spigradle-publish.gradle.kts`: Configures plugin publication with all four plugin IDs
+- `versioning/` - Contains `spigradle-versioning.gradle.kts` and `VersionTask.kt`: Version management
+- `catalog/` - Contains `SpigradleCatalogPlugin.kt`: Generates Gradle Version Catalogs
 
 #### Key Dependencies (libs.versions.toml)
 - Kotlin 2.0.21 (matched to Gradle's embedded Kotlin version)
@@ -143,7 +171,7 @@ Located in `buildSrc/src/main/kotlin/`:
 
 #### Compatibility
 - Gradle 8.0+ required
-- Kotlin API/Language version: 1.8 (for Gradle 8.0+ compatibility)
+- Kotlin API/Language version: 2.2
 - JVM Toolchain: Java 17
 
 ## Code Conventions
@@ -183,11 +211,11 @@ All new source files must include:
 ## Test Structure
 
 Tests use Gradle TestKit for functional testing:
-- Test resources in `src/test/resources/{platform}/{dsl}/`
+- Test resources in `plugin/src/test/resources/{platform}/{dsl}/`
   - `spigot/groovy/` - Groovy DSL test project
   - `spigot/kotlin/` - Kotlin DSL test project
   - Similar for bungee and nukkit
-- Test classes in `src/test/kotlin/io/typst/spigradle/`
+- Test classes in `plugin/src/test/kotlin/io/typst/spigradle/`
   - `SpigotGradleTest.kt`, `BungeeGradleTest.kt`, `NukkitGradleTest.kt`
   - `MainDetectionTest.kt`, `NewMainDetectionTest.kt`
   - `GenerateYamlTaskTest.kt`, `SpigotDebugTest.kt`

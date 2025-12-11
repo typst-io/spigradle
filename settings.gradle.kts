@@ -13,4 +13,6 @@ plugins {
 
 rootProject.name = "spigradle"
 
+include("plugin", "spigot-catalog")
 includeBuild("build-logic")
+includeBuild("common")

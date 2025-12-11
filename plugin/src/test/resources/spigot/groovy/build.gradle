@@ -1,0 +1,68 @@
+package spigot.groovy
+
+plugins {
+    id 'java'
+    id 'io.typst.spigradle'
+}
+
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
+dependencies {
+    compileOnly spigot()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+spigot {
+    description = 'A sample plugin'
+    softDepend = ['Vault', 'PlaceholderAPI']
+    load = "POSTWORLD"
+    commands {
+        give {
+            aliases = ['giv', 'i']
+            description = 'A give command.'
+            permission = 'sample.give'
+            permissionMessage = 'You do not have the permission.'
+        }
+    }
+    permissions {
+        'sample.give' {
+            description = 'Allows give command'
+            defaults = 'true'
+        }
+        'sample.*' {
+            description = 'Wildcard permission'
+            defaults = 'op'
+            children = ['test.foo': true]
+        }
+    }
+}
+
+debugSpigot {
+    version.set('1.21.8')
+    eula.set(true)
+    downloadSoftDepends.set(true)
+}
+
+tasks {
+    debugSpigradleTestKotlin {
+        enabled = false
+    }
+}
+
+build.doLast {
+    def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')
+    if (pluginFile.isFile()) {
+        println(pluginFile.absolutePath)
+        println(pluginFile.text)
+    } else {
+        throw new GradleException("Error!")
+    }
+}

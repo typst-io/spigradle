@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.common
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
-
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
-    }
+enum class NukkitRepositories(val address: String, val alias: String) {
+    OPEN_COLLAB_RELEASE("https://repo.opencollab.dev/maven-releases", "openCollabRelease"),
+    OPEN_COLLAB_SNAPSHOT("https://repo.opencollab.dev/maven-snapshots", "openCollabSnapshot"),
+    NUKKIT_X(OPEN_COLLAB_SNAPSHOT.address, "nukkitX"),
 }

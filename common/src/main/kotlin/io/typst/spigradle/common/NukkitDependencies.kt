@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.common
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+enum class NukkitDependencies(
+    val dependency: Dependency,
+) {
+    NUKKIT(
+        Dependency(
+            "cn.nukkit",
+            "nukkit",
+            "1.0-SNAPSHOT",
+            "nukkit",
+            false,
+            Dependency.SNAPSHOT_TAG
+        )
+    ),
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
+    NUKKIT_X(
+        NUKKIT.dependency.copy(
+            alias = "nukkitX",
+        )
+    )
+    ;
+
+    fun format(version: String? = null): String {
+        return dependency.format(version)
     }
 }

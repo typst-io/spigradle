@@ -14,15 +14,34 @@
  * limitations under the License.
  */
 
-rootProject.name = "build-logic"
+package io.typst.spigradle.bungee
 
-include("docs", "publish", "versioning", "catalog")
-includeBuild("../common")
+import io.typst.spigradle.common.Dependency
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
+internal enum class BungeeDependencies(
+    val dependency: Dependency,
+) {
+    //    @SerialName("bungeecord")
+    BUNGEE_CORD(
+        Dependency(
+        "net.md-5",
+        "bungeecord-api",
+        "1.21-R0.4",
+        "bungeecord"
+        )
+    ),
+
+    BRIGADIER(
+        Dependency(
+        "com.mojang",
+        "brigadier",
+        "1.0.18",
+        "brigadier"
+        )
+    )
+    ;
+
+    fun format(version: String?): String {
+        return dependency.format(version)
     }
 }

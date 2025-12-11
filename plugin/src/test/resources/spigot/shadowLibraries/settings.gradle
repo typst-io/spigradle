@@ -1,0 +1,3 @@
+package spigot.shadowLibraries
+
+rootProject.name = 'SpigradleTestKotlin'

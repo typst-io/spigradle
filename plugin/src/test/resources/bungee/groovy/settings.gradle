@@ -1,0 +1,3 @@
+package bungee.groovy
+
+rootProject.name = 'SpigradleBungeeTest'
