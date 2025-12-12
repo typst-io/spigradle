@@ -1,6 +1,6 @@
 import io.typst.spigradle.common.Dependencies
 import io.typst.spigradle.common.Dependency
-import io.typst.spigradle.common.SpigotDependencies
+import io.typst.spigradle.common.NukkitDependencies
 import org.apache.commons.text.CaseUtils
 
 plugins {
@@ -10,19 +10,19 @@ plugins {
 }
 
 version = "1.0.0"
-description = "Spigot version catalog for Gradle"
+description = "NukkitX version catalog for Gradle"
 
 spigradleCatalog {
-    val spigotDeps = SpigotDependencies.entries.map { it.dependency }
+    val nukkitDeps = NukkitDependencies.entries.map { it.dependency }
     val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(spigotDeps + commonDeps)
+    libraries.set(nukkitDeps + commonDeps)
     plugins.set(
         listOf(
             Dependency(
                 project.group.toString(),
-                "spigradle",
+                "spigradle.nukkit",
                 rootProject.version.toString(),
-                "spigot",
+                "nukkit",
                 versionRef = "spigradle"
             ),
             Dependency(

@@ -167,6 +167,14 @@ enum class SpigotDependencies(
             "bStats",
         )
     ),
+    MOCK_BUKKIT(
+        Dependency(
+            "org.mockbukkit.mockbukkit",
+            "mockbukkit-v1.21",
+            "4.98.0",
+            "mockBukkit"
+        )
+    )
     ;
 
     fun format(version: String? = null): String {

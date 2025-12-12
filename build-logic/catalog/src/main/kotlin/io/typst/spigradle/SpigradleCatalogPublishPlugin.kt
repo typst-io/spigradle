@@ -21,7 +21,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.catalog.CatalogPluginExtension
 
 // used from `*-catalog` modules
-class SpigradleCatalogPlugin : Plugin<Project> {
+class SpigradleCatalogPublishPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val spigradleCatalog = project.extensions.create("spigradleCatalog", SpigradleCatalogExtension::class.java)
         project.pluginManager.apply("version-catalog")

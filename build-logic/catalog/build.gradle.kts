@@ -5,11 +5,6 @@ plugins {
     `java-gradle-plugin`
 }
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
-
 dependencies {
     implementation("io.typst:spigradle-common")
     implementation(kotlin("gradle-plugin"))
@@ -19,7 +14,7 @@ gradlePlugin {
     plugins {
         register("spigradleCatalog") {
             id = "io.typst.spigradle.catalog"
-            implementationClass = "io.typst.spigradle.SpigradleCatalogPlugin"
+            implementationClass = "io.typst.spigradle.SpigradleCatalogPublishPlugin"
         }
     }
 }

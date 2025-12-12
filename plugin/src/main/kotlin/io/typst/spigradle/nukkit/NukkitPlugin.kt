@@ -20,9 +20,9 @@ import groovy.lang.Closure
 import io.typst.spigradle.*
 import io.typst.spigradle.common.NukkitDependencies
 import io.typst.spigradle.common.NukkitRepositories
-import io.typst.spigradle.common.capitalized
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.create
 
 /**
@@ -34,8 +34,8 @@ import org.gradle.kotlin.dsl.create
 class NukkitPlugin : Plugin<Project> {
     companion object {
         val platformName = "nukkit"
-        val genDescTask: String = "generate${platformName.capitalized()}Description"
-        val mainDetectTask: String = "detect${platformName.capitalized()}Main"
+        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
+        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
 
         fun createModuleRegistrationContext(
             project: Project,
@@ -61,6 +61,9 @@ class NukkitPlugin : Plugin<Project> {
             desc.toMap()
         }
         setupGroovyExtensions(project)
+
+        // register repo
+        (project.repositories as ExtensionAware).extensions.create("nukkitRepos", NukkitRepositoryExtension::class, project)
     }
 
     private fun setupGroovyExtensions(project: Project) {

@@ -1,6 +1,6 @@
+import io.typst.spigradle.common.BungeeDependencies
 import io.typst.spigradle.common.Dependencies
 import io.typst.spigradle.common.Dependency
-import io.typst.spigradle.common.SpigotDependencies
 import org.apache.commons.text.CaseUtils
 
 plugins {
@@ -10,19 +10,19 @@ plugins {
 }
 
 version = "1.0.0"
-description = "Spigot version catalog for Gradle"
+description = "BungeeCord version catalog for Gradle"
 
 spigradleCatalog {
-    val spigotDeps = SpigotDependencies.entries.map { it.dependency }
+    val bungeeDeps = BungeeDependencies.entries.map { it.dependency }
     val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(spigotDeps + commonDeps)
+    libraries.set(bungeeDeps + commonDeps)
     plugins.set(
         listOf(
             Dependency(
                 project.group.toString(),
-                "spigradle",
+                "spigradle.bungee",
                 rootProject.version.toString(),
-                "spigot",
+                "bungee",
                 versionRef = "spigradle"
             ),
             Dependency(

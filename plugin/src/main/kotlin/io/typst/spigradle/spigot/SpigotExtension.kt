@@ -16,8 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.common.caseKebabToPascal
-import org.gradle.api.Action
+import io.typst.spigradle.toPascalCase
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -121,7 +120,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
     val name: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
+        project.objects.property<String>().convention(project.provider { project.name.toPascalCase() })
 
     /**
      * The version of your plugin.

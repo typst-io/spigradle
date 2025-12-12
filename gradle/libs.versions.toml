@@ -9,6 +9,7 @@ ideaExt = "1.3"
 junit = "6.0.1"
 publishPlugin = "2.0.0"
 snakeyamlEngine = "3.0.1"
+apacheCommonsText = "1.15.0"
 
 [libraries]
 
@@ -23,3 +24,5 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradlePlugin-publishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "publishPlugin" }
 gradlePlugin-ideaExt = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
+
+apache-commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommonsText" }

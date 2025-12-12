@@ -13,6 +13,6 @@ plugins {
 
 rootProject.name = "spigradle"
 
-include("plugin", "spigot-catalog")
+include("plugin", "spigot-catalog", "bungee-catalog", "nukkit-catalog", "common-catalog")
 includeBuild("build-logic")
 includeBuild("common")

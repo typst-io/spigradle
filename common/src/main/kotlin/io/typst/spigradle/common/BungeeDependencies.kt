@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.bungee
+package io.typst.spigradle.common
 
-import io.typst.spigradle.common.Dependency
-
-internal enum class BungeeDependencies(
+enum class BungeeDependencies(
     val dependency: Dependency,
 ) {
     //    @SerialName("bungeecord")

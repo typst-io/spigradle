@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.bungee
 
+import io.typst.spigradle.toCamelCase
+import org.apache.commons.text.CaseUtils
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -54,7 +56,8 @@ import javax.inject.Inject
 abstract class BungeeExtension @Inject constructor(project: Project) {
     abstract val main: Property<String>
     val name: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.name.caseKebabToPascal() })
+        project.objects.property<String>()
+            .convention(project.provider { project.name.toCamelCase() })
     val version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     val description: Property<String> =

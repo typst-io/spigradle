@@ -16,22 +16,37 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ## Quick Start
 
+### settings.gradle.kts
 ```kotlin
-import io.typst.spigradle.spigot.*
-import io.typst.spigradle.*
-
-plugins {
-    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional, allows Spigradle generates Run Configurations for debug
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // apply the version catalog to use the new dependency shortcut
+        create("spigots") {
+            from("io.typst:spigot-catalog:1.0.0")
+            // if you need to override the version:
+            // version("spigot", "1.21.1-R0.1-SNAPSHOT")
+        }
+    }
 }
 
-repositories {
-    mavenCentral()
-    papermc()
+// ...
+```
+
+```kotlin
+plugins {
+    alias(spigots.plugins.spigot)
+    alias(spigots.plugins.ideaExt) // optional, allows Spigradle generates Run Configurations for debug
 }
 
 dependencies {
-    compileOnly(paper("1.21.8"))
+    compileOnly(spigots.paper)
+    compileOnly(spigots.protocolLib)
+    compileOnly(spigots.vault) {
+        transitive = false
+    }
 }
 
 spigot {

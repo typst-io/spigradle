@@ -16,8 +16,7 @@
 
 package io.typst.spigradle.debug
 
-import io.typst.spigradle.common.capitalized
-import io.typst.spigradle.common.caseKebabToPascal
+import io.typst.spigradle.toPascalCase
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
@@ -45,10 +44,10 @@ internal data class DebugRegistrationContext(
     val extraTasks: Iterable<TaskProvider<out Task>> = emptyList(),
 ) {
     val taskGroupName: String get() = "$platformName debug"
-    val downloadTaskName: String get() = "download${platformName.capitalized()}"
+    val downloadTaskName: String get() = "download${platformName.toPascalCase()}"
 
     fun getRunDebugTaskName(project: Project): String {
-        return "debug${project.name.caseKebabToPascal()}"
+        return "debug${project.name.toPascalCase()}"
     }
 
     fun getDebugArtifactDir(project: Project): File {

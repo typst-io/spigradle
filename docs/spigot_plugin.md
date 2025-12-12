@@ -168,29 +168,29 @@ About the `plugin.yml`, See [plugin-yml wiki](https://www.spigotmc.org/wiki/plug
 
 ```groovy
 spigot {
-    authors 'Me'
-    depends 'ProtocolLib', 'Vault'
-    softDepends 'WorldEdit'
-    apiVersion '1.15'
-    load STARTUP
+    authors = 'Me'
+    depends = 'ProtocolLib', 'Vault'
+    softDepends = 'WorldEdit'
+    apiVersion = '1.15'
+    load = "STARTUP"
     libraries = ['my:lib:1.0.0', 'my:lib2:1.0.0']
     commands {
         register('give') {
-            aliases 'giv', 'i'
-            description 'Give command.'
-            permission 'test.foo'
-            permissionMessage 'You do not have the permission!'
-            usage '/<command> [item] [amount]'
+            aliases = ['giv', 'i']
+            description = 'Give command.'
+            permission = 'test.foo'
+            permissionMessage = 'You do not have the permission!'
+            usage = '/<command> [item] [amount]'
         }
     }
     permissions {
         register('test.foo') {
-            description 'Allows foo command'
-            defaults 'true'
+            description = 'Allows foo command'
+            defaults = 'true'
         }
         register('test.*') {
-            description 'Wildcard permission'
-            defaults 'op'
+            description = 'Wildcard permission'
+            defaults = 'op'
             children = ['test.foo': true]
         }
     }
@@ -208,7 +208,7 @@ spigot {
     depends = listOf("ProtocolLib")
     softDepends = listOf("WorldEdit")
     apiVersion = "1.15"
-    load = Load.STARTUP
+    load = "STARTUP"
     commands {
         register("give") {
             aliases = listOf("i")
@@ -253,8 +253,8 @@ configure<SpigotExtension> {
 debugSpigot {
     // This extension configures the debug${ProjectName} task
     // and IDEA Run configurations: Debug${ProjectName}, Run${ProjectName}
-    version.set("1.21.8")
-    eula.set(true)
+    version = "1.21.8"
+    eula = true
     // if you want to specify the port(default 5005):
     // jvmDebugPort.set(int)
 }

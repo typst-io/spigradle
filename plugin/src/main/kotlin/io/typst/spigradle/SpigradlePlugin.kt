@@ -17,16 +17,13 @@
 package io.typst.spigradle
 
 import groovy.lang.Closure
-import io.typst.spigradle.bungee.BungeeDependencies
+import io.typst.spigradle.common.BungeeDependencies
 import io.typst.spigradle.common.Dependencies
 import io.typst.spigradle.common.Repositories
 import io.typst.spigradle.common.SpigotDependencies
 import io.typst.spigradle.common.SpigotRepositories
-import io.typst.spigradle.spigot.mockBukkit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.RegularFile
-import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.maven
 
 /**
@@ -63,10 +60,6 @@ class SpigradlePlugin : Plugin<Project> {
             })
         }
         // dep
-        depExt.set("mockBukkit", object : Closure<Any>(this, this) {
-            fun doCall(vararg arguments: String) =
-                dependencies.mockBukkit(arguments.getOrNull(0), arguments.getOrNull(1))
-        })
         for (elem in SpigotDependencies.entries) {
             val dep = elem.dependency
             depExt.set(dep.alias, object : Closure<Any>(this, this) {

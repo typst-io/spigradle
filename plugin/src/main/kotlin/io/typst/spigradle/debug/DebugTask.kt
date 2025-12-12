@@ -17,9 +17,8 @@
 package io.typst.spigradle.debug
 
 import io.typst.spigradle.Download
-import io.typst.spigradle.common.capitalized
-import io.typst.spigradle.common.caseKebabToPascal
 import io.typst.spigradle.hasJavaPlugin
+import io.typst.spigradle.toPascalCase
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -196,13 +195,13 @@ internal object DebugTask {
             }
         } else null
         val jar = ctx.getDownloadOutputFile(project)
-        project.tasks.register("cleanDebug${project.name.caseKebabToPascal()}", Delete::class.java) {
+        project.tasks.register("cleanDebug${project.name.toPascalCase()}", Delete::class.java) {
             group = ctx.taskGroupName
             description = "Clean the debug folder of the project: \$PROJECT_HOME/spigradle-debug/\$platform"
 
             delete(ctx.getDebugDir(project))
         }
-        project.tasks.register("cleanCache${ctx.platformName.capitalized()}", Delete::class.java) {
+        project.tasks.register("cleanCache${ctx.platformName.toPascalCase()}", Delete::class.java) {
             group = ctx.taskGroupName
             description = "Clean the global cache of the project: \$GRADLE_USER_HOME/spigradle-debug-jars/\$platform"
 
@@ -235,11 +234,11 @@ internal object DebugTask {
             val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
             ideaModel.project.settings {
                 runConfigurations {
-                    register("Debug${project.name.caseKebabToPascal()}", Remote::class.java) {
+                    register("Debug${project.name.toPascalCase()}", Remote::class.java) {
                         transport = Remote.RemoteTransport.SOCKET
                         port = ctx.jvmDebugPort.get()
                     }
-                    val runConfName = "Run${project.name.caseKebabToPascal()}"
+                    val runConfName = "Run${project.name.toPascalCase()}"
                     register(runConfName, JarApplication::class.java) {
                         val paperJarPath = jar.orNull?.asFile?.absolutePath
                         if (paperJarPath != null) {

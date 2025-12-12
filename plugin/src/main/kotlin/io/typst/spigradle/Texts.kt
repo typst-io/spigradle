@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle
 
-fun String.capitalized() = replaceFirstChar { it.uppercase() }
+import org.apache.commons.text.CaseUtils
 
-fun String.caseKebabToPascal(): String {
-    val pieces = split("-")
-    return pieces.joinToString("") {
-        it.replaceFirstChar { it.uppercase() }
-    }
-}
+fun String.toCamelCase(): String =
+    CaseUtils.toCamelCase(this, false)
+
+fun String.toPascalCase(): String =
+    CaseUtils.toCamelCase(this, true)

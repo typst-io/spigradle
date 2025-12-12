@@ -1,6 +1,6 @@
+import io.typst.spigradle.common.BungeeDependencies
 import io.typst.spigradle.common.Dependencies
 import io.typst.spigradle.common.Dependency
-import io.typst.spigradle.common.SpigotDependencies
 import org.apache.commons.text.CaseUtils
 
 plugins {
@@ -10,21 +10,13 @@ plugins {
 }
 
 version = "1.0.0"
-description = "Spigot version catalog for Gradle"
+description = "Spigradle common version catalog for Gradle"
 
 spigradleCatalog {
-    val spigotDeps = SpigotDependencies.entries.map { it.dependency }
     val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(spigotDeps + commonDeps)
+    libraries.set(commonDeps)
     plugins.set(
         listOf(
-            Dependency(
-                project.group.toString(),
-                "spigradle",
-                rootProject.version.toString(),
-                "spigot",
-                versionRef = "spigradle"
-            ),
             Dependency(
                 "org.jetbrains",
                 "gradle.plugin.idea-ext",

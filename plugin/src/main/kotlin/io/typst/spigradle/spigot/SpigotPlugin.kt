@@ -17,13 +17,13 @@
 package io.typst.spigradle.spigot
 
 import io.typst.spigradle.*
-import io.typst.spigradle.common.capitalized
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
 import io.typst.spigradle.debug.DebugTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
@@ -70,8 +70,8 @@ import org.gradle.kotlin.dsl.create
 class SpigotPlugin : Plugin<Project> {
     companion object {
         val platformName: String = "spigot"
-        val genDescTask: String = "generate${platformName.capitalized()}Description"
-        val mainDetectTask: String = "detect${platformName.capitalized()}Main"
+        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
+        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
 
         private fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
@@ -119,6 +119,9 @@ class SpigotPlugin : Plugin<Project> {
             desc.toMap()
         }
         setupSpigotDebug(project, extension)
+
+        // register repo
+        (project.repositories as ExtensionAware).extensions.create("spigotRepos", SpigotRepositoryExtension::class, project)
     }
 
     private fun setupSpigotDebug(project: Project, extension: SpigotExtension) {

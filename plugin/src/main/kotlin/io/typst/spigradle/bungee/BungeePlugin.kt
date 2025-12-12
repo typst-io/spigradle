@@ -18,11 +18,11 @@ package io.typst.spigradle.bungee
 
 import groovy.lang.Closure
 import io.typst.spigradle.*
-import io.typst.spigradle.common.BungeeExtension
+import io.typst.spigradle.common.BungeeDependencies
 import io.typst.spigradle.common.BungeeRepositories
-import io.typst.spigradle.common.capitalized
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.create
 
 /**
@@ -34,8 +34,8 @@ import org.gradle.kotlin.dsl.create
 class BungeePlugin : Plugin<Project> {
     companion object {
         val platformName: String = "bungee"
-        val genDescTask: String = "generate${platformName.capitalized()}Description"
-        val mainDetectTask: String = "detect${platformName.capitalized()}Main"
+        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
+        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
 
         fun createModuleRegistrationContext(
             project: Project,
@@ -61,6 +61,9 @@ class BungeePlugin : Plugin<Project> {
             desc.toMap()
         }
         setupGroovyExtension(project)
+
+        // register repo
+        (project.repositories as ExtensionAware).extensions.create("bungeeRepos", BungeeRepositoryExtension::class, project)
     }
 
     private fun setupGroovyExtension(project: Project) {
