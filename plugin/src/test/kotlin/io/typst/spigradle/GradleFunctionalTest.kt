@@ -16,6 +16,8 @@
 
 package io.typst.spigradle
 
+import io.typst.spigradle.common.BungeeDependencies
+import io.typst.spigradle.common.SpigotDependencies
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
@@ -86,10 +88,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()
+                }
             }
             dependencies {
-                compileOnly(spigot("1.21.8"))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
@@ -139,10 +143,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()
+                }
             }
             dependencies {
-                compileOnly(spigot("1.21.8"))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
@@ -198,10 +204,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()
+                }
             }
             dependencies {
-                compileOnly(spigot("1.21.8"))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
@@ -233,10 +241,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()                
+                }
             }
             dependencies {
-                compileOnly(spigot("1.21.8"))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
                 implementation(kotlin("stdlib"))
             }
             spigot {
@@ -365,14 +375,18 @@ class GradleFunctionalTest {
             
             repositories {
                 mavenCentral()
-                spigotmc()
-                bungeecord()
-                minecraftLibraries()
+                spigotRepos {
+                    spigotmc()                
+                }
+                bungeeRepos {
+                    bungeecord()        
+                    minecraftLibraries()        
+                }
             }
             
             dependencies {
-                compileOnly spigot('1.21.8')
-                compileOnly bungeecord('1.21-R0.4')
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${BungeeDependencies.BUNGEE_CORD.format()}")
             }
             
             generateSpigotDescription {
@@ -417,10 +431,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()
+                }
             }
             dependencies {
-                compileOnly spigot('1.16.5')                                                            
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")                                                     
             }
         """.trimIndent()
         )
@@ -448,10 +464,12 @@ class GradleFunctionalTest {
             }
             repositories {
                 mavenCentral()
-                spigotmc()
+                spigotRepos {
+                    spigotmc()
+                }
             }
             dependencies {
-                compileOnly(spigot("1.16.5"))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
             }
         """.trimIndent()
         )

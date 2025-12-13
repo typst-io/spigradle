@@ -7,11 +7,13 @@ plugins {
 
 repositories {
     mavenCentral()
-    spigotmc()
+    spigotRepos {
+        spigotmc()
+    }
 }
 
 dependencies {
-    compileOnly(spigot())
+    compileOnly(spigots.spigot)
 }
 
 tasks {

@@ -17,9 +17,27 @@
 package io.typst.spigradle
 
 import org.apache.commons.text.CaseUtils
+import java.util.*
 
-fun String.toCamelCase(): String =
-    CaseUtils.toCamelCase(this, false)
+private val textDelimiters: Set<Char> = setOf('-', '_')
 
-fun String.toPascalCase(): String =
-    CaseUtils.toCamelCase(this, true)
+fun String.asKebabToCamelCase(capitalizeFirstLetter: Boolean = false): String =
+    CaseUtils.toCamelCase(this, capitalizeFirstLetter, *textDelimiters.toCharArray())
+
+fun String.asCapitalized(): String =
+    replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+fun String.asCamelCase(capitalizeFirstLetter: Boolean = false): String {
+    val index = indexOfFirst {
+        it in textDelimiters
+    }
+    return if (index >= 0) {
+        asKebabToCamelCase(capitalizeFirstLetter)
+    } else {
+        if (capitalizeFirstLetter) {
+            asCapitalized()
+        } else {
+            asCapitalized().replaceFirstChar { it.lowercase() }
+        }
+    }
+}

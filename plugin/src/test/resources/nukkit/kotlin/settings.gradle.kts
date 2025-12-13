@@ -1,1 +1,13 @@
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("nukkits") {
+            from("io.typst:nukkit-catalog:1.0.0")
+        }
+    }
+}
+
 rootProject.name = "SpigradleNukkitTest"

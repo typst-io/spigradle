@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.toPascalCase
+import io.typst.spigradle.asCamelCase
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -120,7 +120,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
     val name: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.name.toPascalCase() })
+        project.objects.property<String>().convention(project.provider { project.name.asCamelCase(true) })
 
     /**
      * The version of your plugin.

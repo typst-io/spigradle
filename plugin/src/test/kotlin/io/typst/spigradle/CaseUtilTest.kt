@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle
 
-enum class BungeeDependencies(
-    val dependency: Dependency,
-) {
-    //    @SerialName("bungeecord")
-    BUNGEE_CORD(
-        Dependency(
-        "net.md-5",
-        "bungeecord-api",
-        "1.21-R0.4",
-        "bungeecord"
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class CaseUtilTest {
+    @Test
+    fun case() {
+        assertEquals(
+            "MyAppProject",
+            "myAppProject".asCapitalized()
         )
-    ),
-
-    BRIGADIER(
-        Dependency(
-        "com.mojang",
-        "brigadier",
-        "1.0.18",
-        "brigadier"
-        )
-    )
-    ;
-
-    fun format(version: String? = null): String {
-        return dependency.format(version)
+        assertEquals("myAppProject", "my-app-project".asKebabToCamelCase())
+        assertEquals("MyAppProject", "myAppProject".asCapitalized())
+        assertEquals("MyAppProject", "my-app-project".asCamelCase(true))
+        assertEquals("Main", "main".asCamelCase(true))
     }
 }

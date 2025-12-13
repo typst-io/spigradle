@@ -16,6 +16,7 @@
 
 package io.typst.spigradle
 
+import io.typst.spigradle.common.SpigotDependencies
 import io.typst.spigradle.util.testGradleTask
 import org.junit.jupiter.api.io.TempDir
 import org.snakeyaml.engine.v2.api.Load
@@ -80,7 +81,7 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly(spigot('1.18.1'))
+                compileOnly("${SpigotDependencies.SPIGOT_API.format("1.18.1")}")
                 implementation("com.squareup.okhttp3:okhttp:4.9.0")
             }
         """.trimIndent()

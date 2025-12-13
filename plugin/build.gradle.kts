@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.asm)
     implementation(libs.snakeyamlEngine)
     implementation(libs.gradlePlugin.ideaExt)
+    implementation(libs.apache.commons.lang3)
     implementation(libs.apache.commons.text)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)

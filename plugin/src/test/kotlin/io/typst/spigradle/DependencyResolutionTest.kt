@@ -1,18 +1,14 @@
 package io.typst.spigradle
 
 import groovy.lang.GroovyObject
-import io.typst.spigradle.bungee.BungeeDependencies
 import io.typst.spigradle.bungee.BungeePlugin
-import io.typst.spigradle.bungee.BungeeRepositories
-import io.typst.spigradle.nukkit.NukkitDependencies
+import io.typst.spigradle.common.*
 import io.typst.spigradle.nukkit.NukkitPlugin
-import io.typst.spigradle.nukkit.NukkitRepositories
-import io.typst.spigradle.spigot.SpigotDependencies
 import io.typst.spigradle.spigot.SpigotPlugin
-import io.typst.spigradle.spigot.SpigotRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult
+import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.BeforeTest
@@ -35,14 +31,13 @@ class DependencyResolutionTest {
             this as GroovyObject
             mavenCentral()
             for (repo in repositories) {
-                invokeMethod(repo, emptyArray<Any>())
+                maven(repo)
             }
         }
 
-        val depObjects = dependencies.map { name ->
+        val depObjects = dependencies.map { notation ->
             val dependencies = testProject.dependencies
             dependencies as GroovyObject
-            val notation = dependencies.invokeMethod(name, emptyArray<Any>())
             testProject.dependencies.create(notation).apply {
                 if (this is ExternalModuleDependency) {
                     isTransitive = false
@@ -66,43 +61,43 @@ class DependencyResolutionTest {
 
     @Test
     fun `validate spigot dependencies`() {
-        val apis = setOf(
-            SpigotDependencies.PURPUR.alias,
-            SpigotDependencies.PAPER_API.alias,
-            SpigotDependencies.SPIGOT_API.alias
-        )
+        val apis = listOf(
+            SpigotDependencies.PURPUR.dependency,
+            SpigotDependencies.PAPER_API.dependency,
+            SpigotDependencies.SPIGOT_API.dependency
+        ).associateBy { it.alias }
         val baseDeps = SpigotDependencies.entries.filter {
-            it.alias !in apis && !it.local
+            it.dependency.alias !in apis && !it.dependency.isLocal
         }
 
         // base
         validate(
-            baseDeps.map { it.alias },
-            SpigotRepositories.entries.map { it.alias },
+            baseDeps.map { it.dependency.format() },
+            SpigotRepositories.entries.map { it.address },
             SpigotPlugin::class.java
         )
 
         // purpur
         validate(
-            listOf(SpigotDependencies.PURPUR.alias),
+            listOf(SpigotDependencies.PURPUR.dependency.format()),
             SpigotRepositories.entries.map {
-                it.alias
+                it.address
             },
             SpigotPlugin::class.java
         )
         // spigot
         validate(
-            listOf(SpigotDependencies.SPIGOT_API.alias),
+            listOf(SpigotDependencies.SPIGOT_API.dependency.format()),
             SpigotRepositories.entries.map {
-                it.alias
+                it.address
             },
             SpigotPlugin::class.java
         )
         // paper
         validate(
-            listOf(SpigotDependencies.PAPER_API.alias),
+            listOf(SpigotDependencies.PAPER_API.dependency.format()),
             SpigotRepositories.entries.map {
-                it.alias
+                it.address
             },
             SpigotPlugin::class.java
         )
@@ -112,12 +107,12 @@ class DependencyResolutionTest {
     fun `validate bungee dependencies`() {
         validate(
             BungeeDependencies.entries
-                .filter { !it.local }
+                .filter { !it.dependency.isLocal }
                 .map {
-                    it.alias
+                    it.dependency.format()
                 },
             BungeeRepositories.entries.map {
-                it.alias
+                it.address
             },
             BungeePlugin::class.java
         )
@@ -127,12 +122,12 @@ class DependencyResolutionTest {
     fun `validate nukkit dependencies`() {
         validate(
             NukkitDependencies.entries
-                .filter { !it.local }
+                .filter { !it.dependency.isLocal }
                 .map {
-                    it.alias
+                    it.dependency.format()
                 },
             NukkitRepositories.entries.map {
-                it.alias
+                it.address
             },
             NukkitPlugin::class.java
         )
@@ -143,12 +138,12 @@ class DependencyResolutionTest {
         validate(
             Dependencies.entries
                 .map {
-                    it.alias
+                    it.dependency.format()
                 },
             Repositories.entries.map {
                 it.alias
             },
-            SpigradlePlugin::class.java
+            SpigotPlugin::class.java
         )
     }
 }

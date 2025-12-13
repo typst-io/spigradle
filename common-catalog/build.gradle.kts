@@ -1,7 +1,5 @@
-import io.typst.spigradle.common.BungeeDependencies
 import io.typst.spigradle.common.Dependencies
 import io.typst.spigradle.common.Dependency
-import org.apache.commons.text.CaseUtils
 
 plugins {
     java
@@ -26,13 +24,4 @@ spigradleCatalog {
             )
         )
     )
-}
-
-publishing {
-    publications {
-        val moduleName = CaseUtils.toCamelCase(project.name, false)
-        named<MavenPublication>(moduleName) {
-            from(components["versionCatalog"])
-        }
-    }
 }

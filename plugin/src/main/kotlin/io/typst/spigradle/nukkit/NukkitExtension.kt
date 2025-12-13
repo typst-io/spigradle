@@ -16,9 +16,9 @@
 
 package io.typst.spigradle.nukkit
 
+import io.typst.spigradle.asCamelCase
 import io.typst.spigradle.spigot.Command
 import io.typst.spigradle.spigot.Permission
-import io.typst.spigradle.toPascalCase
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -99,7 +99,7 @@ import javax.inject.Inject
 abstract class NukkitExtension @Inject constructor(private val project: Project) {
     abstract val main: Property<String>
     val name: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.name.toPascalCase() })
+        project.objects.property<String>().convention(project.provider { project.name.asCamelCase(true) })
     val version: Property<String> =
         project.objects.property<String>().convention(project.provider { project.version.toString() })
     val description: Property<String> =

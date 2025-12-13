@@ -1,5 +1,3 @@
-package spigot.groovy
-
 plugins {
     id 'java'
     id 'io.typst.spigradle'
@@ -7,11 +5,13 @@ plugins {
 
 repositories {
     mavenCentral()
-    spigotmc()
+    spigotRepos {
+        spigotmc()
+    }
 }
 
 dependencies {
-    compileOnly spigot()
+    compileOnly spigots.spigot
 }
 
 java {

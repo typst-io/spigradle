@@ -34,8 +34,8 @@ import org.gradle.kotlin.dsl.create
 class BungeePlugin : Plugin<Project> {
     companion object {
         val platformName: String = "bungee"
-        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
-        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
+        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
+        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
 
         fun createModuleRegistrationContext(
             project: Project,
@@ -54,7 +54,6 @@ class BungeePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        project.pluginManager.apply(SpigradlePlugin::class.java)
         val extension = project.extensions.create(platformName, BungeeExtension::class)
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
@@ -63,7 +62,11 @@ class BungeePlugin : Plugin<Project> {
         setupGroovyExtension(project)
 
         // register repo
-        (project.repositories as ExtensionAware).extensions.create("bungeeRepos", BungeeRepositoryExtension::class, project)
+        (project.repositories as ExtensionAware).extensions.create(
+            "bungeeRepos",
+            BungeeRepositoryExtension::class,
+            project
+        )
     }
 
     private fun setupGroovyExtension(project: Project) {

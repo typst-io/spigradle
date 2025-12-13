@@ -1,1 +1,17 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("spigots") {
+            from("io.typst:spigot-catalog:1.0.0")
+        }
+    }
+}
+
 rootProject.name = "SpigradleTestKotlin"

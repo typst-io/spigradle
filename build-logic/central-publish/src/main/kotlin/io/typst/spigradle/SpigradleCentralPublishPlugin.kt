@@ -36,9 +36,13 @@ class SpigradleCentralPublishPlugin : Plugin<Project> {
         val publishing = project.extensions.getByName("publishing") as PublishingExtension
         val signing = project.extensions.getByName("signing") as SigningExtension
         val java = project.extensions.getByName("java") as JavaPluginExtension
-        val moduleName = CaseUtils.toCamelCase(project.name, false)
+        val moduleName = CaseUtils.toCamelCase(project.name, false, '-', '_')
         publishing.publications {
+            val catalog = project.components.findByName("versionCatalog")
             create(moduleName, MavenPublication::class.java) {
+                if (catalog != null) {
+                    from(catalog)
+                }
                 pom {
                     name.set("${project.group}:${project.name}")
                     description.set(project.description)

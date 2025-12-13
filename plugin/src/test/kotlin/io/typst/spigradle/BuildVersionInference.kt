@@ -16,7 +16,8 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.spigot.SpigotDependencies
+import io.typst.spigradle.common.SpigotDependencies
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.testfixtures.ProjectBuilder
@@ -51,7 +52,7 @@ class BuildVersionInference {
 
     fun prepareProject(): Project {
         val project = ProjectBuilder.builder().build()
-        project.pluginManager.apply(SpigradlePlugin::class.java)
+        project.pluginManager.apply(SpigotPlugin::class.java)
         project.plugins.apply("java")
         return project
     }

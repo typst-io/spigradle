@@ -7,12 +7,14 @@ plugins {
 
 repositories {
     mavenCentral()
-    openCollabRelease()
-    openCollabSnapshot()
+    nukkitRepos {
+        openCollabRelease()
+        openCollabSnapshot()
+    }
 }
 
 dependencies {
-    compileOnly(nukkit())
+    compileOnly(nukkits.nukkitX)
 }
 
 nukkit {

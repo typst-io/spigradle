@@ -220,6 +220,10 @@ These are distinct plugins with different purposes.
 - BungeeCord: 1.21-R0.4+
 - NukkitX: Latest stable
 
+## Working Rules
+
+- When fixing code errors, always call `mcp__ide__getDiagnostics` first to get the exact error list before making changes.
+
 ## Code Conventions
 
 ### Copyright Headers

@@ -34,8 +34,8 @@ import org.gradle.kotlin.dsl.create
 class NukkitPlugin : Plugin<Project> {
     companion object {
         val platformName = "nukkit"
-        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
-        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
+        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
+        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
 
         fun createModuleRegistrationContext(
             project: Project,
@@ -54,7 +54,6 @@ class NukkitPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        project.pluginManager.apply(SpigradlePlugin::class.java)
         val extension = project.extensions.create(platformName, NukkitExtension::class)
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
@@ -63,7 +62,11 @@ class NukkitPlugin : Plugin<Project> {
         setupGroovyExtensions(project)
 
         // register repo
-        (project.repositories as ExtensionAware).extensions.create("nukkitRepos", NukkitRepositoryExtension::class, project)
+        (project.repositories as ExtensionAware).extensions.create(
+            "nukkitRepos",
+            NukkitRepositoryExtension::class,
+            project
+        )
     }
 
     private fun setupGroovyExtensions(project: Project) {

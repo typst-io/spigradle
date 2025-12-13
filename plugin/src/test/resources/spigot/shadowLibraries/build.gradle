@@ -1,7 +1,3 @@
-package spigot.shadowLibraries
-
-import io.typst.spigradle.spigot.*
-
 plugins {
     id 'java'
     id 'io.typst.spigradle'
@@ -9,11 +5,13 @@ plugins {
 
 repositories {
     mavenCentral()
-    spigotmc()
+    spigotRepos {
+        spigotmc()
+    }
 }
 
 dependencies {
-    implementation spigot()
+    implementation(spigots.spigot)
 }
 
 def spigotKeyword = 'spigot'

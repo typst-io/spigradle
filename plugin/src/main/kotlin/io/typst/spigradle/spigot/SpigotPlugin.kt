@@ -70,8 +70,8 @@ import org.gradle.kotlin.dsl.create
 class SpigotPlugin : Plugin<Project> {
     companion object {
         val platformName: String = "spigot"
-        val genDescTask: String = "generate${platformName.toPascalCase()}Description"
-        val mainDetectTask: String = "detect${platformName.toPascalCase()}Main"
+        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
+        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
 
         private fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
@@ -109,9 +109,6 @@ class SpigotPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        // apply base
-        project.pluginManager.apply(SpigradlePlugin::class)
-
         // register tasks
         val extension = project.extensions.create(platformName, SpigotExtension::class)
         val ctx = createModuleRegistrationContext(project, extension)

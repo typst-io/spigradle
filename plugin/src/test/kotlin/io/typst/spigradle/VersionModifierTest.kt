@@ -1,20 +1,24 @@
 package io.typst.spigradle
 
-import io.typst.spigradle.VersionModifier
+import io.typst.spigradle.common.Dependency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class VersionModifierTest {
+    val initial = Dependency("", "", "", "")
+
     @Test
     fun `snapshot appender`() {
-        assertEquals("1.0-SNAPSHOT", VersionModifier.SNAPSHOT_APPENDER("1.0"))
-        assertEquals("1.0-ABC", VersionModifier.SNAPSHOT_APPENDER("1.0-ABC"))
+        val dep = initial.copy(tags = Dependency.SNAPSHOT_TAG)
+        assertEquals("1.0-SNAPSHOT", dep.getTaggedVersion("1.0"))
+        assertEquals("1.0-ABC", dep.getTaggedVersion("1.0-ABC"))
     }
 
     @Test
     fun `spigot adjuster`() {
-        assertEquals("1.0-R0.1-SNAPSHOT", VersionModifier.SPIGOT_ADJUSTER("1.0"))
-        assertEquals("1.0-R0.1-ABC", VersionModifier.SPIGOT_ADJUSTER("1.0-R0.1-ABC"))
-        assertEquals("1.0-R2-SNAPSHOT", VersionModifier.SPIGOT_ADJUSTER("1.0-R2-SNAPSHOT"))
+        val dep = initial.copy(tags = Dependency.SPIGOT_VERSION_TAGS)
+        assertEquals("1.0-R0.1-SNAPSHOT", dep.getTaggedVersion("1.0"))
+        assertEquals("1.0-R0.1-ABC", dep.getTaggedVersion("1.0-R0.1-ABC"))
+        assertEquals("1.0-R2-SNAPSHOT", dep.getTaggedVersion("1.0-R2-SNAPSHOT"))
     }
 }

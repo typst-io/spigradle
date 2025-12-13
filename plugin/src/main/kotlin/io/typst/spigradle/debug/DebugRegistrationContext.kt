@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.debug
 
-import io.typst.spigradle.toPascalCase
+import io.typst.spigradle.asCamelCase
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
@@ -44,10 +44,10 @@ internal data class DebugRegistrationContext(
     val extraTasks: Iterable<TaskProvider<out Task>> = emptyList(),
 ) {
     val taskGroupName: String get() = "$platformName debug"
-    val downloadTaskName: String get() = "download${platformName.toPascalCase()}"
+    val downloadTaskName: String get() = "download${platformName.asCamelCase(true)}"
 
     fun getRunDebugTaskName(project: Project): String {
-        return "debug${project.name.toPascalCase()}"
+        return "debug${project.name.asCamelCase(true)}"
     }
 
     fun getDebugArtifactDir(project: Project): File {

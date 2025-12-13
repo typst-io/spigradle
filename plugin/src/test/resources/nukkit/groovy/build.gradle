@@ -1,5 +1,3 @@
-package nukkit.groovy
-
 plugins {
     id 'java'
     id 'io.typst.spigradle.nukkit'
@@ -7,12 +5,14 @@ plugins {
 
 repositories {
     mavenCentral()
-    openCollabRelease()
-    openCollabSnapshot()
+    nukkitRepos {
+        openCollabRelease()
+        openCollabSnapshot()
+    }
 }
 
 dependencies {
-    compileOnly nukkit()
+    compileOnly(nukkits.nukkitX)
 }
 
 nukkit {

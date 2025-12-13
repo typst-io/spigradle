@@ -7,12 +7,14 @@ plugins {
 
 repositories {
     mavenCentral()
-    sonatype()
-    minecraftLibraries()
+    bungeeRepos {
+        sonatype()
+        minecraftLibraries()
+    }
 }
 
 dependencies {
-    compileOnly(bungeecord())
+    compileOnly(bungees.bungeecord)
 }
 
 bungee {
