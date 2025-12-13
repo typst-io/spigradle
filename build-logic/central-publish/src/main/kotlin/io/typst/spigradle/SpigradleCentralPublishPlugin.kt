@@ -31,10 +31,15 @@ class SpigradleCentralPublishPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.pluginManager.apply("java")
         project.pluginManager.apply("maven-publish")
-        project.pluginManager.apply("signing")
+        val hasSign = project.hasProperty("signing.keyId")
+        if (hasSign) {
+            project.pluginManager.apply("signing")
+        }
 
         val publishing = project.extensions.getByName("publishing") as PublishingExtension
-        val signing = project.extensions.getByName("signing") as SigningExtension
+        val signing = if (hasSign) {
+            project.extensions.getByName("signing") as SigningExtension
+        } else null
         val java = project.extensions.getByName("java") as JavaPluginExtension
         val moduleName = CaseUtils.toCamelCase(project.name, false, '-', '_')
         publishing.publications {
@@ -78,7 +83,7 @@ class SpigradleCentralPublishPlugin : Plugin<Project> {
                 }
             }
         }
-        signing.sign(publishing.publications.getByName(moduleName))
+        signing?.sign(publishing.publications.getByName(moduleName))
         java.withSourcesJar()
         java.withJavadocJar()
         project.tasks.getByName("javadoc", Javadoc::class) {
