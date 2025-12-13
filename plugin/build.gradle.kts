@@ -46,9 +46,16 @@ kotlin {
 tasks {
     test {
         useJUnitPlatform()
-        maxParallelForks = 4
+        maxParallelForks = 8
         testLogging {
             events("passed", "skipped", "failed")
         }
+        // publish catalogs for test
+        val catalogPublishTasks = rootProject.subprojects.filter {
+            it.name.endsWith("-catalog")
+        }.map {
+            it.tasks.publishToMavenLocal
+        }
+        dependsOn(catalogPublishTasks)
     }
 }
