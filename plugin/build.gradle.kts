@@ -4,6 +4,7 @@ plugins {
     id("spigradle-docs")
     id("spigradle-publish")
     id("spigradle-versioning")
+    id("spigradle-java")
 }
 
 description = "An intelligent Gradle plugin for developing Minecraft resources."
@@ -39,11 +40,6 @@ kotlin {
         apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
         languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
     }
-    jvmToolchain(17)
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 tasks {
