@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.net.URL
 import java.util.*
 
@@ -11,6 +13,22 @@ repositories {
 
 allprojects {
     group = "io.typst"
+
+    pluginManager.withPlugin("java") {
+        val java = extensions["java"] as JavaPluginExtension
+        java.toolchain {
+            languageVersion.set(JavaLanguageVersion.of(property("java.version")!!.toString().toInt()))
+        }
+    }
+
+    pluginManager.withPlugin("kotlin") {
+        val kotlin = extensions["kotlin"] as KotlinJvmProjectExtension
+        kotlin.compilerOptions {
+            apiVersion =
+                KotlinVersion.fromVersion(property("kotlin.version")!!.toString())
+            languageVersion = KotlinVersion.fromVersion(property("kotlin.version")!!.toString())
+        }
+    }
 }
 
 project.tasks.register("publishCentralPortal") {

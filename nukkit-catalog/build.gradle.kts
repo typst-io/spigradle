@@ -1,8 +1,7 @@
-import io.typst.spigradle.catalog.NukkitDependencies
 import io.typst.spigradle.catalog.Dependency
+import io.typst.spigradle.catalog.NukkitDependencies
 
 plugins {
-    java
     id("io.typst.spigradle.catalog") // build-logic/**/SpigradleCatalogPlugin.kt
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }

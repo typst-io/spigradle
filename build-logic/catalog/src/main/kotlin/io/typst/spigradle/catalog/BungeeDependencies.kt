@@ -19,7 +19,6 @@ package io.typst.spigradle.catalog
 enum class BungeeDependencies(
     val dependency: Dependency,
 ) {
-    //    @SerialName("bungeecord")
     BUNGEE_CORD(
         Dependency(
             "net.md-5",
@@ -28,7 +27,6 @@ enum class BungeeDependencies(
             "bungeecord"
         )
     ),
-
     BRIGADIER(
         Dependency(
             "com.mojang",

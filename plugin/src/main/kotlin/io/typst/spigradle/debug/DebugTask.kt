@@ -235,6 +235,9 @@ internal object DebugTask {
         }
         debugTasks += ctx.extraTasks
         val prepareTask = project.tasks.register("prepare${project.name.asCamelCase(true)}") {
+            group = ctx.taskGroupName
+            description = "A lifecycle task to prepare debugs"
+
             dependsOn(debugTasks)
         }
         project.rootProject.pluginManager.withPlugin("org.jetbrains.gradle.plugin.idea-ext") {
@@ -269,7 +272,6 @@ internal object DebugTask {
             }
         }
         return project.tasks.register(ctx.getRunDebugTaskName(project)) {
-            println(ctx.getRunDebugTaskName(project))
             group = ctx.taskGroupName
 
             dependsOn(prepareTask)

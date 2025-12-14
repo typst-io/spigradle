@@ -1,6 +1,6 @@
 rootProject.name = "build-logic"
 
-include("docs", "publish", "catalog", "central-publish", "java")
+include("docs", "publish", "catalog", "central-publish")
 
 dependencyResolutionManagement {
     repositories {

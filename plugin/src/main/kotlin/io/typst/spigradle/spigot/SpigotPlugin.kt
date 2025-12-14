@@ -40,7 +40,7 @@ import org.gradle.kotlin.dsl.create
  *
  * Required plugins:
  * - java
- * - org.jetbrains.gradle.plugin.idea-ext (recommended for IntelliJ IDEA)
+ * - org.jetbrains.gradle.plugin.idea-ext (recommended for IntelliJ IDEA) **Important:** Only applies on the root project
  *
  * Dependency configurations:
  * - compileOnlySpigot: Compile only dependencies that will be exported to plugin.yml libraries.

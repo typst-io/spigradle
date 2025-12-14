@@ -3,7 +3,6 @@ plugins {
     `java-gradle-plugin`
     id("spigradle-docs")
     id("spigradle-publish")
-    id("spigradle-java")
 }
 
 description = "An intelligent Gradle plugin for developing Minecraft resources."
@@ -31,15 +30,6 @@ dependencies {
 
 configurations {
     testImplementation.get().dependencies += implementation.get().dependencies
-}
-
-kotlin {
-    compilerOptions {
-        // Set lower API and language version to make the plugins compatible with Gradle 8.0+
-        // See: https://docs.gradle.org/current/userguide/compatibility.html#kotlin
-        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
-        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
-    }
 }
 
 tasks {

@@ -2,7 +2,6 @@ import io.typst.spigradle.catalog.BungeeDependencies
 import io.typst.spigradle.catalog.Dependency
 
 plugins {
-    java
     id("io.typst.spigradle.catalog") // build-logic/**/SpigradleCatalogPlugin.kt
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }
