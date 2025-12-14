@@ -1,6 +1,7 @@
 # Spigot plugin
 
-kdoc(javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
+kdoc(
+javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
 
 The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the following features:
 
@@ -55,7 +56,8 @@ Groovy DSL
 ```groovy
 plugins {
     id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '$IDEA_EXT_VERSION' // optional, allows Spigradle generates Run Configurations for debug
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '$IDEA_EXT_VERSION'
+    // optional, allows Spigradle generates Run Configurations for debug
 }
 ```
 
@@ -118,9 +120,12 @@ You can configure all properties of `plugin.yml` in [spigot {} block](#configura
 
 ## Main class detection
 
-The plugin automatically detects your main plugin class using bytecode analysis (ASM). It scans compiled `.class` files to find classes that extend [JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
+The plugin automatically detects your main plugin class using bytecode analysis (ASM). It scans compiled `.class` files
+to find classes that
+extend [JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
 **How it works:**
+
 - Scans compiled bytecode (not source code) for faster and more reliable detection
 - Finds non-abstract, public classes extending `org.bukkit.plugin.java.JavaPlugin`
 - Supports complex inheritance hierarchies
@@ -129,6 +134,7 @@ The plugin automatically detects your main plugin class using bytecode analysis 
 
 **Manual override:**
 If you need to manually specify the main class:
+
 ```groovy
 spigot {
     main.set("com.example.MyCustomMain")
@@ -153,7 +159,7 @@ About the `plugin.yml`, See [plugin-yml wiki](https://www.spigotmc.org/wiki/plug
 ```groovy
 spigot {
     authors = 'Me'
-    depends = 'ProtocolLib', 'Vault'
+    depends = 'ProtocolLib' , 'Vault'
     softDepends = 'WorldEdit'
     apiVersion = '1.15'
     load = "STARTUP"
@@ -229,20 +235,21 @@ configure<SpigotExtension> {
 
 ### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
 
-> **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debug\${ProjectName}` (e.g., `debugMyPlugin`).
+> **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debug\${ProjectName}` (
+> e.g., `debugMyPlugin`).
 
 **Available properties:**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `version` | `Property<String>` | - | Paper/Minecraft version to download (e.g., "1.21.8") |
-| `eula` | `Property<Boolean>` | `false` | Auto-accept Minecraft EULA |
-| `jvmDebugPort` | `Property<Int>` | `5005` | Port for remote JVM debugging |
-| `downloadSoftDepends` | `Property<Boolean>` | `false` | Also download `softDepends` plugins |
-| `jvmArgs` | `ListProperty<String>` | platform defaults | JVM arguments (e.g., `-Xmx2G`) |
-| `programArgs` | `ListProperty<String>` | platform defaults | Server program arguments (e.g., `nogui`) |
-| `javaVersion` | `Property<JavaLanguageVersion>` | project toolchain | Java version for the server |
-| `javaHome` | `Property<Directory>` | resolved from `javaVersion` | Java installation directory |
+| Property              | Type                            | Default                     | Description                                          |
+|-----------------------|---------------------------------|-----------------------------|------------------------------------------------------|
+| `version`             | `Property<String>`              | -                           | Paper/Minecraft version to download (e.g., "1.21.8") |
+| `eula`                | `Property<Boolean>`             | `false`                     | Auto-accept Minecraft EULA                           |
+| `jvmDebugPort`        | `Property<Int>`                 | `5005`                      | Port for remote JVM debugging                        |
+| `downloadSoftDepends` | `Property<Boolean>`             | `false`                     | Also download `softDepends` plugins                  |
+| `jvmArgs`             | `ListProperty<String>`          | platform defaults           | JVM arguments (e.g., `-Xmx2G`)                       |
+| `programArgs`         | `ListProperty<String>`          | platform defaults           | Server program arguments (e.g., `nogui`)             |
+| `javaVersion`         | `Property<JavaLanguageVersion>` | project toolchain           | Java version for the server                          |
+| `javaHome`            | `Property<Directory>`           | resolved from `javaVersion` | Java installation directory                          |
 
 **Example:**
 
@@ -270,7 +277,8 @@ debugSpigot {
 }
 ```
 
-> **Warning:** Using `add()`, `set()`, or `empty()` on `jvmArgs`/`programArgs` will discard platform defaults. Use `append()` or `appendAll()` (Gradle 8.7+) to preserve defaults.
+> **Warning:** Using `add()`, `set()`, or `empty()` on `jvmArgs`/`programArgs` will discard platform defaults. Use
+`append()` or `appendAll()` (Gradle 8.7+) to preserve defaults.
 
 ## Use external dependencies
 
@@ -308,49 +316,57 @@ extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bu
 
 Generates the description file 'plugin.yml'.
 
-### `debug\${ProjectName}` - [Exec](https://docs.gradle.org/current/javadoc/org/gradle/api/DefaultTask.html)
+### `debugProjectName` - [Exec](https://docs.gradle.org/current/javadoc/org/gradle/api/DefaultTask.html)
 
-*Depends on: `downloadPaper`, `preparePluginDependencies`, `createJavaDebugScript`*
+*Depends on: `prepareProjectName`*
 
 Runs a local Paper server with your plugin for debugging. This task orchestrates the complete debug workflow:
 
 **What it does:**
 
-1. **Downloads Paper server** (via `downloadPaper`) - Fetches the specified Paper version from PaperMC API if not already cached
-2. **Prepares plugin dependencies** (via `preparePluginDependencies`) - Resolves plugins listed in `depends`/`softDepends`:
-  - First tries to copy from your project's `compileClasspath`
-  - Falls back to downloading from SpigotMC (via Spiget API) if not found
+1. **Downloads Paper server** (via `downloadPaper`) - Fetches the specified Paper version from PaperMC API if not
+   already cached
+2. **Prepares plugin dependencies** (via `preparePluginDependencies`) - Resolves plugins listed in `depends`/
+   `softDepends`:
+
+- First tries to copy from your project's `compileClasspath`
+- Falls back to downloading from SpigotMC (via Spiget API) if not found
+
 3. **Copies your plugin JAR** (via `copyArtifactJar`) - Copies the built plugin to the debug server's plugins folder
 4. **Creates starter scripts** (via `createJavaDebugScript`) - Generates platform-specific scripts:
-  - `starter.bat` for Windows
-  - `starter` for Unix/Linux/Mac
+
+- `starter.bat` for Windows
+- `starter` for Unix/Linux/Mac
+
 5. **Launches the server** - Opens a new terminal window and runs the server
 
 **IntelliJ IDEA Run Configurations:**
 
-Spigradle automatically creates two run configurations (NOTE: These are only generated if the plugin `org.jetbrains.gradle.plugin.idea-ext` is applied):
+Spigradle automatically creates two run configurations (NOTE: These are only generated if the plugin
+`org.jetbrains.gradle.plugin.idea-ext` is applied):
 
 1. **`Debug\${ProjectName}` - Remote JVM Debug** ⭐ **Recommended**
-   - **Type:** Remote JVM Debug configuration
-   - **Purpose:** Attaches debugger to an already-running server process
-   - **Recommended workflow:**
-     1. Run `debug\${ProjectName}` task via IntelliJ's terminal or "Run Gradle Task"
-     2. Server starts in a new terminal window with remote debugging enabled on port 5005
-     3. Click the "🐞 Debug" button on this configuration to attach the debugger
-   - **Advantages:**
-     - **Keeps IntelliJ lightweight** - server runs in separate terminal, not managed by IDE
-     - Clean separation between server output and IDE
-     - Better performance - IDE doesn't handle server I/O
-   - **When to use:** Standard debugging workflow (recommended for regular use)
+  - **Type:** Remote JVM Debug configuration
+  - **Purpose:** Attaches debugger to an already-running server process
+  - **Recommended workflow:**
+    1. Run `debug\${ProjectName}` task via IntelliJ's terminal or "Run Gradle Task"
+    2. Server starts in a new terminal window with remote debugging enabled on port 5005
+    3. Click the "🐞 Debug" button on this configuration to attach the debugger
+  - **Advantages:**
+    - **Keeps IntelliJ lightweight** - server runs in separate terminal, not managed by IDE
+    - Clean separation between server output and IDE
+    - Better performance - IDE doesn't handle server I/O
+  - **When to use:** Standard debugging workflow (recommended for regular use)
 
 2. **`Run\${ProjectName}` - JarApplication**
-   - **Type:** JarApplication run configuration
-   - **Purpose:** All-in-one server launch directly from IntelliJ
-   - **Usage:**
-     - Click the "▶ Run" button to start the server normally
-     - Click the "🐞 Debug" button to start the server AND attach debugger in one step
-   - **Note:** Makes IntelliJ heavier as it manages the server process directly; You need to click the `Sync All Gradle Projects` button in IDEA if you change the debugSpigot extension.
-   - **When to use:** Only when you want absolute convenience and don't mind the performance impact
+  - **Type:** JarApplication run configuration
+  - **Purpose:** All-in-one server launch directly from IntelliJ
+  - **Usage:**
+    - Click the "▶ Run" button to start the server normally
+    - Click the "🐞 Debug" button to start the server AND attach debugger in one step
+  - **Note:** Makes IntelliJ heavier as it manages the server process directly; You need to click the
+    `Sync All Gradle Projects` button in IDEA if you change the debugSpigot extension.
+  - **When to use:** Only when you want absolute convenience and don't mind the performance impact
 
 **Directory structure:**
 
@@ -360,7 +376,8 @@ Spigradle automatically creates two run configurations (NOTE: These are only gen
 
 **Configuration:**
 
-See [debugSpigot extension](#debugspigot-extension---debugextension) for configuration options like version, EULA acceptance, JVM arguments, and debug port.
+See [debugSpigot extension](#debugspigot-extension---debugextension) for configuration options like version, EULA
+acceptance, JVM arguments, and debug port.
 
 ## Why not spigot-annotations?
 

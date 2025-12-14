@@ -108,15 +108,19 @@ internal object DebugTask {
      * - **`createJavaDebugScript`** - [CreateJavaDebugScriptTask]
      *   - Generates platform-specific starter scripts (starter.bat/starter)
      *
+     *   **`prepare${ProjectName}`** - [Task]
+     *   - A lifecycle task to prepare debugs
+     *   - **Dependencies:** `download${PlatformName}`, `copyArtifactJar`, `createJavaDebugScript`
+     *
      * - **`debug${ProjectName}`** - [Task]
      *   - Main debug task that orchestrates the debug workflow
-     *   - **Dependencies:** `download${PlatformName}`, `copyArtifactJar`, `createJavaDebugScript`
+     *   - **Dependencies:** `parepare${ProjectName}`
      *
      * ## IntelliJ IDEA Run Configurations
      *
      * Two run configurations are automatically created:
      *
-     * ### 1. `Debug${ProjectName}` - Remote JVM Debug Configuration ⭐ **Recommended**
+     * ### 1. `Debug${ProjectName}` - Remote JVM Debug Configuration **Recommended**
      *
      * **Purpose:** Attach debugger to an already-running server (lightweight)
      *
@@ -230,6 +234,9 @@ internal object DebugTask {
             debugTasks += createJavaDebugScriptTask
         }
         debugTasks += ctx.extraTasks
+        val prepareTask = project.tasks.register("prepare${project.name.asCamelCase(true)}") {
+            dependsOn(debugTasks)
+        }
         project.rootProject.pluginManager.withPlugin("org.jetbrains.gradle.plugin.idea-ext") {
             val ideaModel = project.rootProject.extensions["idea"] as IdeaModel
             ideaModel.project.settings {
@@ -253,10 +260,8 @@ internal object DebugTask {
                         jvmArgs = ctx.jvmArgs.get().joinToString(" ")
                         programParameters = ctx.programArgs.get().joinToString(" ")
                         beforeRun {
-                            for (task in debugTasks) {
-                                register(task.name, GradleTask::class.java) {
-                                    this.task = task.get()
-                                }
+                            register(prepareTask.name, GradleTask::class.java) {
+                                this.task = prepareTask.get()
                             }
                         }
                     }
@@ -267,7 +272,7 @@ internal object DebugTask {
             println(ctx.getRunDebugTaskName(project))
             group = ctx.taskGroupName
 
-            dependsOn(debugTasks)
+            dependsOn(prepareTask)
 
             val os = System.getProperty("os.name").lowercase()
             val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath

@@ -51,9 +51,9 @@ import org.gradle.kotlin.dsl.create
  * - detectSpigotMain([io.typst.spigradle.SubclassDetection]): task to detect the main class.
  *
  * Tasks for debugging:
- * - debug${project.name.caseKebabToPascal()}([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
- *     - dependsOn: downloadPaper, copyArtifactJar, createJavaDebugScript, `preparePluginDependencies`
- * - cleanDebug${project.name.caseKebabToPascal()}([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
+ * - debugProjectName([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`
+ *   - dependsOn: prepareProjectName`
+ * - cleanDebugProjectName([Delete][org.gradle.api.tasks.Delete]): task to clean the project's debug directory
  * - cleanCachePaper([Delete][org.gradle.api.tasks.Delete]): task to clean the global cached `paper.jar` file
  *
  * Trivial tasks for debugging:
@@ -61,12 +61,14 @@ import org.gradle.kotlin.dsl.create
  * - copyArtifactJar([org.gradle.api.tasks.Copy]): task to copy the project artifact JAR, writes `eula.txt`.
  * - downloadPaper([PaperDownloadTask]): task to download the latest build of the version. The download path is `$GRADLE_USER_HOME/spigradle-debug-jars/$version/${platform}.jar`
  * - createJavaDebugScript([io.typst.spigradle.debug.CreateJavaDebugScriptTask]): writes a script file to run the server on Windows/Unix
+ * - prepareProjectName([org.gradle.api.Task]): A lifecycle task to prepare debugs
+ *   - dependsOn: `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`, `preparePluginDependencies`
  *
  * IDEA run configurations (NOTE: These are only generated if the plugin `org.jetbrains.gradle.plugin.idea-ext` applied):
  * - Debug$ProjectName: `Remote JVM Debug` configuration
  *     - port: [DebugExtension.jvmDebugPort]
  * - Run$ProjectName: `JAR Application` configuration that you can run or debug from the Run/Debug button UI
- *     - beforeRun: Gradle tasks `downloadPaper`, `copyArtifactJar`, `createJavaDebugScript`, `preparePluginDependencies`
+ *     - beforeRun: Gradle task `prepareProjectName`
  *     - NOTE: You need to click the Refresh Gradle Project button in IDEA if you change the debugSpigot extension.
  */
 class SpigotPlugin : Plugin<Project> {
