@@ -29,13 +29,7 @@ Spigradle is a Gradle plugin for developing Spigot, Bungeecord, and NukkitX plug
 This processes files in `docs/templates/` and `docs/root-templates/`, expanding variables and adding edit warnings to generated files.
 
 ### Version Management
-```bash
-# Set project version
-./gradlew setVersion
-```
-Version is read from `version.txt` via `VersionTask.readVersion(project)`.
-
-**Current Project Version:** 4.0.0 (from `version.txt`)
+Project version is defined in `gradle.properties` file.
 
 ## Project Structure
 
@@ -46,21 +40,28 @@ spigradle/
 ├── plugin/                    # Main Gradle plugin module
 │   └── src/main/kotlin/io/typst/spigradle/
 ├── spigot-catalog/            # Version Catalog for Spigot dependencies
-├── common/                    # Composite build: shared dependencies/repositories
-│   └── src/main/kotlin/io/typst/spigradle/common/
+├── bungee-catalog/            # Version Catalog for BungeeCord dependencies
+├── nukkit-catalog/            # Version Catalog for NukkitX dependencies
+├── common-catalog/            # Version Catalog for common dependencies
+├── spigot-bom-1.16.5/         # BOM for Spigot 1.16.5 dependencies
+├── spigot-bom-1.20.1/         # BOM for Spigot 1.20.1 dependencies
 └── build-logic/               # Composite build: convention plugins
+    ├── catalog/               # Version Catalog generation plugin
+    ├── central-publish/       # Maven Central publication
     ├── docs/                  # Dokka documentation configuration
-    ├── publish/               # Plugin publication configuration
-    ├── versioning/            # Version management
-    └── catalog/               # Version Catalog generation plugin
+    ├── java/                  # Java toolchain configuration
+    └── publish/               # Gradle Plugin Portal publication
 ```
 
 ### Module Descriptions
 
 - **`plugin`**: Main Gradle plugin containing Spigot, Bungee, and Nukkit plugins. Published as `io.typst:spigradle`.
-- **`spigot-catalog`**: Generates a Gradle Version Catalog with Spigot-related dependencies and Spigradle plugin coordinates. Published as `io.typst:spigot-catalog` (version 1.0.0, independently versioned). Configured via `SpigradleCatalogPlugin` from `build-logic/catalog/`. The catalog includes all Spigot dependencies from `SpigotDependencies` enum, common dependencies from `Dependencies` enum, and Spigradle plugin coordinates for easy version management.
-- **`common`**: Shared library (`io.typst:spigradle-common`) containing repository URLs, dependency coordinates, and extension interfaces. Can be used independently.
-- **`build-logic`**: Internal convention plugins for building the project.
+- **`spigot-catalog`**: Generates a Gradle Version Catalog with Spigot-related dependencies and Spigradle plugin coordinates. Published as `io.typst:spigot-catalog`. Configured via `SpigradleCatalogPublishPlugin` from `build-logic/catalog/`. Includes all Spigot dependencies from `SpigotDependencies` enum, common dependencies from `Dependencies` enum, and Spigradle plugin coordinates.
+- **`bungee-catalog`**: Version Catalog for BungeeCord dependencies. Published as `io.typst:bungee-catalog`.
+- **`nukkit-catalog`**: Version Catalog for NukkitX dependencies. Published as `io.typst:nukkit-catalog`.
+- **`common-catalog`**: Version Catalog for common dependencies (e.g., bStats). Published as `io.typst:common-catalog`.
+- **`spigot-bom-*`**: Bill of Materials for Spigot dependencies at specific Minecraft versions (e.g., `spigot-bom-1.16.5`, `spigot-bom-1.20.1`). Provides dependency version constraints for consistent builds.
+- **`build-logic`**: Internal convention plugins for building the project. Catalog versions are independently versioned in `gradle.properties`.
 
 ## Architecture
 
@@ -150,21 +151,20 @@ The project publishes four Gradle plugins:
 - Paper download API: `https://fill.papermc.io/v3/projects/paper/versions/{version}/builds`
 
 #### Repository and Dependency Shortcuts
-- Common definitions in `common/src/main/kotlin/io/typst/spigradle/common/`:
+- Dependency enums in `build-logic/catalog/src/main/kotlin/io/typst/spigradle/catalog/`:
+  - `Dependencies.kt` - Common dependencies (bStats, etc.)
+  - `SpigotDependencies.kt` - Spigot-specific dependencies
+  - `BungeeDependencies.kt` - BungeeCord-specific dependencies
+  - `NukkitDependencies.kt` - NukkitX-specific dependencies
+- Repository enums in `plugin/src/main/kotlin/io/typst/spigradle/`:
   - `Repositories.kt` - Common repositories
-  - `Dependencies.kt` - Common dependencies
-  - `SpigotRepositories.kt`, `SpigotDependencies.kt` - Spigot-specific
-  - `BungeeRepositories.kt` - Bungee-specific
-  - `NukkitRepositories.kt`, `NukkitDependencies.kt` - Nukkit-specific
-- Plugin-specific extensions in `plugin/src/main/kotlin/io/typst/spigradle/`:
-  - `bungee/BungeeDependencies.kt` - Internal enum defining BungeeCord dependencies:
-    - `BUNGEE_CORD`: net.md-5:bungeecord-api:1.21-R0.4
-    - `BRIGADIER`: com.mojang:brigadier:1.0.18
-    - Each entry wraps a `Dependency` object and provides `format(version)` method
+  - `spigot/SpigotRepositories.kt` - Spigot-specific repositories
+  - `bungee/BungeeRepositories.kt` - BungeeCord-specific repositories
+  - `nukkit/NukkitRepositories.kt` - NukkitX-specific repositories
 
 ### Package Organization
 
-- `io.typst.spigradle.common` (common module) - Shared repository/dependency definitions
+- `io.typst.spigradle.catalog` (build-logic module) - Dependency enums and catalog generation
 - `io.typst.spigradle` (plugin module) - Core plugin, tasks, utilities
 - `io.typst.spigradle.spigot` - Spigot extensions, tasks, models (SpigotExtension, Command, Permission)
   - **Note on `load` property:** Documentation examples may show `Load.STARTUP` or `Load.POSTWORLD`, but `Load` is not an actual type in the codebase. The `load` property in `SpigotExtension` is of type `Property<String>`. Use string values directly: `load.set("STARTUP")` or `load.set("POSTWORLD")`.
@@ -178,18 +178,19 @@ The project publishes four Gradle plugins:
 #### Build-Logic Convention Plugins
 Located in `build-logic/`:
 
-- `docs/` - Contains `spigradle-docs.gradle.kts`: Dokka configuration and `updateTemplateDocs` task
-- `publish/` - Contains `spigradle-publish.gradle.kts`: Configures plugin publication with all four plugin IDs
-- `versioning/` - Contains `spigradle-versioning.gradle.kts` and `VersionTask.kt`: Version management
-- `catalog/` - Contains `SpigradleCatalogPlugin.kt` and `SpigradleCatalogExtension.kt`
+- `catalog/` - Contains `SpigradleCatalogPublishPlugin.kt` and `SpigradleCatalogExtension.kt`
   - Custom plugin for generating Gradle Version Catalogs
   - Applies `version-catalog` and `maven-publish` plugins
   - Extension: `spigradleCatalog { libraries.set(...); plugins.set(...) }`
   - Converts `Dependency` objects to version catalog format (aliases, coordinates, versions)
-  - Used by `spigot-catalog` module to publish reusable catalogs
+  - Used by catalog modules (`spigot-catalog`, `bungee-catalog`, etc.) to publish reusable catalogs
+- `central-publish/` - Contains `SpigradleCentralPublishPlugin.kt`: Configures Maven Central publication
+- `docs/` - Contains `spigradle-docs.gradle.kts`: Dokka configuration and `updateTemplateDocs` task
+- `java/` - Contains `spigradle-java.gradle.kts`: Java toolchain/version configuration
+- `publish/` - Contains `spigradle-publish.gradle.kts`: Configures plugin publication to Gradle Plugin Portal
 
 **Note on Catalog Plugins:**
-- `build-logic/catalog/SpigradleCatalogPlugin.kt` - Convention plugin for building catalog modules (internal build-logic)
+- `build-logic/catalog/SpigradleCatalogPublishPlugin.kt` - Convention plugin for building catalog modules (internal build-logic)
 - `plugin/src/main/kotlin/.../spigot/SpigotCatalogPlugin.kt` - Published plugin for Spigot catalog functionality (external API)
 
 These are distinct plugins with different purposes.

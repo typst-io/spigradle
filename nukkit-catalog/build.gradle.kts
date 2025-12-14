@@ -1,6 +1,5 @@
-import io.typst.spigradle.common.Dependencies
-import io.typst.spigradle.common.Dependency
-import io.typst.spigradle.common.NukkitDependencies
+import io.typst.spigradle.catalog.NukkitDependencies
+import io.typst.spigradle.catalog.Dependency
 
 plugins {
     java
@@ -8,28 +7,19 @@ plugins {
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }
 
-version = "1.0.0"
+version = property("catalog.nukkit.version")!!
 description = "NukkitX version catalog for Gradle"
 
 spigradleCatalog {
-    val nukkitDeps = NukkitDependencies.entries.map { it.dependency }
-    val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(nukkitDeps + commonDeps)
+    libraries.set(NukkitDependencies.entries.map { it.dependency })
     plugins.set(
         listOf(
             Dependency(
                 project.group.toString(),
                 "spigradle.nukkit",
-                rootProject.version.toString(),
+                property("spigradle.catalog.version")!!.toString(),
                 "nukkit",
                 versionRef = "spigradle"
-            ),
-            Dependency(
-                "org.jetbrains",
-                "gradle.plugin.idea-ext",
-                "1.3",
-                "ideaExt",
-                versionRef = "ideaExt",
             )
         )
     )

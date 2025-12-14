@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.common.SpigotDependencies
+import io.typst.spigradle.catalog.SpigotDependencies
 import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

@@ -231,16 +231,46 @@ configure<SpigotExtension> {
 
 > **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debug\${ProjectName}` (e.g., `debugMyPlugin`).
 
+**Available properties:**
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `version` | `Property<String>` | - | Paper/Minecraft version to download (e.g., "1.21.8") |
+| `eula` | `Property<Boolean>` | `false` | Auto-accept Minecraft EULA |
+| `jvmDebugPort` | `Property<Int>` | `5005` | Port for remote JVM debugging |
+| `downloadSoftDepends` | `Property<Boolean>` | `false` | Also download `softDepends` plugins |
+| `jvmArgs` | `ListProperty<String>` | platform defaults | JVM arguments (e.g., `-Xmx2G`) |
+| `programArgs` | `ListProperty<String>` | platform defaults | Server program arguments (e.g., `nogui`) |
+| `javaVersion` | `Property<JavaLanguageVersion>` | project toolchain | Java version for the server |
+| `javaHome` | `Property<Directory>` | resolved from `javaVersion` | Java installation directory |
+
+**Example:**
+
 ```groovy
 debugSpigot {
-    // This extension configures the debug\${ProjectName} task
-    // and IDEA Run configurations: Debug\${ProjectName}, Run\${ProjectName}
     version = "1.21.8"
     eula = true
-    // if you want to specify the port(default 5005):
-    // jvmDebugPort.set(int)
+    jvmDebugPort = 5005
+    downloadSoftDepends = true
+    // Use append() (Gradle 8.7+) to preserve defaults:
+    jvmArgs.append("-Xmx4G")
+    programArgs.append("--world myworld")
 }
 ```
+
+```kotlin
+debugSpigot {
+    version = "1.21.8"
+    eula = true
+    jvmDebugPort = 5005
+    downloadSoftDepends = true
+    // Use append() (Gradle 8.7+) to preserve defaults:
+    jvmArgs.append("-Xmx4G")
+    programArgs.append("--world myworld")
+}
+```
+
+> **Warning:** Using `add()`, `set()`, or `empty()` on `jvmArgs`/`programArgs` will discard platform defaults. Use `append()` or `appendAll()` (Gradle 8.7+) to preserve defaults.
 
 ## Use external dependencies
 

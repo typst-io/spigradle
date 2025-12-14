@@ -16,14 +16,11 @@
 
 package io.typst.spigradle.nukkit
 
-import io.typst.spigradle.common.NukkitRepositories
-import io.typst.spigradle.common.Repositories
-import io.typst.spigradle.common.Repositories.JITPACK
-import io.typst.spigradle.common.Repositories.SONATYPE
+import io.typst.spigradle.Repositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
-import javax.inject.Inject
 import org.gradle.kotlin.dsl.maven
+import javax.inject.Inject
 
 abstract class NukkitRepositoryExtension @Inject constructor(val project: Project) {
     /**
@@ -39,12 +36,14 @@ abstract class NukkitRepositoryExtension @Inject constructor(val project: Projec
     /**
      * The repo shortcut for openCollabRelease, related with NukkitX releases.
      */
-    fun openCollabRelease(): MavenArtifactRepository = project.repositories.maven(NukkitRepositories.OPEN_COLLAB_RELEASE.address)
+    fun openCollabRelease(): MavenArtifactRepository =
+        project.repositories.maven(NukkitRepositories.OPEN_COLLAB_RELEASE.address)
 
     /**
      * The repo shortcut for openCollabSnapshot, related with NukkitX snapshots.
      */
-    fun openCollabSnapshot(): MavenArtifactRepository = project.repositories.maven(NukkitRepositories.OPEN_COLLAB_SNAPSHOT.address)
+    fun openCollabSnapshot(): MavenArtifactRepository =
+        project.repositories.maven(NukkitRepositories.OPEN_COLLAB_SNAPSHOT.address)
 
     /**
      * The repo shortcut for nukkitX same as openCollabSnapshot, related with NukkitX.

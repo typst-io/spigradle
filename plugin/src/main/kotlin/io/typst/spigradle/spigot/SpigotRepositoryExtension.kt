@@ -16,8 +16,8 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.common.Repositories
-import io.typst.spigradle.common.SpigotRepositories
+import io.typst.spigradle.Repositories
+import io.typst.spigradle.spigot.SpigotRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven

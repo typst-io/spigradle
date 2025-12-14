@@ -1,6 +1,6 @@
 package io.typst.spigradle
 
-import io.typst.spigradle.common.Dependency
+import io.typst.spigradle.catalog.Dependency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

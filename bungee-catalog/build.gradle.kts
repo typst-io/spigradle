@@ -1,6 +1,5 @@
-import io.typst.spigradle.common.BungeeDependencies
-import io.typst.spigradle.common.Dependencies
-import io.typst.spigradle.common.Dependency
+import io.typst.spigradle.catalog.BungeeDependencies
+import io.typst.spigradle.catalog.Dependency
 
 plugins {
     java
@@ -8,28 +7,19 @@ plugins {
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }
 
-version = "1.0.0"
+version = property("catalog.bungee.version")!!
 description = "BungeeCord version catalog for Gradle"
 
 spigradleCatalog {
-    val bungeeDeps = BungeeDependencies.entries.map { it.dependency }
-    val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(bungeeDeps + commonDeps)
+    libraries.set(BungeeDependencies.entries.map { it.dependency })
     plugins.set(
         listOf(
             Dependency(
                 project.group.toString(),
                 "spigradle.bungee",
-                rootProject.version.toString(),
+                property("spigradle.catalog.version")!!.toString(),
                 "bungee",
                 versionRef = "spigradle"
-            ),
-            Dependency(
-                "org.jetbrains",
-                "gradle.plugin.idea-ext",
-                "1.3",
-                "ideaExt",
-                versionRef = "ideaExt",
             )
         )
     )

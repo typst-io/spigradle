@@ -16,8 +16,8 @@
 
 package io.typst.spigradle.bungee
 
-import io.typst.spigradle.common.BungeeRepositories
-import io.typst.spigradle.common.Repositories
+import io.typst.spigradle.bungee.BungeeRepositories
+import io.typst.spigradle.Repositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven

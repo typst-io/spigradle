@@ -29,24 +29,21 @@ import java.net.URI
 
 class SpigradleCentralPublishPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.pluginManager.apply("java")
         project.pluginManager.apply("maven-publish")
         val hasSign = project.hasProperty("signing.keyId")
         if (hasSign) {
             project.pluginManager.apply("signing")
         }
-
         val publishing = project.extensions.getByName("publishing") as PublishingExtension
-        val signing = if (hasSign) {
-            project.extensions.getByName("signing") as SigningExtension
-        } else null
-        val java = project.extensions.getByName("java") as JavaPluginExtension
         val moduleName = CaseUtils.toCamelCase(project.name, false, '-', '_')
         publishing.publications {
             val catalog = project.components.findByName("versionCatalog")
+            val javaPlatform = project.components.findByName("javaPlatform")
             create(moduleName, MavenPublication::class.java) {
                 if (catalog != null) {
                     from(catalog)
+                } else if (javaPlatform != null) {
+                    from(javaPlatform)
                 }
                 pom {
                     name.set("${project.group}:${project.name}")
@@ -83,11 +80,17 @@ class SpigradleCentralPublishPlugin : Plugin<Project> {
                 }
             }
         }
-        signing?.sign(publishing.publications.getByName(moduleName))
-        java.withSourcesJar()
-        java.withJavadocJar()
-        project.tasks.getByName("javadoc", Javadoc::class) {
-            options.encoding = "UTF-8"
+        project.pluginManager.withPlugin("signing") {
+            val signing = project.extensions.getByName("signing") as SigningExtension
+            signing.sign(publishing.publications.getByName(moduleName))
+        }
+        project.pluginManager.withPlugin("java") {
+            val java = project.extensions.getByName("java") as JavaPluginExtension
+            java.withSourcesJar()
+            java.withJavadocJar()
+            project.tasks.getByName("javadoc", Javadoc::class) {
+                options.encoding = "UTF-8"
+            }
         }
     }
 }

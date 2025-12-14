@@ -160,57 +160,50 @@ configure<BungeeExtension> {
 
 </details>
 
-## Tasks
+## Repository shortcuts
 
-All tasks supports [UP-TO-DATE checks](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
+Repository shortcuts are available via `bungeeRepos {}` block inside `repositories {}`:
 
-<details>
-<summary>Configuration Guide</summary>
+| Shortcut | URL |
+|----------|-----|
+| `bungeecord()` | https://oss.sonatype.org/content/repositories/snapshots/ |
+| `sonatype()` | https://oss.sonatype.org/content/repositories/snapshots/ |
+| `minecraftLibraries()` | https://libraries.minecraft.net/ |
+| `jitpack()` | https://jitpack.io/ |
+
+**Example:**
 
 Groovy:
-
 ```groovy
-runBungee {
-    jvmArgs('-Xmx8G')
-}
-```
-
-Kotlin with type-safe accessors:
-
-```kotlin
-tasks {
-    runBungee {
-        jvmArgs("-Xmx8G")
+repositories {
+    mavenCentral()
+    bungeeRepos {
+        bungeecord()
+        minecraftLibraries()
     }
 }
 ```
 
-Kotlin without [type-safe accessors](https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin_using_standard_api):
-
+Kotlin:
 ```kotlin
-tasks {
-    named<JavaExec>("runBungee") {
-        jvmArgs("-Xmx8G")
+repositories {
+    mavenCentral()
+    bungeeRepos {
+        bungeecord()
+        minecraftLibraries()
     }
 }
 ```
 
-Kotlin with property delegation
+## Tasks
 
-```kotlin
-tasks {
-    val runBungee by existing(JavaExec::class) {
-        jvmArgs("-Xmx8G")
-    }
-    // Do something with 'runBungee'
-}
-```
+All tasks support [UP-TO-DATE checks](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
 
-</details>
+**Note:** Debug tasks (server download and run) are currently **Spigot-only**. For BungeeCord, you'll need to set up your own development server.
 
 ### detectBungeeMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
-Finds the main class extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
+Finds the main class that extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
 
 ### generateBungeeDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.catalog
 
 enum class NukkitDependencies(
     val dependency: Dependency,
@@ -33,6 +33,16 @@ enum class NukkitDependencies(
     NUKKIT_X(
         NUKKIT.dependency.copy(
             alias = "nukkitX",
+        )
+    ),
+    SPIGRADLOE(
+        Dependency(
+            "io.typst.spigradle.nukkit",
+            "io.typst.spigradle.nukkit.gradle.plugin",
+            "4.0.0",
+            "spigradleNukkit",
+            versionRef = "spigradle",
+            isLocal = true,
         )
     )
     ;

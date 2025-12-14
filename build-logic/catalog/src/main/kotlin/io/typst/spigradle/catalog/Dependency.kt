@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.catalog
 
 data class Dependency(
     val group: String,

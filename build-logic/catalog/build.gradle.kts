@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-    implementation("io.typst:spigradle-common")
     implementation(kotlin("gradle-plugin"))
 }
 
@@ -14,7 +13,7 @@ gradlePlugin {
     plugins {
         register("spigradleCatalog") {
             id = "io.typst.spigradle.catalog"
-            implementationClass = "io.typst.spigradle.SpigradleCatalogPublishPlugin"
+            implementationClass = "io.typst.spigradle.catalog.SpigradleCatalogPublishPlugin"
         }
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.nukkit
 
 enum class NukkitRepositories(val address: String, val alias: String) {
     OPEN_COLLAB_RELEASE("https://repo.opencollab.dev/maven-releases", "openCollabRelease"),

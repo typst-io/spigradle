@@ -2,9 +2,15 @@ package io.typst.spigradle
 
 import groovy.lang.GroovyObject
 import io.typst.spigradle.bungee.BungeePlugin
-import io.typst.spigradle.common.*
+import io.typst.spigradle.bungee.BungeeRepositories
+import io.typst.spigradle.catalog.BungeeDependencies
+import io.typst.spigradle.catalog.Dependencies
+import io.typst.spigradle.catalog.NukkitDependencies
+import io.typst.spigradle.catalog.SpigotDependencies
 import io.typst.spigradle.nukkit.NukkitPlugin
+import io.typst.spigradle.nukkit.NukkitRepositories
 import io.typst.spigradle.spigot.SpigotPlugin
+import io.typst.spigradle.spigot.SpigotRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult

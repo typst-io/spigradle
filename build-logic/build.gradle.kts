@@ -1,0 +1,3 @@
+allprojects {
+    group = "io.typst"
+}

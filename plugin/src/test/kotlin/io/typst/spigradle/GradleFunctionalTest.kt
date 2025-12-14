@@ -16,8 +16,8 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.common.BungeeDependencies
-import io.typst.spigradle.common.SpigotDependencies
+import io.typst.spigradle.catalog.BungeeDependencies
+import io.typst.spigradle.catalog.SpigotDependencies
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language

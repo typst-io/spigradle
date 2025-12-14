@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle
+package io.typst.spigradle.catalog
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

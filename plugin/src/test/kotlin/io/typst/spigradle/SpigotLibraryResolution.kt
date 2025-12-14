@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.common.SpigotDependencies
+import io.typst.spigradle.catalog.SpigotDependencies
 import io.typst.spigradle.util.testGradleTask
 import org.junit.jupiter.api.io.TempDir
 import org.snakeyaml.engine.v2.api.Load

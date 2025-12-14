@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":versioning"))
     implementation(kotlin("gradle-plugin"))
     implementation(libs.apache.commons.text)
 }

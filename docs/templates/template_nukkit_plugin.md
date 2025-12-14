@@ -166,7 +166,7 @@ nukkit {
     authors = listOf("Me")
     depends = listOf("SomePlugin")
     api = listOf("1.0.5")
-    load = Load.STARTUP
+    load = "STARTUP"  // Property<String>: "STARTUP" or "POSTWORLD"
     commands {
         register("give") {
             aliases = listOf("i")
@@ -203,55 +203,13 @@ configure<NukkitExtension> {
 
 ## Tasks
 
-All tasks supports [UP-TO-DATE check](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
+All tasks support [UP-TO-DATE check](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
 
-<details>
-<summary>Configuration Guide</summary>
-
-Groovy:
-
-```groovy
-runNukkit {
-    jvmArgs('-Xmx8G')
-}
-```
-
-Kotlin with type-safe accessors:
-
-```kotlin
-tasks {
-    runNukkit {
-        jvmArgs("-Xmx8G")
-    }
-}
-```
-
-Kotlin without [type-safe accessors](https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin_using_standard_api):
-
-```kotlin
-tasks {
-    named<JavaExec>("runNukkit") {
-        jvmArgs("-Xmx8G")
-    }
-}
-```
-
-Kotlin with property delegation
-
-```kotlin
-tasks {
-    val runNukkit by existing(JavaExec::class) {
-        jvmArgs("-Xmx8G")
-    }
-    // Do something with 'runNukkit'
-}
-```
-
-</details>
+**Note:** Debug tasks (server download and run) are currently **Spigot-only**. For NukkitX, you'll need to set up your own development server.
 
 ### detectNukkitMain - [SubclassDetection](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
-Finds the main class extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
+Finds the main class that extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
 
 ### generateNukkitDescription - [YamlGenerate](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 

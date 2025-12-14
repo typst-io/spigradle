@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.catalog
 
-enum class Repositories(val address: String, val alias: String) {
-    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/", "sonatype"),
-    JITPACK("https://jitpack.io", "jitpack"),
-//    val ALL: List<Pair<String, String>>
-//        get() = listOf(
-//            Repositories, SpigotRepositories,
-//            BungeeRepositories, NukkitRepositories
-//        ).flatMap { it.toFieldEntries() }
+enum class Dependencies(
+    val dependency: Dependency,
+) {
+    LOMBOK(
+        Dependency(
+            "org.projectlombok",
+            "lombok",
+            "1.18.38",
+            "lombok"
+        )
+    )
+    ;
+
+    fun format(version: String?): String {
+        return dependency.format(version)
+    }
 }

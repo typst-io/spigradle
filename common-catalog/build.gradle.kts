@@ -1,5 +1,5 @@
-import io.typst.spigradle.common.Dependencies
-import io.typst.spigradle.common.Dependency
+import io.typst.spigradle.catalog.Dependencies
+import io.typst.spigradle.catalog.Dependency
 
 plugins {
     java
@@ -7,12 +7,11 @@ plugins {
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }
 
-version = "1.0.0"
+version = property("catalog.common.version")!!
 description = "Spigradle common version catalog for Gradle"
 
 spigradleCatalog {
-    val commonDeps = Dependencies.entries.map { it.dependency }
-    libraries.set(commonDeps)
+    libraries.set(Dependencies.entries.map { it.dependency })
     plugins.set(
         listOf(
             Dependency(

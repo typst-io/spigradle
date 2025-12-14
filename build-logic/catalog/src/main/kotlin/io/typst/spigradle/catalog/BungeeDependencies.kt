@@ -14,22 +14,42 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.catalog
 
-enum class Dependencies(
+enum class BungeeDependencies(
     val dependency: Dependency,
 ) {
-    LOMBOK(
+    //    @SerialName("bungeecord")
+    BUNGEE_CORD(
         Dependency(
-            "org.projectlombok",
-            "lombok",
-            "1.18.38",
-            "lombok"
+            "net.md-5",
+            "bungeecord-api",
+            "1.21-R0.4",
+            "bungeecord"
+        )
+    ),
+
+    BRIGADIER(
+        Dependency(
+            "com.mojang",
+            "brigadier",
+            "1.0.18",
+            "brigadier"
+        )
+    ),
+    SPIGRADLOE(
+        Dependency(
+            "io.typst.spigradle.bungee",
+            "io.typst.spigradle.bungee.gradle.plugin",
+            "4.0.0",
+            "spigradleBungee",
+            versionRef = "spigradle",
+            isLocal = true,
         )
     )
     ;
 
-    fun format(version: String?): String {
+    fun format(version: String? = null): String {
         return dependency.format(version)
     }
 }

@@ -16,10 +16,10 @@
 
 package io.typst.spigradle.nukkit
 
-import groovy.lang.Closure
-import io.typst.spigradle.*
-import io.typst.spigradle.common.NukkitDependencies
-import io.typst.spigradle.common.NukkitRepositories
+import io.typst.spigradle.ModuleRegistrationContext
+import io.typst.spigradle.asCamelCase
+import io.typst.spigradle.getMainDetectOutputFile
+import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -59,7 +59,6 @@ class NukkitPlugin : Plugin<Project> {
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
-        setupGroovyExtensions(project)
 
         // register repo
         (project.repositories as ExtensionAware).extensions.create(
@@ -67,22 +66,5 @@ class NukkitPlugin : Plugin<Project> {
             NukkitRepositoryExtension::class,
             project
         )
-    }
-
-    private fun setupGroovyExtensions(project: Project) {
-        val depExt = project.dependencies.groovyExtension
-        val repExp = project.repositories.groovyExtension
-        for (element in NukkitDependencies.entries) {
-            val dep = element.dependency
-            depExt.set(dep.alias, object : Closure<Any>(this, this) {
-                fun doCall(vararg arguments: String) =
-                    dep.format(arguments.getOrNull(0))
-            })
-        }
-        for (repo in NukkitRepositories.entries) {
-            repExp.set(repo.alias, object : Closure<Any>(this, this) {
-                fun doCall() = project.repositories.maven { setUrl(repo.address) }
-            })
-        }
     }
 }

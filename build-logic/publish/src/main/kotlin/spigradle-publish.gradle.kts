@@ -1,5 +1,3 @@
-import io.typst.spigradle.buildlogic.VersionTask
-
 plugins {
     id("com.gradle.plugin-publish")
     java
@@ -33,13 +31,6 @@ gradlePlugin {
     fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin."
 //
     plugins {
-        create("spigradle") {
-            id = "io.typst.spigradle.base"
-            displayName = "Spigradle Base Plugin"
-            description = "The base plugin of Spigradle"
-            tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
-            implementationClass = "io.typst.spigradle.SpigradlePlugin"
-        }
         create("spigot") {
             id = "io.typst.spigradle"
             displayName = "Spigradle Spigot Plugin"
@@ -64,4 +55,3 @@ gradlePlugin {
     }
 }
 
-tasks.register<VersionTask>("setVersion")

@@ -59,7 +59,9 @@ A typical multi-module Spigradle project structure:
 my-plugin/
 ├── settings.gradle                # Declares all modules
 ├── build.gradle                   # Root build configuration
-├── gradle.properties              # Shared properties
+├── gradle.properties              # Shared properties (including version)
+├── gradle/
+├── └── libs.versions.toml         # your unique dependencies
 ├── common/                        # Shared code module
 │   ├── build.gradle
 │   └── src/main/java/...
@@ -78,33 +80,87 @@ my-plugin/
 
 ### Step 1: Configure settings.gradle
 
-Define all modules in your project:
+Define all modules in your project.
+
+> Gradle supports importing multiple version catalogs from `settings.gradle(.kts)` via `dependencyResolutionManagement { versionCatalogs { ... } }`. See Gradle’s “Version Catalogs” docs for details. citeturn0search0
 
 **Groovy DSL:**
 ```groovy
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // Centralized versions from gradle.properties
+        // For Spigot modules
+        create('spigots') {
+            from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+        }
+        // For BungeeCord modules
+        create('bungees') {
+            from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+        }
+        // For common plugins/dependencies (idea-ext, lombok, etc.)
+        // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
+        create('commons') {
+            from("io.typst:common-catalog:\${property("catalog.common.version")}")
+        }
+    }
+}
+
 rootProject.name = 'my-plugin'
 
 include('common', 'spigot', 'bungee', 'api') // api is optional
 
-rootProject.children.forEach { project ->
-    project.name = "my-plugin-\${project.name}"
-}
+// OPTIONAL: rename child projects.
+// Purpose: archiveBaseName / Maven artifactId derived from project.name
+// rootProject.children.each { p ->
+//     p.name = "my-plugin-\${p.name}"
+// }
 ```
 
 **Kotlin DSL (`settings.gradle.kts`):**
 ```kotlin
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // Centralized versions from gradle.properties
+        // For Spigot modules
+        create("spigots") {
+            from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+        }
+        // For BungeeCord modules
+        create("bungees") {
+            from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+        }
+        // For common plugins/dependencies (idea-ext, lombok, etc.)
+        // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
+        create("commons") {
+            from("io.typst:common-catalog:\${property("catalog.common.version")}")
+        }
+    }
+}
+
 rootProject.name = "my-plugin"
 
 include("common", "spigot", "bungee", "api") // api is optional
 
-rootProject.children.forEach { project ->
-    project.name = "my-plugin-\${project.name}"
-}
+// OPTIONAL: rename child projects.
+// Purpose: archiveBaseName / Maven artifactId derived from project.name
+// rootProject.children.forEach { p ->
+//     p.name = "my-plugin-\${p.name}"
+// }
 ```
+
+> **Important:** `ideaExt` is only in the `commons` catalog (not in platform catalogs).
 
 ### Step 2: Configure root build.gradle
 
-Configure shared settings for all subprojects:
+Configure shared settings for all subprojects.
+
+> **Important:** Version is managed centrally in `gradle.properties`. Do **not** set `version = "1.0.0"` (or similar) in build scripts.
 
 <details>
 <summary>Groovy DSL</summary>
@@ -114,10 +170,11 @@ plugins {
     id 'base'
 }
 
-// You can configure shared settings here (for example, repositories and dependencies), but I recommend configuring them explicitly in each submodule.
-subprojects {
+// You can configure shared settings here (for example, repositories and dependencies),
+// but I recommend configuring them explicitly in each submodule.
+allprojects {
     group = 'com.example.myplugin'
-    version = '1.0.0'
+    // version is managed by gradle.properties (do not set it here)
 }
 ```
 
@@ -131,14 +188,35 @@ plugins {
     id("base")
 }
 
-// You can configure shared settings here (for example, repositories and dependencies), but I recommend configuring them explicitly in each submodule.
-subprojects {
+// You can configure shared settings here (for example, repositories and dependencies),
+// but I recommend configuring them explicitly in each submodule.
+allprojects {
     group = "com.example.myplugin"
-    version = "1.0.0"
+    // version is managed by gradle.properties (do not set it here)
 }
 ```
 
 </details>
+
+**Example `gradle.properties` (root):**
+```properties
+# Project version (centralized)
+version=1.0.0
+
+# External catalogs (centralized)
+catalog.spigot.version=1.0.0
+catalog.bungee.version=1.0.0
+catalog.common.version=1.0.0
+```
+
+**Example `gradle/libs.version.toml` (root):**
+```toml
+[versions]
+gson = "2.10.1"
+
+[libraries]
+gson = {group = "com.google.code.gson", name = "gson", version.ref = "gson"}
+```
 
 ### Step 3: Configure subproject build.gradle
 
@@ -152,7 +230,7 @@ The common module has no platform-specific dependencies.
 ```groovy
 plugins {
     id 'java'
-    // id 'org.jetbrains.kotlin.jvm' version '2.2.21'
+    // or: id 'org.jetbrains.kotlin.jvm' version '2.2.21'
 }
 
 repositories {
@@ -167,7 +245,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 ```
@@ -180,7 +258,7 @@ java {
 ```kotlin
 plugins {
     id("java")
-    // id("org.jetbrains.kotlin.jvm") version "2.2.21"
+    // or: id("org.jetbrains.kotlin.jvm") version "2.2.21"
 }
 
 repositories {
@@ -195,34 +273,49 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 ```
 
 </details>
 
+> Gradle’s Java toolchain configuration is done via the `java { toolchain { languageVersion = JavaLanguageVersion.of(...) } }` block. citeturn0search1
+
 #### Spigot module (spigot/build.gradle)
+
+> **Important:** Platform plugins do **not** apply `java` automatically. Add `java` or `org.jetbrains.kotlin.jvm` (version `2.2.21`) explicitly.
 
 <details>
 <summary>Groovy DSL</summary>
 
 ```groovy
 plugins {
-    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
+    id 'java'
+
+    // Spigradle plugin (via version catalog)
+    alias(spigots.plugins.spigot)
+
+    // Optional (commons catalog only)
+    // alias(commons.plugins.ideaExt)
+    // alias(commons.plugins.lombok)
 }
 
 repositories {
     mavenCentral()
-    papermc()
+
+    // Repository shortcuts
+    spigotRepos {
+        papermc()
+    }
 }
 
 dependencies {
     // Depend on common module
-    implementation project(':my-plugin-common')
+    implementation project(':common')
 
-    // Paper API
-    compileOnly paper('1.21.8')
+    // Paper API (from catalog)
+    compileOnly spigots.paper
 }
 
 spigot {
@@ -238,14 +331,14 @@ spigot {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 // include the common in jar
 tasks.jar {
-    dependsOn(':my-plugin-common:jar')
-    from project(':my-plugin-common').sourceSets.main.output
+    dependsOn(':common:jar')
+    from project(':common').sourceSets.main.output
 }
 ```
 
@@ -255,23 +348,32 @@ tasks.jar {
 <summary>Kotlin DSL (spigot/build.gradle.kts)</summary>
 
 ```kotlin
-import io.typst.spigradle.spigot.*
-
 plugins {
-    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+    id("java")
+
+    // Spigradle plugin (via version catalog)
+    alias(spigots.plugins.spigot)
+
+    // Optional (commons catalog only)
+    // alias(commons.plugins.ideaExt)
+    // alias(commons.plugins.lombok)
 }
 
 repositories {
     mavenCentral()
-    papermc()
+
+    // Repository shortcuts
+    spigotRepos {
+        papermc()
+    }
 }
 
 dependencies {
     // Depend on common module
-    implementation(project(":my-plugin-common"))
+    implementation(project(":common"))
 
-    // Paper API
-    compileOnly(paper("1.21.8"))
+    // Paper API (from catalog)
+    compileOnly(spigots.paper)
 }
 
 spigot {
@@ -287,14 +389,14 @@ spigot {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
 // include the common in jar
 tasks.jar {
-    dependsOn(":my-plugin-common:jar")
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    dependsOn(":common:jar")
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -302,20 +404,38 @@ tasks.jar {
 
 #### BungeeCord module (bungee/build.gradle)
 
+> **Important:** Platform plugins do **not** apply `java` automatically. Add `java` or `org.jetbrains.kotlin.jvm` (version `2.2.21`) explicitly.
+
 <details>
 <summary>Groovy DSL</summary>
 
 ```groovy
 plugins {
-    id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
+    id 'java'
+
+    // Spigradle plugin (via version catalog)
+    alias(bungees.plugins.bungee)
+
+    // Optional (commons catalog only)
+    // alias(commons.plugins.lombok)
+}
+
+repositories {
+    mavenCentral()
+
+    // Repository shortcuts
+    bungeeRepos {
+        sonatype()
+        minecraftLibraries()
+    }
 }
 
 dependencies {
     // Depend on common module
-    implementation project(':my-plugin-common')
+    implementation project(':common')
 
-    // BungeeCord API
-    compileOnly bungeecord('1.21')
+    // BungeeCord API (from catalog)
+    compileOnly bungees.bungeecord
 }
 
 bungee {
@@ -325,13 +445,13 @@ bungee {
 
 // Shadow common module into final JAR
 tasks.jar {
-    dependsOn(':my-plugin-common:jar')
-    from project(':my-plugin-common').sourceSets.main.output
+    dependsOn(':common:jar')
+    from project(':common').sourceSets.main.output
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 ```
@@ -342,18 +462,32 @@ java {
 <summary>Kotlin DSL (bungee/build.gradle.kts)</summary>
 
 ```kotlin
-import io.typst.spigradle.bungee.*
-
 plugins {
-    id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
+    id("java")
+
+    // Spigradle plugin (via version catalog)
+    alias(bungees.plugins.bungee)
+
+    // Optional (commons catalog only)
+    // alias(commons.plugins.lombok)
+}
+
+repositories {
+    mavenCentral()
+
+    // Repository shortcuts
+    bungeeRepos {
+        sonatype()
+        minecraftLibraries()
+    }
 }
 
 dependencies {
     // Depend on common module
-    implementation(project(":my-plugin-common"))
+    implementation(project(":common"))
 
-    // BungeeCord API
-    compileOnly(bungeecord("1.21"))
+    // BungeeCord API (from catalog)
+    compileOnly(bungees.bungeecord)
 }
 
 bungee {
@@ -363,13 +497,13 @@ bungee {
 
 // Shadow common module into final JAR
 tasks.jar {
-    dependsOn(":my-plugin-common:jar")
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    dependsOn(":common:jar")
+    from(project(":common").sourceSets.main.get().output)
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 ```
@@ -443,23 +577,26 @@ For plugins that expose a public API for other developers:
 **Groovy DSL (api/build.gradle):**
 ```groovy
 plugins {
-    id 'io.typst.spigradle.base' version '$SPIGRADLE_VERSION'
     id 'java'
+    // Optionally apply platform plugin via catalog if your API needs it.
+    // alias(spigots.plugins.spigot)
 }
 
 repositories {
     mavenCentral()
-    papermc()
+    spigotRepos { papermc() }
 }
 
 dependencies {
     // API typically doesn't depend on implementation
-    compileOnly paper('1.21.8')  // Only if needed
+    compileOnly spigots.paper  // Only if needed
 }
+
+// tasks.detectSpigotMain.enabled = false
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 ```
@@ -467,23 +604,26 @@ java {
 **Kotlin DSL (api/build.gradle.kts):**
 ```kotlin
 plugins {
-    id("io.typst.spigradle.base") version "$SPIGRADLE_VERSION"
     id("java")
+    // Optionally apply platform plugin via catalog if your API needs it.
+    // alias(spigots.plugins.base)
 }
 
 repositories {
     mavenCentral()
-    papermc()
+    spigotRepos { papermc() }
 }
 
 dependencies {
     // API typically doesn't depend on implementation
-    compileOnly(paper("1.21.8"))  // Only if needed
+    compileOnly(spigots.paper)  // Only if needed
 }
+
+// tasks.detectSpigotMain.enabled = false
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 ```
@@ -494,8 +634,8 @@ Groovy DSL:
 ```groovy
 // spigot/build.gradle
 dependencies {
-    api project(':my-plugin-api')           // Expose API to consumers
-    implementation project(':my-plugin-common')  // Hide implementation
+    api project(':api')           // Expose API to consumers
+    implementation project(':common')  // Hide implementation
 }
 ```
 
@@ -503,8 +643,8 @@ Kotlin DSL:
 ```kotlin
 // spigot/build.gradle.kts
 dependencies {
-    api(project(":my-plugin-api"))           // Expose API to consumers
-    implementation(project(":my-plugin-common"))  // Hide implementation
+    api(project(":api"))           // Expose API to consumers
+    implementation(project(":common"))  // Hide implementation
 }
 ```
 
@@ -608,6 +748,23 @@ my-plugin/
 **Step 1: Configure build-logic/settings.gradle.kts:**
 ```kotlin
 rootProject.name = "build-logic"
+
+versionCatalogs {
+    // Centralized versions from gradle.properties
+    // For Spigot modules
+    create('spigots') {
+        from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+    }
+    // For BungeeCord modules
+    create('bungees') {
+        from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+    }
+    // For common plugins/dependencies (idea-ext, lombok, etc.)
+    // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
+    create('commons') {
+        from("io.typst:common-catalog:\${property("catalog.common.version")}")
+    }
+}
 ```
 
 **Step 2: Configure build-logic/build.gradle.kts:**
@@ -622,9 +779,9 @@ repositories {
 }
 
 dependencies {
-    // Add Spigradle plugin to convention plugin classpath
-    implementation("io.typst.spigradle:io.typst.spigradle.gradle.plugin:$SPIGRADLE_VERSION")
-    implementation("io.typst.spigradle.bungee:io.typst.spigradle.bungee.gradle.plugin:$SPIGRADLE_VERSION")
+    // Add Spigradle plugin(s) to convention plugin classpath if needed
+    implementation(spigots.spigradleSpigot)
+    implementation(spigots.spigradleBungee)
 }
 ```
 
@@ -642,26 +799,24 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 ```
 
 **build-logic/src/main/kotlin/spigot-conventions.gradle.kts:**
 ```kotlin
-import io.typst.spigradle.spigot.*
-
 plugins {
     id("common-conventions")
-    id("io.typst.spigradle")
+    alias(spigots.plugins.spigot)
 }
 
 repositories {
-    papermc()
+    spigotRepos { papermc() }
 }
 
 dependencies {
-    compileOnly(paper("1.21.8"))
+    compileOnly(spigots.paper)
 }
 
 spigot {
@@ -671,15 +826,20 @@ spigot {
 
 **build-logic/src/main/kotlin/bungee-conventions.gradle.kts:**
 ```kotlin
-import io.typst.spigradle.bungee.*
-
 plugins {
     id("common-conventions")
-    id("io.typst.spigradle.bungee")
+    alias(bungees.plugins.bungee)
+}
+
+repositories {
+    bungeeRepos {
+        sonatype()
+        minecraftLibraries()
+    }
 }
 
 dependencies {
-    compileOnly(bungeecord("1.21"))
+    compileOnly(bungees.bungeecord)
 }
 ```
 
@@ -692,10 +852,6 @@ pluginManagement {
 rootProject.name = "my-plugin"
 
 include("common", "spigot", "bungee", "api")
-
-rootProject.children.forEach { project ->
-    project.name = "my-plugin-\${project.name}"
-}
 ```
 
 **Step 5: Apply conventions in module build files:**
@@ -718,7 +874,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":my-plugin-common"))
+    implementation(project(":common"))
 }
 
 spigot {
@@ -732,8 +888,8 @@ spigot {
 }
 
 tasks.jar {
-    dependsOn(":my-plugin-common:jar")
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    dependsOn(":common:jar")
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -744,7 +900,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":my-plugin-common"))
+    implementation(project(":common"))
 }
 
 bungee {
@@ -753,8 +909,8 @@ bungee {
 }
 
 tasks.jar {
-    dependsOn(":my-plugin-common:jar")
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    dependsOn(":common:jar")
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -773,13 +929,13 @@ tasks.jar {
 Groovy DSL:
 ```groovy
 // Hides the dependency from consumers
-implementation project(':my-plugin-common')
+implementation project(':common')
 ```
 
 Kotlin DSL:
 ```kotlin
 // Hides the dependency from consumers
-implementation(project(":my-plugin-common"))
+implementation(project(":common"))
 ```
 
 **Using `api`:**
@@ -787,13 +943,13 @@ implementation(project(":my-plugin-common"))
 Groovy DSL:
 ```groovy
 // Exposes the dependency to consumers (requires java-library plugin)
-api project(':my-plugin-api')
+api project(':api')
 ```
 
 Kotlin DSL:
 ```kotlin
 // Exposes the dependency to consumers (requires java-library plugin)
-api(project(":my-plugin-api"))
+api(project(":api"))
 ```
 
 ### Platform Dependencies
@@ -804,15 +960,15 @@ Each platform module should declare its own dependencies:
 ```groovy
 // spigot/build.gradle
 dependencies {
-    implementation project(':my-plugin-common')
-    compileOnly spigot('1.21.8')
+    implementation project(':common')
+    compileOnly spigots.paper
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 // bungee/build.gradle
 dependencies {
-    implementation project(':my-plugin-common')
-    compileOnly bungeecord('1.21')
+    implementation project(':common')
+    compileOnly bungees.bungeecord
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 ```
@@ -821,42 +977,32 @@ dependencies {
 ```kotlin
 // spigot/build.gradle.kts
 dependencies {
-    implementation(project(":my-plugin-common"))
-    compileOnly(spigot("1.21.8"))
+    implementation(project(":common"))
+    compileOnly(spigots.paper)
     implementation("com.google.code.gson:gson:2.10.1")
 }
 
 // bungee/build.gradle.kts
 dependencies {
-    implementation(project(":my-plugin-common"))
-    compileOnly(bungeecord("1.21"))
+    implementation(project(":common"))
+    compileOnly(bungees.bungeecord)
     implementation("com.google.code.gson:gson:2.10.1")
 }
-```
-
-**Tip:** Use `gradle.properties` to manage common dependency versions:
-
-```properties
-# gradle.properties
-gsonVersion=2.10.1
-spigotVersion=1.21.8
 ```
 
 Groovy DSL:
 ```groovy
 // In build.gradle
 dependencies {
-    implementation "com.google.code.gson:gson:\${gsonVersion}"
+    implementation libs.gson
 }
 ```
 
 Kotlin DSL:
 ```kotlin
 // In build.gradle.kts
-val gsonVersion: String by project
-
 dependencies {
-    implementation("com.google.code.gson:gson:\$gsonVersion")
+    implementation(libs.gson)
 }
 ```
 
@@ -868,46 +1014,36 @@ For Bukkit plugin, use the `libraries` option in plugin.yml instead of shadowJar
 ```groovy
 // spigot/build.gradle
 plugins {
-    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
+    id 'java'
+    alias(spigots.plugins.spigot)
 }
 
 // ...
 
-def libs = [
-    'com.google.code.gson:gson:2.10.1'
-]
-
 dependencies {
-    compileOnly(libs)
+    // compileOnlySpigot will be exported to plugin.yml libraries and compileOnly
+    compileOnlySpigot libs.gson
 }
 
-spigot {
-    // ...
-    libraries = libs
-}
+// ...
 ```
 
 **Kotlin DSL:**
 ```kotlin
 // spigot/build.gradle.kts
 plugins {
-    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
+    id("java")
+    alias(spigots.plugins.spigot)
 }
 
 // ...
 
-val libs = listOf(
-    "com.google.code.gson:gson:2.10.1"
-)
-
 dependencies {
-    compileOnly(libs)
+    // compileOnlySpigot will be exported to plugin.yml libraries and compileOnly
+    compileOnlySpigot(libs.gson)
 }
 
-spigot {
-    // ...
-    libraries = libs
-}
+// ...
 ```
 
 When using Shadow plugin to bundle dependencies:
@@ -916,8 +1052,9 @@ When using Shadow plugin to bundle dependencies:
 ```groovy
 // bungee/build.gradle
 plugins {
+    id 'java'
     id("com.gradleup.shadow") version "9.2.2"
-    id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
+    alias(bungees.plugins.bungee)
 }
 
 shadowJar {
@@ -935,8 +1072,9 @@ tasks {
 ```kotlin
 // bungee/build.gradle.kts
 plugins {
+    id("java")
     id("com.gradleup.shadow") version "9.2.2"
-    id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
+    alias(bungees.plugins.bungee)
 }
 
 tasks.shadowJar {
@@ -978,7 +1116,11 @@ Gradle automatically handles build order based on dependencies:
 
 ### Artifacts Location
 
-Built JARs are located in each module's `build/libs/` directory:
+Built JARs are located in each module's `build/libs/` directory.
+
+If you enabled the optional `rootProject.children` renaming in `settings.gradle(.kts)`, the jar base names follow the renamed project names (useful for artifactId/archive naming). Otherwise, they follow the default module names.
+
+Example (with renaming enabled):
 ```
 my-plugin/
 ├── common/build/libs/my-plugin-common-1.0.0.jar
@@ -1040,22 +1182,10 @@ MessageService.getInstance().send(...);
 
 ### 3. Version Consistency
 
-Keep all modules at the same version:
+Keep all modules at the same version by managing it centrally in `gradle.properties`:
 
-Groovy DSL:
-```groovy
-// root build.gradle
-subprojects {
-    version = '1.0.0'  // Same for all
-}
-```
-
-Kotlin DSL:
-```kotlin
-// root build.gradle.kts
-subprojects {
-    version = "1.0.0"  // Same for all
-}
+```properties
+version=1.0.0
 ```
 
 ### 4. Shared Resources
@@ -1066,7 +1196,7 @@ Groovy DSL:
 ```groovy
 // spigot/build.gradle
 processResources {
-    from(project(':my-plugin-common').sourceSets.main.resources)
+    from(project(':common').sourceSets.main.resources)
 }
 ```
 
@@ -1074,7 +1204,7 @@ Kotlin DSL:
 ```kotlin
 // spigot/build.gradle.kts
 tasks.processResources {
-    from(project(":my-plugin-common").sourceSets.main.get().resources)
+    from(project(":common").sourceSets.main.get().resources)
 }
 ```
 
@@ -1094,7 +1224,7 @@ Groovy DSL:
 // spigot/build.gradle
 dependencies {
     testImplementation 'org.mockito:mockito-core:5.8.0'
-    testImplementation project(':my-plugin-common')
+    testImplementation project(':common')
 }
 
 // common/build.gradle
@@ -1108,7 +1238,7 @@ Kotlin DSL:
 // spigot/build.gradle.kts
 dependencies {
     testImplementation("org.mockito:mockito-core:5.8.0")
-    testImplementation(project(":my-plugin-common"))
+    testImplementation(project(":common"))
 }
 
 // common/build.gradle.kts
@@ -1147,14 +1277,14 @@ api → common → spigot/bungee
 Groovy DSL:
 ```groovy
 tasks.jar {
-    from project(':my-plugin-common').sourceSets.main.output
+    from project(':common').sourceSets.main.output
 }
 ```
 
 Kotlin DSL:
 ```kotlin
 tasks.jar {
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -1163,14 +1293,14 @@ Or use Shadow plugin to bundle:
 Groovy DSL:
 ```groovy
 shadowJar {
-    from project(':my-plugin-common').sourceSets.main.output
+    from project(':common').sourceSets.main.output
 }
 ```
 
 Kotlin DSL:
 ```kotlin
 tasks.shadowJar {
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -1184,7 +1314,7 @@ Groovy DSL:
 ```groovy
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from project(':my-plugin-common').sourceSets.main.output
+    from project(':common').sourceSets.main.output
 }
 ```
 
@@ -1192,7 +1322,7 @@ Kotlin DSL:
 ```kotlin
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(project(":my-plugin-common").sourceSets.main.get().output)
+    from(project(":common").sourceSets.main.get().output)
 }
 ```
 
@@ -1203,5 +1333,9 @@ tasks.jar {
 - [The Nukkit plugin](nukkit_plugin.md)
 - [README.md](../README.md)
 - [Gradle Multi-Project Builds](https://docs.gradle.org/current/userguide/multi_project_builds.html)
+- [Gradle Multi-Project Builds (rootProject.name)](https://docs.gradle.org/current/userguide/multi_project_builds.html)
+- [Gradle Version Catalogs](https://docs.gradle.org/current/userguide/version_catalogs.html)
+- [Gradle Toolchains for JVM projects](https://docs.gradle.org/current/userguide/toolchains.html)
 - [Gradle Java Library Plugin](https://docs.gradle.org/current/userguide/java_library_plugin.html)
-- [Shadow Plugin](https://github.com/johnrengelman/shadow)
+- [Shadow Plugin](https://github.com/GradleUp/shadow)
+```

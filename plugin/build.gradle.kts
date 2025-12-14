@@ -3,7 +3,6 @@ plugins {
     `java-gradle-plugin`
     id("spigradle-docs")
     id("spigradle-publish")
-    id("spigradle-versioning")
     id("spigradle-java")
 }
 
@@ -17,7 +16,6 @@ repositories {
 }
 
 dependencies {
-    api("io.typst:spigradle-common:${project.version}") // included build `common`
     implementation(libs.kotlin.stdlib)
     implementation(libs.asm)
     implementation(libs.snakeyamlEngine)
@@ -28,6 +26,7 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(gradleTestKit())
+    testImplementation("io.typst:catalog")
 }
 
 configurations {

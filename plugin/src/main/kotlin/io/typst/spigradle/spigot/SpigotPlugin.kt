@@ -23,9 +23,10 @@ import io.typst.spigradle.debug.DebugTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 
 /**
@@ -37,12 +38,13 @@ import org.gradle.kotlin.dsl.create
  *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}`
  *     - programArgs: defaults to `nogui`
  *
- * Plugins:
- * - io.typst.spigradle.base([io.typst.spigradle.SpigradlePlugin]): base plugin
- *
  * Required plugins:
  * - java
- * - org.jetbrains.gradle.plugin.idea-ext
+ * - org.jetbrains.gradle.plugin.idea-ext (recommended for IntelliJ IDEA)
+ *
+ * Dependency configurations:
+ * - compileOnlySpigot: Compile only dependencies that will be exported to plugin.yml libraries.
+ * - spigotLibrariesClasspath: Resolvable view of compileOnlySpigot for generating plugin.yml libraries.
  *
  * Tasks:
  * - generateSpigotDescription([io.typst.spigradle.YamlGenerate]): task to generate `plugin.yml`.
@@ -77,6 +79,7 @@ class SpigotPlugin : Plugin<Project> {
             val versions = semVer.split(".")
             val minor = versions[1].toInt()
             val fix = versions.getOrNull(2)?.toInt() ?: 0
+            // NOTE: required consistent maintenance
             return if (minor <= 16) {
                 // https://www.minecraftforum.net/forums/minecraft-java-edition/discussion/3041524-help-will-this-laptop-play-java
                 8
@@ -109,16 +112,54 @@ class SpigotPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        // register tasks
+        // register dependency configuration
+        val pluginLibsProp = if (project.pluginManager.hasPlugin("java")) {
+            // register configuration: https://docs.gradle.org/current/userguide/declaring_configurations.html#sec:defining-custom-configurations
+            val compileOnlySpigot = project.configurations.create("compileOnlySpigot").apply {
+                isCanBeConsumed = false
+                isCanBeResolved = false
+                description = "Compile only dependencies that will be exported to plugin.yml libraries."
+            }
+            project.configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).configure {
+                extendsFrom(compileOnlySpigot)
+            }
+            val spigotLibrariesClasspath = project.configurations.create("spigotLibrariesClasspath").apply {
+                isCanBeConsumed = false
+                isCanBeResolved = true
+                extendsFrom(compileOnlySpigot)
+                description = "Resolvable view of compileOnlySpigot for generating plugin.yml libraries."
+            }
+            project.provider {
+                spigotLibrariesClasspath.incoming.resolutionResult.allComponents.asSequence()
+                    .mapNotNull { component ->
+                        val id = component.id as? ModuleComponentIdentifier ?: return@mapNotNull null
+                        "${id.group}:${id.module}:${id.version}"
+                    }
+                    .distinct()
+                    .sorted()
+                    .toList()
+            }
+        } else null
+
+        // register extension
         val extension = project.extensions.create(platformName, SpigotExtension::class)
+        if (pluginLibsProp != null) {
+            extension.libraries.convention(pluginLibsProp)
+        }
+
+        // register tasks
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
         setupSpigotDebug(project, extension)
 
-        // register repo
-        (project.repositories as ExtensionAware).extensions.create("spigotRepos", SpigotRepositoryExtension::class, project)
+        // register repo extension
+        (project.repositories as ExtensionAware).extensions.create(
+            "spigotRepos",
+            SpigotRepositoryExtension::class,
+            project
+        )
     }
 
     private fun setupSpigotDebug(project: Project, extension: SpigotExtension) {

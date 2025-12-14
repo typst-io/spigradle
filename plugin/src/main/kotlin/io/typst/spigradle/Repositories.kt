@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle
 
-enum class BungeeRepositories(val address: String, val alias: String) {
-    BUNGEECORD(Repositories.SONATYPE.address, "bungeecord"),
-    SONATYPE(Repositories.SONATYPE.address, "sonatype"),
-    MINECRAFT_LIBRARIES("https://libraries.minecraft.net", "minecraftLibraries")
+enum class Repositories(val address: String, val alias: String) {
+    SONATYPE("https://oss.sonatype.org/content/repositories/snapshots/", "sonatype"),
+    JITPACK("https://jitpack.io", "jitpack"),
 }

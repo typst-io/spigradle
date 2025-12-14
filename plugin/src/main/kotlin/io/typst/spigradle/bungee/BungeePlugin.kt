@@ -16,10 +16,7 @@
 
 package io.typst.spigradle.bungee
 
-import groovy.lang.Closure
 import io.typst.spigradle.*
-import io.typst.spigradle.common.BungeeDependencies
-import io.typst.spigradle.common.BungeeRepositories
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -59,7 +56,6 @@ class BungeePlugin : Plugin<Project> {
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
-        setupGroovyExtension(project)
 
         // register repo
         (project.repositories as ExtensionAware).extensions.create(
@@ -67,22 +63,5 @@ class BungeePlugin : Plugin<Project> {
             BungeeRepositoryExtension::class,
             project
         )
-    }
-
-    private fun setupGroovyExtension(project: Project) {
-        val depExt = project.dependencies.groovyExtension
-        val repExp = project.repositories.groovyExtension
-        for (elem in BungeeDependencies.entries) {
-            val dep = elem.dependency
-            depExt.set(dep.alias, object : Closure<Any>(this, this) {
-                fun doCall(vararg arguments: String) =
-                    dep.format(arguments.getOrNull(0))
-            })
-        }
-        for (repo in BungeeRepositories.entries) {
-            repExp.set(repo.alias, object : Closure<Any>(this, this) {
-                fun doCall() = project.repositories.maven { setUrl(repo.address) }
-            })
-        }
     }
 }

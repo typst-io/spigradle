@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle
+package io.typst.spigradle.bungee
 
-import io.typst.spigradle.common.Dependency
-import org.gradle.api.provider.ListProperty
+import io.typst.spigradle.Repositories
 
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<Dependency>
+enum class BungeeRepositories(val address: String, val alias: String) {
+    BUNGEECORD(Repositories.SONATYPE.address, "bungeecord"),
+    SONATYPE(Repositories.SONATYPE.address, "sonatype"),
+    MINECRAFT_LIBRARIES("https://libraries.minecraft.net", "minecraftLibraries")
 }

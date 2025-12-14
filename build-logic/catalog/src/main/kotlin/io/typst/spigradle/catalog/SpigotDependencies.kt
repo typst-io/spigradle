@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.catalog
 
 
 enum class SpigotDependencies(
@@ -119,11 +119,10 @@ enum class SpigotDependencies(
         )
     ),
     WORLDEDIT(
-
         Dependency(
             "com.sk89q.worldedit",
             "worldedit-bukkit",
-            "7.3.15",
+            "7.3.17",
             "worldedit",
         )
     ),
@@ -173,6 +172,16 @@ enum class SpigotDependencies(
             "mockbukkit-v1.21",
             "4.98.0",
             "mockBukkit"
+        )
+    ),
+    SPIGRADLOE(
+        Dependency(
+            "io.typst.spigradle",
+            "io.typst.spigradle.gradle.plugin",
+            "4.0.0",
+            "spigradleSpigot",
+            versionRef = "spigradle",
+            isLocal = true,
         )
     )
     ;

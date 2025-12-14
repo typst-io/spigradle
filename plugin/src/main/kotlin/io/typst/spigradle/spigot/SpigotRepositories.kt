@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.common
+package io.typst.spigradle.spigot
 
 enum class SpigotRepositories(val address: String, val alias: String) {
     // @SerialName("purpurmc"), purpur
