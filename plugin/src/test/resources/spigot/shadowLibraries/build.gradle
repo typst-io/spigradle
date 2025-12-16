@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation(spigots.spigot)
+    implementation(spigots.spigot.api)
 }
 
 def spigotKeyword = 'spigot'

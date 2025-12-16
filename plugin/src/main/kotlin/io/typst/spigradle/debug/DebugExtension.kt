@@ -110,21 +110,21 @@ open class DebugExtension(project: Project) {
     val jvmDebugPort: Property<Int> = project.objects.property(Int::class.java).convention(5005)
 
     /**
-     * Whether to download plugins listed in `softDepends` in addition to `depends`.
+     * Whether to download plugins listed in `softDepend` in addition to `depend`.
      *
-     * - When `true`: Downloads both `depends` and `softDepends` plugins
-     * - When `false`: Only downloads `depends` plugins
+     * - When `true`: Downloads both `depend` and `softDepend` plugins
+     * - When `false`: Only downloads `depen` plugins
      *
      * **Default:** `false`
      *
      * **Example:**
      * ```groovy
-     * downloadSoftDepends.set(true)
+     * downloadSoftDepend.set(true)
      * ```
      *
      * @see io.typst.spigradle.spigot.PluginDependencyPrepareTask
      */
-    val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    val downloadSoftDepend: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
 
     /**
      * JVM arguments to pass to the server process.

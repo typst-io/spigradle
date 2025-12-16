@@ -28,25 +28,17 @@ import javax.inject.Inject
  *
  * Groovy Example:
  * ```groovy
- * spigot {
- *   author 'Me'
- *   depends 'ProtocolLib', 'Vault'
- *   debug {
- *     agentPort 5005
- *   }
+ * bungee {
+ *   author = 'Me'
+ *   depends = ['ProtocolLib', 'Vault']
  * }
  * ```
  *
  * Kotlin Example:
  * ```kotlin
- * import io.typst.spigradle.Load
- *
- * spigot {
+ * bungee {
  *   author = "Me"
  *   depends = listOf("ProtocolLib", "Vault")
- *   debug {
- *     agentPort = 5005
- *   }
  * }
  * ```
  *

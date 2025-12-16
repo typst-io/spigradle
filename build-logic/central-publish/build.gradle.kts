@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin"))
-    implementation(libs.apache.commons.text)
+    implementation(libs.commons.text)
 }
 
 gradlePlugin {

@@ -175,8 +175,8 @@ About the `plugin.yml`, See [plugin-yml wiki](https://www.spigotmc.org/wiki/plug
 ```groovy
 spigot {
     authors = 'Me'
-    depends = 'ProtocolLib' , 'Vault'
-    softDepends = 'WorldEdit'
+    depend = 'ProtocolLib' , 'Vault'
+    softDepend = 'WorldEdit'
     apiVersion = '1.15'
     load = "STARTUP"
     libraries = ['my:lib:1.0.0', 'my:lib2:1.0.0']
@@ -211,8 +211,8 @@ spigot {
 ```kotlin
 spigot {
     authors = listOf("Me")
-    depends = listOf("ProtocolLib")
-    softDepends = listOf("WorldEdit")
+    depend = listOf("ProtocolLib")
+    softDepend = listOf("WorldEdit")
     apiVersion = "1.15"
     load = "STARTUP"
     commands {
@@ -258,16 +258,16 @@ configure<SpigotExtension> {
 
 **Available properties:**
 
-| Property              | Type                            | Default                     | Description                                          |
-|-----------------------|---------------------------------|-----------------------------|------------------------------------------------------|
-| `version`             | `Property<String>`              | -                           | Paper/Minecraft version to download (e.g., "1.21.8") |
-| `eula`                | `Property<Boolean>`             | `false`                     | Auto-accept Minecraft EULA                           |
-| `jvmDebugPort`        | `Property<Int>`                 | `5005`                      | Port for remote JVM debugging                        |
-| `downloadSoftDepends` | `Property<Boolean>`             | `false`                     | Also download `softDepends` plugins                  |
-| `jvmArgs`             | `ListProperty<String>`          | platform defaults           | JVM arguments (e.g., `-Xmx2G`)                       |
-| `programArgs`         | `ListProperty<String>`          | platform defaults           | Server program arguments (e.g., `nogui`)             |
-| `javaVersion`         | `Property<JavaLanguageVersion>` | project toolchain           | Java version for the server                          |
-| `javaHome`            | `Property<Directory>`           | resolved from `javaVersion` | Java installation directory                          |
+| Property             | Type                            | Default                     | Description                                          |
+|----------------------|---------------------------------|-----------------------------|------------------------------------------------------|
+| `version`            | `Property<String>`              | -                           | Paper/Minecraft version to download (e.g., "1.21.8") |
+| `eula`               | `Property<Boolean>`             | `false`                     | Auto-accept Minecraft EULA                           |
+| `jvmDebugPort`       | `Property<Int>`                 | `5005`                      | Port for remote JVM debugging                        |
+| `downloadSoftDepend` | `Property<Boolean>`             | `false`                     | Also download `softDepends` plugins                  |
+| `jvmArgs`            | `ListProperty<String>`          | platform defaults           | JVM arguments (e.g., `-Xmx2G`)                       |
+| `programArgs`        | `ListProperty<String>`          | platform defaults           | Server program arguments (e.g., `nogui`)             |
+| `javaVersion`        | `Property<JavaLanguageVersion>` | project toolchain           | Java version for the server                          |
+| `javaHome`           | `Property<Directory>`           | resolved from `javaVersion` | Java installation directory                          |
 
 **Example:**
 

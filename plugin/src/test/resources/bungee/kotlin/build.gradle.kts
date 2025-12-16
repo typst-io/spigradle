@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(bungees.bungeecord)
+    compileOnly(bungees.bungeecord.api)
 }
 
 bungee {

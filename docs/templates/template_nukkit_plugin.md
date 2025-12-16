@@ -130,7 +130,7 @@ About the `plugin.yml`, See [Official Sample](https://github.com/NukkitX/Example
 ```groovy
 nukkit {
     authors 'Me'
-    depends 'ProtocolLib', 'Vault'
+    depend 'ProtocolLib', 'Vault'
     api '1.0.5'
     load STARTUP
     commands {
@@ -164,7 +164,7 @@ nukkit {
 ```kotlin
 nukkit {
     authors = listOf("Me")
-    depends = listOf("SomePlugin")
+    depend = listOf("SomePlugin")
     api = listOf("1.0.5")
     load = "STARTUP"  // Property<String>: "STARTUP" or "POSTWORLD"
     commands {

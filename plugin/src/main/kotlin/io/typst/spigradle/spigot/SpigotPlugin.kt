@@ -24,6 +24,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.result.ResolvedDependencyResult
+import org.gradle.api.attributes.Usage
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.bundling.Jar
@@ -130,11 +132,21 @@ class SpigotPlugin : Plugin<Project> {
                 isCanBeResolved = true
                 extendsFrom(compileOnlySpigot)
                 description = "Resolvable view of compileOnlySpigot for generating plugin.yml libraries."
+
+                attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_API))
+                }
             }
             project.provider {
-                spigotLibrariesClasspath.incoming.resolutionResult.allComponents.asSequence()
-                    .mapNotNull { component ->
-                        val id = component.id as? ModuleComponentIdentifier ?: return@mapNotNull null
+                spigotLibrariesClasspath.incoming.resolutionResult.root
+                    .dependencies
+                    .asSequence()
+                    .mapNotNull {
+                        if (it is ResolvedDependencyResult && !it.isConstraint) {
+                            it.selected.id as? ModuleComponentIdentifier
+                        } else null
+                    }
+                    .map { id ->
                         "${id.group}:${id.module}:${id.version}"
                     }
                     .distinct()
@@ -197,15 +209,21 @@ class SpigotPlugin : Plugin<Project> {
             project.tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {
                 group = ctx.taskGroupName
 
-                pluginNames.set(paperExt.downloadSoftDepends.map {
+                pluginNames.set(paperExt.downloadSoftDepend.map {
                     if (it) {
                         (extension.depend.orNull ?: emptyList()) + (extension.softDepend.orNull ?: emptyList())
                     } else extension.depend.orNull ?: emptyList()
                 })
-                downloadSoftDepends.set(paperExt.downloadSoftDepends)
+                downloadSoftDepend.set(paperExt.downloadSoftDepend)
                 outputDir.set(ctx.getDebugArtifactDir(project))
                 // for up-to-date check
                 inputs.property("javaVersion", paperExt.version)
+
+                project.pluginManager.withPlugin("java") {
+                    resolvableConfigurations.convention(
+                        project.configurations.named("compileClasspath").map(::setOf)
+                    )
+                }
 
                 doFirst {
                     // NOTE: minJavaVer required consistent maintenance

@@ -16,6 +16,7 @@
 
 package io.typst.spigradle.catalog
 
+// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
 enum class NukkitDependencies(
     val dependency: Dependency,
 ) {
@@ -35,12 +36,12 @@ enum class NukkitDependencies(
             alias = "nukkitX",
         )
     ),
-    SPIGRADLOE(
+    SPIGRADLOE_PLUGIN(
         Dependency(
             "io.typst.spigradle.nukkit",
             "io.typst.spigradle.nukkit.gradle.plugin",
             "4.0.0",
-            "spigradleNukkit",
+            "spigradleNukkit-plugin",
             versionRef = "spigradle",
             isLocal = true,
         )

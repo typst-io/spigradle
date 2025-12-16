@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.catalog
 
-
+// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
 enum class SpigotDependencies(
     val dependency: Dependency,
 ) {
@@ -25,7 +25,7 @@ enum class SpigotDependencies(
             "org.spigotmc",
             "spigot-api",
             "1.21.8-R0.1-SNAPSHOT",
-            "spigot",
+            "spigot-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
         )
@@ -35,7 +35,7 @@ enum class SpigotDependencies(
             "org.spigotmc",
             "spigot",
             "1.21.8-R0.1-SNAPSHOT",
-            "spigotAll",
+            "spigot-all",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
@@ -46,7 +46,7 @@ enum class SpigotDependencies(
             "org.purpurmc.purpur",
             "purpur-api",
             "1.21.8-R0.1-SNAPSHOT",
-            "purpur",
+            "purpur-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
         )
@@ -56,7 +56,7 @@ enum class SpigotDependencies(
             "io.papermc.paper",
             "paper-api",
             "1.21.8-R0.1-SNAPSHOT",
-            "paper",
+            "paper-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
         )
@@ -107,7 +107,7 @@ enum class SpigotDependencies(
             "com.github.MilkBowl",
             "VaultAPI",
             "1.7",
-            "vault"
+            "vault-api"
         )
     ),
     LUCK_PERMS(
@@ -115,7 +115,7 @@ enum class SpigotDependencies(
             "net.luckperms",
             "api",
             "5.5",
-            "luckperms",
+            "luckperms-api",
         )
     ),
     WORLDEDIT(
@@ -155,7 +155,7 @@ enum class SpigotDependencies(
             "com.sk89q",
             "commandhelper",
             "3.3.4-SNAPSHOT",
-            "commandHelper",
+            "commandhelper",
         )
     ),
     B_STATS(
@@ -163,7 +163,7 @@ enum class SpigotDependencies(
             "org.bstats",
             "bstats-bukkit",
             "3.0.2",
-            "bStats",
+            "bstats",
         )
     ),
     MOCK_BUKKIT(
@@ -171,15 +171,15 @@ enum class SpigotDependencies(
             "org.mockbukkit.mockbukkit",
             "mockbukkit-v1.21",
             "4.98.0",
-            "mockBukkit"
+            "mockbukkit"
         )
     ),
-    SPIGRADLOE(
+    SPIGRADLOE_PLUGIN(
         Dependency(
             "io.typst.spigradle",
             "io.typst.spigradle.gradle.plugin",
             "4.0.0",
-            "spigradleSpigot",
+            "spigradleSpigot-plugin",
             versionRef = "spigradle",
             isLocal = true,
         )

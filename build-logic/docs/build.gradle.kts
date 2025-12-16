@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.gradlePlugin.dokka)
+    implementation(libs.dokka.plugin)
 }

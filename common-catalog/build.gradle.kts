@@ -1,4 +1,4 @@
-import io.typst.spigradle.catalog.Dependencies
+import io.typst.spigradle.catalog.CommonDependencies
 import io.typst.spigradle.catalog.Dependency
 
 plugins {
@@ -10,7 +10,7 @@ version = property("catalog.common.version")!!
 description = "Spigradle common version catalog for Gradle"
 
 spigradleCatalog {
-    libraries.set(Dependencies.entries.map { it.dependency })
+    libraries.set(CommonDependencies.entries.map { it.dependency })
     plugins.set(
         listOf(
             Dependency(

@@ -16,14 +16,20 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.*
+import io.typst.spigradle.ContentSource
+import io.typst.spigradle.YamlValue
+import io.typst.spigradle.fetchHttpGetAsByteArray
+import io.typst.spigradle.fetchHttpGetAsString
 import org.gradle.api.DefaultTask
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -64,7 +70,7 @@ import java.util.jar.JarInputStream
  *
  * **Important behaviors:**
  * - This task does NOT overwrite existing files; you can manually place plugin JARs if needed
- * - Plugin names are sourced from the `depends` and `softDepends` configuration in your plugin.yml
+ * - Plugin names are sourced from the `depend` and `softDepend` configuration in your plugin.yml
  * - The task validates that downloaded plugins have the correct name in their plugin.yml
  * - Uses the `compileClasspath` configuration to search for plugin JARs
  */
@@ -78,15 +84,18 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
      * List of plugin names to prepare (e.g., `["Vault", "WorldEdit"]`).
      *
      * These names should match the plugin names defined in each dependency's `plugin.yml`.
-     * Typically populated from the `depends` and `softDepends` configuration of the
+     * Typically populated from the `depend` and `softDepend` configuration of the
      * project's Spigot plugin.
      */
     @get:Input
     abstract val pluginNames: ListProperty<String>
 
     @get:Input
-    val downloadSoftDepends: Property<Boolean> = project.objects.property(Boolean::class.java)
+    val downloadSoftDepend: Property<Boolean> = project.objects.property(Boolean::class.java)
         .convention(false)
+
+    @get:Classpath
+    abstract val resolvableConfigurations: SetProperty<Configuration>
 
     /**
      * The output directory where plugin dependency JARs will be placed.
@@ -99,26 +108,27 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
 
     @TaskAction
     fun prepare() {
+        // TODO: don't recursively for soft depend
         val thePluginNames = pluginNames.get()
-        val downloadSoftDepends = downloadSoftDepends.get()
+        val downloadSoftDepends = downloadSoftDepend.get()
         if (thePluginNames.isEmpty()) {
             logger.log(LogLevel.LIFECYCLE, "SKIPPED: no dependencies configured")
             return
         }
 
         // fetch all plugins from classpath
-        val runtimeCp = if (project.hasJavaPlugin) {
-            project.configurations.named("compileClasspath")
-        } else null
         val pluginFiles = mutableMapOf<String, File>()
 
-        val artifacts = runtimeCp?.get()?.incoming
-            ?.artifactView {
-                isLenient = true
+        val classpath = resolvableConfigurations.orNull ?: emptySet()
+        val artifacts = classpath
+            .flatMap {
+                it.incoming
+                    .artifactView {
+                        isLenient = true
+                    }
+                    .artifacts
+                    .resolvedArtifacts.get()
             }
-            ?.artifacts
-            ?.resolvedArtifacts
-            ?.get() ?: emptyList()
         for (artifact in artifacts) {
             val file = artifact.file
             if (!file.name.endsWith(".jar")) {
@@ -216,7 +226,12 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
 
     internal fun downloadPluginDependency(name: String): SpigotPluginDependency? {
         val uri = URI("https://api.spiget.org/v2/search/resources/${name}?field=name&sort=-downloads")
-        val results = YamlValue.parse(fetchHttpGetAsString(uri).body()).asList() ?: emptyList()
+        val results = try {
+            YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()
+        } catch (ex: Exception) {
+            logger.log(LogLevel.WARN, "Couldn't download the dependency: $name", ex)
+            emptyList()
+        } ?: emptyList()
 
         for (resultYaml in results) {
             project.logger.log(

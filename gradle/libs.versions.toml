@@ -1,16 +1,17 @@
 [versions]
 
+# NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
 # matched with the version of kotlin-dsl `embeddedKotlinVersion`
 kotlin = "2.2.20"
 dokka = "2.1.0"
 # NOTE: required consistent maintenance
 asm = "9.9"
-ideaExt = "1.3"
+ideaExt = "1.3.1-SNAPSHOT"
 junit = "6.0.1"
 publishPlugin = "2.0.0"
 snakeyamlEngine = "3.0.1"
-apacheCommonsText = "1.15.0"
-apacheCommonsLang3 = "3.20.0"
+commons-text = "1.15.0"
+commons-lang3 = "3.20.0"
 
 [libraries]
 
@@ -22,9 +23,9 @@ snakeyamlEngine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "sn
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
-gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-gradlePlugin-publishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "publishPlugin" }
-gradlePlugin-ideaExt = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
+dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "publishPlugin" }
+ideaExt-plugin = { module = "org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
 
-apache-commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommonsText" }
-apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "apacheCommonsLang3" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }

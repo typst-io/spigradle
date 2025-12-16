@@ -16,6 +16,7 @@
 
 package io.typst.spigradle.catalog
 
+// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
 enum class BungeeDependencies(
     val dependency: Dependency,
 ) {
@@ -24,7 +25,7 @@ enum class BungeeDependencies(
             "net.md-5",
             "bungeecord-api",
             "1.21-R0.4",
-            "bungeecord"
+            "bungeecord-api"
         )
     ),
     BRIGADIER(
@@ -40,7 +41,7 @@ enum class BungeeDependencies(
             "io.typst.spigradle.bungee",
             "io.typst.spigradle.bungee.gradle.plugin",
             "4.0.0",
-            "spigradleBungee",
+            "spigradleBungee-plugin",
             versionRef = "spigradle",
             isLocal = true,
         )

@@ -50,7 +50,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(spigots.paper)
+    compileOnly(spigots.paper.api)
     compileOnly(spigots.protocolLib)
     compileOnly(spigots.vault) {
         transitive = false
@@ -58,7 +58,7 @@ dependencies {
 }
 
 spigot {
-    depends = listOf("ProtocolLib", "Vault")
+    depend = listOf("ProtocolLib", "Vault")
     apiVersion = "1.21"
 }
 

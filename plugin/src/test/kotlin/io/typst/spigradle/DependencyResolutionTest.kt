@@ -4,7 +4,7 @@ import groovy.lang.GroovyObject
 import io.typst.spigradle.bungee.BungeePlugin
 import io.typst.spigradle.bungee.BungeeRepositories
 import io.typst.spigradle.catalog.BungeeDependencies
-import io.typst.spigradle.catalog.Dependencies
+import io.typst.spigradle.catalog.CommonDependencies
 import io.typst.spigradle.catalog.NukkitDependencies
 import io.typst.spigradle.catalog.SpigotDependencies
 import io.typst.spigradle.nukkit.NukkitPlugin
@@ -113,9 +113,10 @@ class DependencyResolutionTest {
     fun `validate bungee dependencies`() {
         validate(
             BungeeDependencies.entries
-                .filter { !it.dependency.isLocal }
-                .map {
-                    it.dependency.format()
+                .flatMap {
+                    if (!it.dependency.isLocal) {
+                        listOf(it.dependency.format())
+                    } else emptyList()
                 },
             BungeeRepositories.entries.map {
                 it.address
@@ -128,9 +129,10 @@ class DependencyResolutionTest {
     fun `validate nukkit dependencies`() {
         validate(
             NukkitDependencies.entries
-                .filter { !it.dependency.isLocal }
-                .map {
-                    it.dependency.format()
+                .flatMap {
+                    if (!it.dependency.isLocal) {
+                        listOf(it.dependency.format())
+                    } else emptyList()
                 },
             NukkitRepositories.entries.map {
                 it.address
@@ -142,9 +144,11 @@ class DependencyResolutionTest {
     @Test
     fun `validate common dependencies`() {
         validate(
-            Dependencies.entries
-                .map {
-                    it.dependency.format()
+            CommonDependencies.entries
+                .flatMap {
+                    if (!it.dependency.isLocal) {
+                        listOf(it.dependency.format())
+                    } else emptyList()
                 },
             Repositories.entries.map {
                 it.alias

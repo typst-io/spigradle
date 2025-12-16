@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly spigots.spigot
+    compileOnly spigots.spigot.api
 }
 
 java {
@@ -48,7 +48,7 @@ spigot {
 debugSpigot {
     version.set('1.21.8')
     eula.set(true)
-    downloadSoftDepends.set(true)
+    downloadSoftDepend.set(true)
 }
 
 tasks {

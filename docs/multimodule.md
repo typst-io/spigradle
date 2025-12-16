@@ -342,7 +342,7 @@ dependencies {
 
 spigot {
     apiVersion = '1.21'
-    depends = ['Vault']
+    depend = ['Vault']
 
     commands {
         register('mycommand') {
@@ -395,7 +395,7 @@ dependencies {
     implementation(project(":common"))
 
     // Paper API (from catalog)
-    compileOnly(spigots.paper)
+    compileOnly(spigots.paper.api)
 }
 
 spigot {
@@ -646,7 +646,7 @@ repositories {
 
 dependencies {
     // API typically doesn't depend on implementation
-    compileOnly(spigots.paper)  // Only if needed
+    compileOnly(spigots.paper.api)  // Only if needed
 }
 
 // tasks.detectSpigotMain.enabled = false
@@ -852,7 +852,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(spigots.paper)
+    compileOnly(spigots.paper.api)
 }
 
 spigot {
@@ -1020,7 +1020,7 @@ dependencies {
 // spigot/build.gradle.kts
 dependencies {
     implementation(project(":common"))
-    compileOnly(spigots.paper)
+    compileOnly(spigots.paper.api)
     implementation("com.google.code.gson:gson:2.10.1")
 }
 

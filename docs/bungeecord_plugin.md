@@ -147,8 +147,8 @@ About the `bungee.yml`, See [Here](https://www.spigotmc.org/wiki/create-your-fir
 bungee {
     description 'A Bungeecord plugin.'
     author 'Me'
-    depends 'foo', 'bar'
-    softDepends 'soft'
+    depend 'foo', 'bar'
+    softDepend 'soft'
 }
 ```
 
@@ -161,8 +161,8 @@ bungee {
 bungee {
     description = "A Bungeecord plugin."
     author = "Me"
-    depends = listOf("SomePlugin")
-    softDepends = listOf("SomeSoftPlugin")
+    depend = listOf("SomePlugin")
+    softDepend = listOf("SomeSoftPlugin")
 }
 ```
 

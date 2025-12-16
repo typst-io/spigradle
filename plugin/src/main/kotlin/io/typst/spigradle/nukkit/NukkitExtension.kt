@@ -31,46 +31,41 @@ import javax.inject.Inject
  *
  * Groovy Example:
  * ```groovy
- * spigot {
- *   authors 'Me'
- *   depends 'ProtocolLib', 'Vault'
- *   api '1.0.5'
- *   load STARTUP
+ * nukkit {
+ *   authors = 'Me'
+ *   depend = ['ProtocolLib', 'Vault']
+ *   api = '1.0.5'
+ *   load = 'STARTUP'
  *   commands {
- *     give {
- *       aliases 'giv', 'i'
- *       description 'Give command.'
- *       permission 'test.foo'
- *       permissionMessage 'You do not have the permission!'
- *       usage '/<command> [item] [amount]'
+ *     register("give") {
+ *       aliases = ['giv', 'i']
+ *       description = 'Give command.'
+ *       permission = 'test.foo'
+ *       permissionMessage = 'You do not have the permission!'
+ *       usage = '/<command> [item] [amount]'
  *     }
  *   }
  *   permissions {
- *     'test.foo' {
- *       description 'Allows foo command'
- *       defaults 'true'
+ *     register('test.foo') {
+ *       description = 'Allows foo command'
+ *       defaults = 'true'
  *     }
  *     'test.*' {
- *       description 'Wildcard permission'
- *       defaults 'op'
+ *       description = 'Wildcard permission'
+ *       defaults = 'op'
  *       children = ['test.foo': true]
  *     }
- *   }
- *   debug {
- *     eula = true
  *   }
  * }
  * ```
  *
  * Kotlin Example:
  * ```kotlin
- * import io.typst.spigradle.Load
- *
- * spigot {
+ * nukkit {
  *   authors = "Me"
- *   depends = listOf("ProtocolLib", "Vault")
+ *   depend = listOf("ProtocolLib", "Vault")
  *   api = listOf("1.0.5")
- *   load = Load.STARTUP
+ *   load = "STARTUP"
  *   commands {
  *     register("give") {
  *       aliases = listOf("giv", "i")

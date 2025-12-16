@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(spigots.spigot)
+    compileOnly(spigots.spigot.api)
 }
 
 tasks {
