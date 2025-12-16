@@ -177,47 +177,47 @@ class SpigotPlugin : Plugin<Project> {
     }
 
     private fun setupSpigotDebug(project: Project, extension: SpigotExtension) {
-        val paperExt = project.extensions.create("debugSpigot", DebugExtension::class.java).apply {
+        val paperDebugExt = project.extensions.create("debugSpigot", DebugExtension::class.java).apply {
             jvmArgs.convention(jvmDebugPort.map { port ->
                 listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${port}")
             })
             programArgs.convention(listOf("nogui"))
         }
         val jarTask = if (project.hasJavaPlugin) {
-            project.tasks.named("jar", Jar::class.java)
+            paperDebugExt.projectJarTask.convention(project.tasks.named("jar", Jar::class.java))
         } else null
         val ctx = DebugRegistrationContext(
             "paper",
-            paperExt.version,
+            paperDebugExt.version,
             "",
             "plugins",
             jarTask,
-            paperExt.jvmArgs,
-            paperExt.programArgs,
-            paperExt.jvmDebugPort,
-            paperExt.javaHome.map { it.file("bin/java") },
+            paperDebugExt.jvmArgs,
+            paperDebugExt.programArgs,
+            paperDebugExt.jvmDebugPort,
+            paperDebugExt.javaHome.map { it.file("bin/java") },
             false,
-            paperExt.eula
+            paperDebugExt.eula
         )
         val downloadPaper = project.tasks.register("downloadPaper", PaperDownloadTask::class.java) {
             group = ctx.taskGroupName
 
-            version.set(paperExt.version)
+            version.set(paperDebugExt.version)
             outputFile.set(ctx.getDownloadOutputFile(project))
         }
         val preparePluginDependencies =
             project.tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {
                 group = ctx.taskGroupName
 
-                pluginNames.set(paperExt.downloadSoftDepend.map {
+                pluginNames.set(paperDebugExt.downloadSoftDepend.map {
                     if (it) {
                         (extension.depend.orNull ?: emptyList()) + (extension.softDepend.orNull ?: emptyList())
                     } else extension.depend.orNull ?: emptyList()
                 })
-                downloadSoftDepend.set(paperExt.downloadSoftDepend)
+                downloadSoftDepend.set(paperDebugExt.downloadSoftDepend)
                 outputDir.set(ctx.getDebugArtifactDir(project))
                 // for up-to-date check
-                inputs.property("javaVersion", paperExt.version)
+                inputs.property("javaVersion", paperDebugExt.version)
 
                 project.pluginManager.withPlugin("java") {
                     resolvableConfigurations.convention(
@@ -228,11 +228,11 @@ class SpigotPlugin : Plugin<Project> {
                 doFirst {
                     // NOTE: minJavaVer required consistent maintenance
                     // REFERENCE: https://docs.papermc.io/paper/getting-started/#requirements
-                    val minimumJavaVersion = getMinecraftMinimumJavaVersion(paperExt.version.get())
-                    val javaVersion = paperExt.javaVersion.orNull?.asInt()
+                    val minimumJavaVersion = getMinecraftMinimumJavaVersion(paperDebugExt.version.get())
+                    val javaVersion = paperDebugExt.javaVersion.orNull?.asInt()
                     if (javaVersion != null && javaVersion < minimumJavaVersion) {
                         // https://docs.gradle.org/current/userguide/reporting_problems.html
-                        throw GradleException("Paper ${paperExt.version.get()} requires at least Java ${minimumJavaVersion}! Please set the `java.toolchain.languageVersion`, or `debugSpigot.javaVersion` to JavaLanguageVersion(21), or kotlin.jvmToolchain(21) if Kotlin!")
+                        throw GradleException("Paper ${paperDebugExt.version.get()} requires at least Java ${minimumJavaVersion}! Please set the `java.toolchain.languageVersion`, or `debugSpigot.javaVersion` to JavaLanguageVersion(21), or kotlin.jvmToolchain(21) if Kotlin!")
                     }
                 }
             }

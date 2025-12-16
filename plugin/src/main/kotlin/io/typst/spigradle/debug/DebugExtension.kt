@@ -22,9 +22,11 @@ import org.gradle.api.file.Directory
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.internal.DefaultJavaLanguageVersion
+import javax.inject.Inject
 
 /**
  * Configuration extension for the Spigot debug system.
@@ -58,7 +60,7 @@ import org.gradle.jvm.toolchain.internal.DefaultJavaLanguageVersion
  *
  * @see io.typst.spigradle.debug.DebugTask
  */
-open class DebugExtension(project: Project) {
+abstract class DebugExtension @Inject constructor(project: Project) {
     /**
      * The Minecraft/Paper version to download and run (e.g., "1.21.8", "1.20.6").
      *
@@ -70,7 +72,7 @@ open class DebugExtension(project: Project) {
      * version.set("1.21.8")
      * ```
      */
-    val version: Property<String> = project.objects.property(String::class.java)
+    abstract val version: Property<String>
 
     /**
      * Whether to automatically accept the Minecraft EULA.
@@ -152,7 +154,7 @@ open class DebugExtension(project: Project) {
      * @see io.typst.spigradle.spigot.SpigotPlugin
      * @see <a href="https://docs.gradle.org/8.7/release-notes.html">Gradle 8.7 Release Notes</a>
      */
-    val jvmArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+    abstract val jvmArgs: ListProperty<String>
 
     /**
      * Program arguments to pass to the Minecraft server.
@@ -180,7 +182,7 @@ open class DebugExtension(project: Project) {
      *
      * @see <a href="https://docs.gradle.org/8.7/release-notes.html">Gradle 8.7 Release Notes</a>
      */
-    val programArgs: ListProperty<String> = project.objects.listProperty(String::class.java)
+    abstract val programArgs: ListProperty<String>
 
     /**
      * The Java language version to use for running the debug server.
@@ -238,4 +240,6 @@ open class DebugExtension(project: Project) {
                 it.metadata.installationPath
             }
         })
+
+    abstract val projectJarTask: Property<Jar>
 }
