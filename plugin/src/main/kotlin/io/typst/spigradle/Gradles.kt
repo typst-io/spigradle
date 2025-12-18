@@ -23,3 +23,5 @@ import org.gradle.api.plugins.ExtraPropertiesExtension
 internal val Any.groovyExtension get() = (this as GroovyObject).getProperty("ext") as ExtraPropertiesExtension
 
 internal val Project.hasJavaPlugin: Boolean get() = pluginManager.hasPlugin("java")
+
+internal val Project.hasJavaBasePlugin: Boolean get() = pluginManager.hasPlugin("java-base")

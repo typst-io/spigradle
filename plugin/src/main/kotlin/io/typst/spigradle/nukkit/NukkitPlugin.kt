@@ -22,14 +22,18 @@ import io.typst.spigradle.getMainDetectOutputFile
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.create
+import org.gradle.api.plugins.JavaBasePlugin
 
 /**
- * The Nukkit plugin that adds:
- * - [io.typst.spigradle.YamlGenerate] task for the 'plugin.yml' generation.
- * - [io.typst.spigradle.SubclassDetection] task for the main-class detection.
- * - Debug tasks for test your plugin.
+ * The Nukkit plugin that provides:
+ *
+ * Applies plugins:
+ * - java-base([JavaBasePlugin])
+ * - io.typst.spigradle.nukkit-base([NukkitBasePlugin])
+ *
+ * Tasks:
+ * - generateNukkitDescription([io.typst.spigradle.YamlGenerate]) task for the 'plugin.yml' generation.
+ * - detectNukkitMain([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
  */
 class NukkitPlugin : Plugin<Project> {
     companion object {
@@ -54,17 +58,13 @@ class NukkitPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        val extension = project.extensions.create(platformName, NukkitExtension::class)
+        project.pluginManager.apply(JavaBasePlugin::class.java)
+        project.pluginManager.apply(NukkitBasePlugin::class.java)
+
+        val extension = project.extensions.getByType(NukkitExtension::class.java)
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
-
-        // register repo
-        (project.repositories as ExtensionAware).extensions.create(
-            "nukkitRepos",
-            NukkitRepositoryExtension::class,
-            project
-        )
     }
 }

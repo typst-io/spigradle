@@ -1,8 +1,6 @@
-import io.typst.spigradle.spigot.*
-
 plugins {
     kotlin("jvm") version "2.2.0"
-    id("io.typst.spigradle")
+    alias(spigots.plugins.spigot)
 }
 
 repositories {

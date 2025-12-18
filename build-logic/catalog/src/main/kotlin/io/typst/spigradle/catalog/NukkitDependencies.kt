@@ -36,16 +36,6 @@ enum class NukkitDependencies(
             alias = "nukkitX",
         )
     ),
-    SPIGRADLOE_PLUGIN(
-        Dependency(
-            "io.typst.spigradle.nukkit",
-            "io.typst.spigradle.nukkit.gradle.plugin",
-            "4.0.0",
-            "spigradleNukkit-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
-    )
     ;
 
     fun format(version: String? = null): String {

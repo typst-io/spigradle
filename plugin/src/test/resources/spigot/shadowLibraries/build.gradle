@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'io.typst.spigradle'
+    alias(spigots.plugins.spigot)
 }
 
 repositories {

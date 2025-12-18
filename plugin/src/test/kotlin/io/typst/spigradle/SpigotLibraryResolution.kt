@@ -28,14 +28,13 @@ import kotlin.test.assertEquals
 
 class SpigotLibraryResolution {
     @Test
-    @Ignore // TODO: release in future
     fun `resolve libraries and serialize`(@TempDir dir: File) {
         val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
         testGradleTask(
             "generateSpigotDescription", dir, """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             
             repositories {
@@ -47,8 +46,8 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly(spigot('1.18.1'))
-                implementation("$okhttp")
+                compileOnly('${SpigotDependencies.SPIGOT_API.format("1.20.1")}')
+                compileOnlySpigot("$okhttp")
             }
         """.trimIndent()
         )
@@ -68,7 +67,7 @@ class SpigotLibraryResolution {
             "generateSpigotDescription", dir, """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             
             repositories {

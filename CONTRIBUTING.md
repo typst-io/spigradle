@@ -102,3 +102,7 @@ The following must be updated consistently:
 - Kotlin version: sync with Gradle embedded Kotlin version
 - Hardcoded versions in [spigradle-docs.gradle.kts](build-logic/docs/src/main/kotlin/spigradle-docs.gradle.kts) (KOTLIN_VERSION, SHADOW_JAR_VERSION, IDEA_EXT_VERSION)
 - Catalog versions: [gradle.properties](gradle.properties)
+
+## Good articles
+
+- Common Gradle mistakes: https://marcelkliemannel.com/articles/2022/common-gradle-plugin-mistakes-and-good-practices

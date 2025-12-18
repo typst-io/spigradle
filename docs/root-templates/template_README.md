@@ -27,7 +27,10 @@ dependencyResolutionManagement {
         create("spigots") {
             from("io.typst:spigot-catalog:1.0.0")
             // if you need to override the version:
-            // version("spigot", "1.21.1-R0.1-SNAPSHOT")
+            // version("spigot", "1.21.10-R0.1-SNAPSHOT")
+        }
+        create("commons") {
+            from("io.typst:common-catalog:1.0.0")
         }
     }
 }
@@ -37,8 +40,9 @@ dependencyResolutionManagement {
 
 ```kotlin
 plugins {
+    java
     alias(spigots.plugins.spigot)
-    alias(spigots.plugins.ideaExt) // optional, allows Spigradle generates Run Configurations for debug
+    alias(commons.plugins.ideaExt) // optional, allows Spigradle generates Run Configurations for debug
 }
 
 dependencies {
@@ -72,7 +76,7 @@ debugSpigot { // extension for debug\${ProjectName} task
 
 ## Plugins
 
-- **Spigot**: `id 'io.typst.spigradle'` - [Documentation](docs/spigot_plugin.md)
+- **Spigot**: `id 'io.typst.spigradle.spigot'` - [Documentation](docs/spigot_plugin.md)
 - **BungeeCord**: `id 'io.typst.spigradle.bungee'` - [Documentation](docs/bungeecord_plugin.md)
 - **NukkitX**: `id 'io.typst.spigradle.nukkit'` - [Documentation](docs/nukkit_plugin.md)
 
@@ -273,8 +277,6 @@ dependencies {
 ### Kotlin usage
 
 ```kotlin
-import io.typst.spigradle.spigot.*
-
 dependencies {
     compileOnly(spigot("1.21.8")) // or just spigot()
 }

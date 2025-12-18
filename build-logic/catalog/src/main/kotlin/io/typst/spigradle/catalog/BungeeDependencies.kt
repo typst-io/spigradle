@@ -36,16 +36,6 @@ enum class BungeeDependencies(
             "brigadier"
         )
     ),
-    SPIGRADLOE(
-        Dependency(
-            "io.typst.spigradle.bungee",
-            "io.typst.spigradle.bungee.gradle.plugin",
-            "4.0.0",
-            "spigradleBungee-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
-    )
     ;
 
     fun format(version: String? = null): String {

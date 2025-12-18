@@ -18,6 +18,7 @@ package io.typst.spigradle.debug
 
 import io.typst.spigradle.Download
 import io.typst.spigradle.asCamelCase
+import io.typst.spigradle.hasJavaBasePlugin
 import io.typst.spigradle.hasJavaPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -212,7 +213,7 @@ internal object DebugTask {
             delete(ctx.getDownloadBaseDir(project))
         }
         val createJavaDebugScriptTask =
-            if (project.hasJavaPlugin) {
+            if (project.hasJavaBasePlugin) {
                 project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
                     group = ctx.taskGroupName
 

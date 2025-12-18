@@ -1,7 +1,7 @@
 package io.typst.spigradle
 
+import io.typst.spigradle.spigot.SpigotBasePlugin
 import io.typst.spigradle.spigot.SpigotExtension
-import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.normaliseLineSeparators
@@ -42,7 +42,7 @@ class GenerateYamlTaskTest {
             properties.set(
                 project.getMainDetectivePropertiesProvider(
                     extension.toMap(),
-                    project.getMainDetectOutputFile(SpigotPlugin.platformName)
+                    project.getMainDetectOutputFile(SpigotBasePlugin.PLATFORM_NAME)
                 )
             )
             outputFiles.from(file)
@@ -101,7 +101,7 @@ class GenerateYamlTaskTest {
             properties.set(
                 project.getMainDetectivePropertiesProvider(
                     ext.toMap(),
-                    project.getMainDetectOutputFile(SpigotPlugin.platformName)
+                    project.getMainDetectOutputFile(SpigotBasePlugin.PLATFORM_NAME)
                 )
             )
             generate()

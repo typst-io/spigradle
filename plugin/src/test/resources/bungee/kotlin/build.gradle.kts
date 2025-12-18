@@ -2,7 +2,7 @@ import io.typst.spigradle.bungee.*
 
 plugins {
     kotlin("jvm") version "2.2.0"
-    id("io.typst.spigradle.bungee")
+    alias(bungees.plugins.bungee)
 }
 
 repositories {

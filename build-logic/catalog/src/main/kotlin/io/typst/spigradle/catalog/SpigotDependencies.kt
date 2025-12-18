@@ -174,16 +174,6 @@ enum class SpigotDependencies(
             "mockbukkit"
         )
     ),
-    SPIGRADLOE_PLUGIN(
-        Dependency(
-            "io.typst.spigradle",
-            "io.typst.spigradle.gradle.plugin",
-            "4.0.0",
-            "spigradleSpigot-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
-    )
     ;
 
     fun format(version: String? = null): String {

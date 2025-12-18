@@ -84,7 +84,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             repositories {
                 mavenCentral()
@@ -139,7 +139,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             repositories {
                 mavenCentral()
@@ -200,7 +200,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             repositories {
                 mavenCentral()
@@ -234,10 +234,9 @@ class GradleFunctionalTest {
     fun `jdk21 kotlin`() {
         buildFileKt.writeText(
             """
-            import io.typst.spigradle.spigot.*
             plugins {
                 kotlin("jvm") version "2.2.0"
-                id("io.typst.spigradle")
+                id("io.typst.spigradle.spigot")
             }
             repositories {
                 mavenCentral()
@@ -252,8 +251,10 @@ class GradleFunctionalTest {
             spigot {
                 description.set("A test plugin")
             }
-            kotlin {
-                jvmToolchain(21)
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(21)
+                }
             }
         """.trimIndent()
         )
@@ -270,14 +271,12 @@ class GradleFunctionalTest {
     }
 
     @Test
-    @Ignore
     fun `apply scala and spigradle on a subproject`() {
         subBuildFile.writeGroovy(
             """ 
             plugins {
                 id 'scala'
-                id 'idea'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             spigot.main = 'Main'
             
@@ -297,7 +296,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             description 'My awesome plugin'
             version '3.2.1'
@@ -369,7 +368,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
                 id 'io.typst.spigradle.bungee'
             }
             
@@ -427,7 +426,7 @@ class GradleFunctionalTest {
             """
             plugins {
                 id 'java'
-                id 'io.typst.spigradle'
+                id 'io.typst.spigradle.spigot'
             }
             repositories {
                 mavenCentral()
@@ -457,10 +456,9 @@ class GradleFunctionalTest {
     fun `automatic main class detection kotlin`() {
         buildFileKt.writeText(
             """
-            import io.typst.spigradle.spigot.*
             plugins {
                 kotlin("jvm") version "2.2.20"
-                id("io.typst.spigradle")
+                id("io.typst.spigradle.spigot")
             }
             repositories {
                 mavenCentral()

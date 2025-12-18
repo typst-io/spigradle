@@ -2,7 +2,7 @@ import io.typst.spigradle.nukkit.*
 
 plugins {
     kotlin("jvm") version "2.2.0"
-    id("io.typst.spigradle.nukkit")
+    alias(nukkits.plugins.nukkit)
 }
 
 repositories {

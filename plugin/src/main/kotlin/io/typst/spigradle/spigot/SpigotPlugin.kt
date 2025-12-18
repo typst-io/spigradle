@@ -20,28 +20,26 @@ import io.typst.spigradle.*
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
 import io.typst.spigradle.debug.DebugTask
+import io.typst.spigradle.spigot.SpigotBasePlugin.Companion.PLATFORM_NAME
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.artifacts.result.ResolvedDependencyResult
 import org.gradle.api.attributes.Usage
-import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.create
 
 /**
- * A Spigot plugin that provides:
+ * The Spigot plugin that provides:
  *
- * Extensions (configuration blocks, NOT tasks):
- * - spigot([SpigotExtension]): extension for the Spigot environment
- * - debugSpigot([DebugExtension]): extension for Spigot (Paper) debugging (configures `debug${ProjectName}` task)
- *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}`
- *     - programArgs: defaults to `nogui`
+ * Applies plugins:
+ * - java-base([JavaBasePlugin])
+ * - io.typst.spigradle.spigot-base([SpigotBasePlugin])
  *
- * Required plugins:
- * - java
+ * Optional plugins:
+ * - java: You must manually apply it if you develop a pure java project.
  * - org.jetbrains.gradle.plugin.idea-ext (recommended for IntelliJ IDEA) **Important:** Only applies on the root project
  *
  * Dependency configurations:
@@ -75,11 +73,13 @@ import org.gradle.kotlin.dsl.create
  */
 class SpigotPlugin : Plugin<Project> {
     companion object {
-        val platformName: String = "spigot"
-        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
-        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
+        @JvmStatic
+        val GENERATE_DESCRIPTION_TASK_NAME: String = "generate${PLATFORM_NAME.asCamelCase(true)}Description"
 
-        private fun getMinecraftMinimumJavaVersion(semVer: String): Int {
+        @JvmStatic
+        val DETECT_MAIN_TASK_NAME: String = "detect${PLATFORM_NAME.asCamelCase(true)}Main"
+
+        internal fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
             val minor = versions[1].toInt()
             val fix = versions.getOrNull(2)?.toInt() ?: 0
@@ -99,25 +99,29 @@ class SpigotPlugin : Plugin<Project> {
             }
         }
 
-        fun createModuleRegistrationContext(
+        internal fun createModuleRegistrationContext(
             project: Project,
             extension: SpigotExtension,
         ): ModuleRegistrationContext<SpigotExtension> {
             return ModuleRegistrationContext(
-                platformName,
+                PLATFORM_NAME,
                 "plugin.yml",
                 extension,
-                project.getMainDetectOutputFile(platformName),
-                genDescTask,
-                mainDetectTask,
+                project.getMainDetectOutputFile(PLATFORM_NAME),
+                GENERATE_DESCRIPTION_TASK_NAME,
+                DETECT_MAIN_TASK_NAME,
                 "org/bukkit/plugin/java/JavaPlugin"
             )
         }
     }
 
     override fun apply(project: Project) {
+        // apply base plugins
+        project.pluginManager.apply(JavaBasePlugin::class.java)
+        project.pluginManager.apply(SpigotBasePlugin::class.java)
+
         // register dependency configuration
-        val pluginLibsProp = if (project.pluginManager.hasPlugin("java")) {
+        val pluginLibsProp = if (project.hasJavaPlugin) {
             // register configuration: https://docs.gradle.org/current/userguide/declaring_configurations.html#sec:defining-custom-configurations
             val compileOnlySpigot = project.configurations.create("compileOnlySpigot").apply {
                 isCanBeConsumed = false
@@ -155,29 +159,22 @@ class SpigotPlugin : Plugin<Project> {
             }
         } else null
 
-        // register extension
-        val extension = project.extensions.create(platformName, SpigotExtension::class)
+        // configure extension
+        val extension = project.extensions.getByType(SpigotExtension::class.java)
         if (pluginLibsProp != null) {
             extension.libraries.convention(pluginLibsProp)
         }
 
-        // register tasks
+        // configure tasks
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
         setupSpigotDebug(project, extension)
-
-        // register repo extension
-        (project.repositories as ExtensionAware).extensions.create(
-            "spigotRepos",
-            SpigotRepositoryExtension::class,
-            project
-        )
     }
 
     private fun setupSpigotDebug(project: Project, extension: SpigotExtension) {
-        val paperDebugExt = project.extensions.create("debugSpigot", DebugExtension::class.java).apply {
+        val paperDebugExt = project.extensions.getByType(DebugExtension::class.java).apply {
             jvmArgs.convention(jvmDebugPort.map { port ->
                 listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${port}")
             })

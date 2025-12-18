@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'io.typst.spigradle.bungee'
+    alias(bungees.plugins.bungee)
 }
 
 repositories {

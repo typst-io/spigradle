@@ -16,52 +16,57 @@
 
 package io.typst.spigradle.bungee
 
-import io.typst.spigradle.*
+import io.typst.spigradle.ModuleRegistrationContext
+import io.typst.spigradle.asCamelCase
+import io.typst.spigradle.bungee.BungeeBasePlugin.Companion.PLATFORM_NAME
+import io.typst.spigradle.getMainDetectOutputFile
+import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.create
+import org.gradle.api.plugins.JavaBasePlugin
 
 /**
- * The Bungeecord plugin that adds:
- * - [io.typst.spigradle.YamlGenerate] task for the 'bungee.yml' generation.
- * - [io.typst.spigradle.SubclassDetection] task for the main-class detection.
- * - Debug tasks for test your plugin.
+ * The BungeeCord plugin that provides:
+ *
+ * Applies plugins:
+ * - java-base([JavaBasePlugin])
+ * - io.typst.spigradle.bungee-base([BungeeBasePlugin])
+ *
+ * Tasks:
+ * - generateBungeeDescription([io.typst.spigradle.YamlGenerate]) task for the 'bungee.yml' generation.
+ * - detectBungeeMain([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
  */
 class BungeePlugin : Plugin<Project> {
     companion object {
-        val platformName: String = "bungee"
-        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
-        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
+        @JvmStatic
+        val GENERATE_DESCRIPTION_TASK_NAME: String = "generate${PLATFORM_NAME.asCamelCase(true)}Description"
+        @JvmStatic
+        val DETECT_MAIN_TASK_NAME: String = "detect${PLATFORM_NAME.asCamelCase(true)}Main"
 
         fun createModuleRegistrationContext(
             project: Project,
             extension: BungeeExtension,
         ): ModuleRegistrationContext<BungeeExtension> {
             return ModuleRegistrationContext(
-                platformName,
+                PLATFORM_NAME,
                 "bungee.yml",
                 extension,
-                project.getMainDetectOutputFile(platformName),
-                genDescTask,
-                mainDetectTask,
+                project.getMainDetectOutputFile(PLATFORM_NAME),
+                GENERATE_DESCRIPTION_TASK_NAME,
+                DETECT_MAIN_TASK_NAME,
                 "net/md_5/bungee/api/plugin/Plugin"
             )
         }
     }
 
     override fun apply(project: Project) {
-        val extension = project.extensions.create(platformName, BungeeExtension::class)
+        project.pluginManager.apply(JavaBasePlugin::class.java)
+        project.pluginManager.apply(BungeeBasePlugin::class.java)
+
+        val extension = project.extensions.getByType(BungeeExtension::class.java)
         val ctx = createModuleRegistrationContext(project, extension)
         registerDescGenTask(project, ctx) { desc ->
             desc.toMap()
         }
-
-        // register repo
-        (project.repositories as ExtensionAware).extensions.create(
-            "bungeeRepos",
-            BungeeRepositoryExtension::class,
-            project
-        )
     }
 }

@@ -9,14 +9,38 @@ plugins {
 version = property("catalog.nukkit.version")!!
 description = "NukkitX version catalog for Gradle"
 
+/*
+
+    SPIGRADLOE_PLUGIN(
+        Dependency(
+            "io.typst.spigradle.nukkit",
+            "io.typst.spigradle.nukkit.gradle.plugin",
+            "4.0.0",
+            "spigradleNukkit-plugin",
+            versionRef = "spigradle",
+            isLocal = true,
+        )
+    )
+ */
+
 spigradleCatalog {
-    libraries.set(NukkitDependencies.entries.map { it.dependency })
+    libraries.set(
+        NukkitDependencies.entries.map { it.dependency }
+                + Dependency(
+            "io.typst.spigradle.nukkit",
+            "io.typst.spigradle.nukkit.gradle.plugin",
+            property("version")!!.toString(),
+            "spigradleNukkit-plugin",
+            versionRef = "spigradle",
+            isLocal = true,
+        )
+    )
     plugins.set(
         listOf(
             Dependency(
                 project.group.toString(),
                 "spigradle.nukkit",
-                property("spigradle.catalog.version")!!.toString(),
+                property("version")!!.toString(),
                 "nukkit",
                 versionRef = "spigradle"
             )
