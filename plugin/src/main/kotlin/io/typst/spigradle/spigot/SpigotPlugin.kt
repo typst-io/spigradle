@@ -16,6 +16,7 @@
 
 package io.typst.spigradle.spigot
 
+import io.typst.spigradle.ModuleRegistrationContext
 import io.typst.spigradle.PlatformPluginSpec
 import io.typst.spigradle.PluginDescriptionProperty
 import io.typst.spigradle.debug.DebugExtension
@@ -108,6 +109,11 @@ class SpigotPlugin : Plugin<Project> {
                 // https://www.minecraft.net/en-us/article/minecraft-snapshot-24w14a
                 21
             }
+        }
+
+        internal fun createModuleRegistrationContext(project: Project): ModuleRegistrationContext {
+            val extension = project.extensions.getByType(SpigotExtension::class.java)
+            return spec.createModuleRegistrationContext(project, project.provider { extension.toMap() })
         }
 
         internal fun createPaperDebugRegistrationContext(

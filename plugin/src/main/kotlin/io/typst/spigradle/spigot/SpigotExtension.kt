@@ -235,8 +235,8 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
             "api-version" to apiVersion.orNull,
             "load" to load.orNull,
             "prefix" to prefix.orNull,
-            "depend" to depend.orNull?.ifEmpty { null },
-            "softdepend" to softDepend.orNull?.ifEmpty { null },
+            "depend" to depend.orNull?.toList()?.ifEmpty { null },
+            "softdepend" to softDepend.orNull?.toList()?.ifEmpty { null },
             "loadbefore" to loadBefore.orNull?.ifEmpty { null },
             "libraries" to libraries.orNull?.ifEmpty { null },
             "commands" to commands.toList().associate {

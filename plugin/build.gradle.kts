@@ -10,6 +10,7 @@ description = "An intelligent Gradle plugin for developing Minecraft resources."
 version = property("spigradle.version")!!
 
 dependencies {
+    compileOnly(libs.spigot.api) // make dokka resolve the spigot-api class
     implementation(libs.kotlin.stdlib)
     implementation(libs.asm)
     implementation(libs.snakeyamlEngine)

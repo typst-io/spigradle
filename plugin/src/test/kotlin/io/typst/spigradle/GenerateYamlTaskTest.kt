@@ -42,7 +42,7 @@ class GenerateYamlTaskTest {
         yamlTask.apply {
             properties.set(
                 project.getFallbackProperties(
-                    extension.toMap(),
+                    ctx.descriptionProperties,
                     ctx.getFileFallbackProperties()
                 )
             )
@@ -102,7 +102,7 @@ class GenerateYamlTaskTest {
             outputFiles.from(file)
             properties.set(
                 project.getFallbackProperties(
-                    ext.toMap(),
+                    ctx.descriptionProperties,
                     ctx.getFileFallbackProperties()
                 )
             )

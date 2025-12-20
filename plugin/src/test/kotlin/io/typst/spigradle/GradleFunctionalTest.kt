@@ -82,7 +82,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `main detection task incremental`() {
-        val superclass = SpigotPlugin.spec.propertyBySuperclass.entries.first().key
+        val superclass = SpigotPlugin.spec.pluginDescriptionProperties.first().superclass
         buildFile.writeText(
             """
             plugins {
@@ -138,7 +138,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `main detection task update`() {
-        val superclass = SpigotPlugin.spec.propertyBySuperclass.entries.first().key
+        val superclass = SpigotPlugin.spec.pluginDescriptionProperties.first().superclass
         buildFile.writeText(
             """
             plugins {

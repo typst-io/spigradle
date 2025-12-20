@@ -13,6 +13,7 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     }
 }
 
