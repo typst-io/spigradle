@@ -24,7 +24,7 @@ enum class PaperDependencies(
         Dependency(
             "org.spigotmc",
             "spigot-api",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "spigot-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
@@ -34,7 +34,7 @@ enum class PaperDependencies(
         Dependency(
             "org.spigotmc",
             "spigot",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "spigot-all",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
@@ -45,7 +45,7 @@ enum class PaperDependencies(
         Dependency(
             "org.purpurmc.purpur",
             "purpur-api",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "purpur-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
@@ -55,7 +55,7 @@ enum class PaperDependencies(
         Dependency(
             "io.papermc.paper",
             "paper-api",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "paper-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
@@ -65,7 +65,7 @@ enum class PaperDependencies(
         Dependency(
             SPIGOT.dependency.group,
             "minecraft-server",
-            "1.21.8-SNAPSHOT",
+            "1.21.10-SNAPSHOT",
             "minecraftServer",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
@@ -76,7 +76,7 @@ enum class PaperDependencies(
         Dependency(
             "org.bukkit",
             "bukkit",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "bukkit",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
@@ -87,7 +87,7 @@ enum class PaperDependencies(
         Dependency(
             "org.bukkit",
             "craftbukkit",
-            "1.21.8-R0.1-SNAPSHOT",
+            "1.21.10-R0.1-SNAPSHOT",
             "craftbukkit",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
