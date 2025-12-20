@@ -27,7 +27,7 @@ data class PluginDependency(
             id,
             "$id.gradle.plugin",
             version,
-            "${label}-plugin",
+            "gradle-${label}-plugin",
             isLocal = true,
             versionRef = versionRef
         )

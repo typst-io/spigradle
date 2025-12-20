@@ -30,47 +30,42 @@ import javax.inject.Inject
  * Groovy example:
  * ```groovy
  * spigot {
- *   authors 'Me', 'Someone'
- *   depends 'ProtocolLib', 'Vault'
- *   softDepends 'MySoftLib'
- *   apiVersion '1.15'
- *   load STARTUP
+ *   authors = ['Me', 'Someone']
+ *   depend = ['ProtocolLib', 'Vault']
+ *   softDepend = ['MySoftLib']
+ *   apiVersion = '1.15'
+ *   load = 'STARTUP'
  *   commands {
- *     give {
- *       aliases 'giv', 'i'
- *       description 'Give command.'
- *       permission 'test.foo'
- *       permissionMessage 'You do not have permission!'
- *       usage '/<command> [item] [amount]'
+ *     register('give') {
+ *       aliases = ['giv', 'i']
+ *       description = 'Give command.'
+ *       permission = 'test.foo'
+ *       permissionMessage = 'You do not have permission!'
+ *       usage = '/<command> [item] [amount]'
  *     }
  *   }
  *   permissions {
- *     'test.foo' {
- *       description 'Allows the foo command'
- *       defaults 'true'
+ *     register('test.foo') {
+ *       description = 'Allows the foo command'
+ *       defaults = 'true'
  *     }
- *     'test.*' {
- *       description 'Wildcard permission'
- *       defaults 'op'
+ *     register('test.*') {
+ *       description = 'Wildcard permission'
+ *       defaults = 'op'
  *       children = ['test.foo': true]
  *     }
- *   }
- *   debug {
- *     eula = true
  *   }
  * }
  * ```
  *
  * Kotlin example:
  * ```kotlin
- * import io.typst.spigradle.Load
- *
  * spigot {
- *   authors = "Me"
- *   depends = listOf("ProtocolLib", "Vault")
- *   softDepends = listOf("MySoftLib")
+ *   authors = listOf("Me")
+ *   depend = listOf("ProtocolLib", "Vault")
+ *   softDepend = listOf("MySoftLib")
  *   apiVersion = "1.15"
- *   load = Load.STARTUP
+ *   load = "STARTUP"
  *   commands {
  *     register("give") {
  *       aliases = listOf("giv", "i")

@@ -50,61 +50,107 @@ gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 ## Usage
 
 [Full Example Here](https://github.com/spigradle/spigradle-sample/tree/master/spigot)
+### Using Version Catalog (Recommended)
 
-Groovy DSL
-
-```groovy
-plugins {
-    id 'io.typst.spigradle' version '$SPIGRADLE_VERSION'
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '$IDEA_EXT_VERSION'
-    // optional, allows Spigradle generates Run Configurations for debug
+**settings.gradle.kts**
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("spigots") {
+            from("io.typst:spigot-catalog:$SPIGRADLE_VERSION")
+        }
+        create("commons") {
+            from("io.typst:common-catalog:$SPIGRADLE_VERSION")
+        }
+    }
 }
 ```
 
-Kotlin DSL
-
+**build.gradle.kts**
 ```kotlin
 plugins {
-    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional, allows Spigradle generates Run Configurations for debug
+    java
+    alias(spigots.plugins.spigot)
+    alias(commons.plugins.ideaExt) // optional, for debug Run Configurations
+}
+
+repositories {
+    mavenCentral()
+    spigotRepos {
+        papermc()
+    }
+}
+
+dependencies {
+    compileOnly(spigots.paper.api)
 }
 ```
 
 <details>
-<summary>Groovy Legacy</summary>
+<summary>Groovy (settings.gradle)</summary>
 
 ```groovy
-buildscript {
+dependencyResolutionManagement {
     repositories {
-        gradlePluginPortal()
+        mavenCentral()
     }
-    dependencies {
-        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
+    versionCatalogs {
+        create('spigots') {
+            from('io.typst:spigot-catalog:$SPIGRADLE_VERSION')
+        }
+        create('commons') {
+            from('io.typst:common-catalog:$SPIGRADLE_VERSION')
+        }
     }
 }
-
-apply plugin: 'io.typst.spigradle'
 ```
 
 </details>
 
 <details>
-<summary>Kotlin Legacy</summary>
+<summary>Groovy (build.gradle)</summary>
 
 ```groovy
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
+plugins {
+    id 'java'
+    alias spigots.plugins.spigot
+    alias commons.plugins.ideaExt // optional
+}
+
+repositories {
+    mavenCentral()
+    spigotRepos {
+        papermc()
     }
 }
 
-apply(plugin = "io.typst.spigradle")
+dependencies {
+    compileOnly spigots.paper.api
+}
 ```
 
 </details>
+
+### Without Version Catalog
+
+**Groovy DSL**
+```groovy
+plugins {
+    id 'io.typst.spigradle.spigot' version '$SPIGRADLE_VERSION'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '$IDEA_EXT_VERSION' // optional
+}
+```
+
+**Kotlin DSL**
+```kotlin
+plugins {
+    id("io.typst.spigradle.spigot") version "$SPIGRADLE_VERSION"
+    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional
+}
+```
 
 ## Description file generation
 
@@ -158,9 +204,9 @@ About the `plugin.yml`, See [plugin-yml wiki](https://www.spigotmc.org/wiki/plug
 
 ```groovy
 spigot {
-    authors = 'Me'
-    depend = 'ProtocolLib' , 'Vault'
-    softDepend = 'WorldEdit'
+    authors = ['Me']
+    depend = ['ProtocolLib', 'Vault']
+    softDepend = ['WorldEdit']
     apiVersion = '1.15'
     load = "STARTUP"
     libraries = ['my:lib:1.0.0', 'my:lib2:1.0.0']
@@ -258,7 +304,7 @@ debugSpigot {
     version = "1.21.8"
     eula = true
     jvmDebugPort = 5005
-    downloadSoftDepends = true
+    downloadSoftDepend = true
     // Use append() (Gradle 8.7+) to preserve defaults:
     jvmArgs.append("-Xmx4G")
     programArgs.append("--world myworld")
@@ -270,7 +316,7 @@ debugSpigot {
     version = "1.21.8"
     eula = true
     jvmDebugPort = 5005
-    downloadSoftDepends = true
+    downloadSoftDepend = true
     // Use append() (Gradle 8.7+) to preserve defaults:
     jvmArgs.append("-Xmx4G")
     programArgs.append("--world myworld")

@@ -36,56 +36,97 @@ gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 
 [Full Example Here](https://github.com/spigradle/spigradle-sample/tree/master/nukkit)
 
-Groovy DSL
+### Using Version Catalog (Recommended)
 
+**settings.gradle.kts**
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("nukkits") {
+            from("io.typst:nukkit-catalog:$SPIGRADLE_VERSION")
+        }
+    }
+}
+```
+
+**build.gradle.kts**
+```kotlin
+plugins {
+    java
+    alias(nukkits.plugins.nukkit)
+}
+
+repositories {
+    mavenCentral()
+    nukkitRepos {
+        nukkitX()
+    }
+}
+
+dependencies {
+    compileOnly(nukkits.nukkit.api)
+}
+```
+
+<details>
+<summary>Groovy (settings.gradle)</summary>
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create('nukkits') {
+            from('io.typst:nukkit-catalog:$SPIGRADLE_VERSION')
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Groovy (build.gradle)</summary>
+
+```groovy
+plugins {
+    id 'java'
+    alias nukkits.plugins.nukkit
+}
+
+repositories {
+    mavenCentral()
+    nukkitRepos {
+        nukkitX()
+    }
+}
+
+dependencies {
+    compileOnly nukkits.nukkit.api
+}
+```
+
+</details>
+
+### Without Version Catalog
+
+**Groovy DSL**
 ```groovy
 plugins {
     id 'io.typst.spigradle.nukkit' version '$SPIGRADLE_VERSION'
 }
 ```
-Kotlin DSL
 
+**Kotlin DSL**
 ```kotlin
 plugins {
     id("io.typst.spigradle.nukkit") version "$SPIGRADLE_VERSION"
 }
 ```
-
-<details>
-<summary>Groovy Legacy</summary>
-
-```groovy
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
-    }
-}
-
-apply plugin: 'io.typst.spigradle.nukkit'
-```
-
-</details>
-
-<details>
-<summary>Kotlin Legacy</summary>
-
-```groovy
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
-    }
-}
-
-apply(plugin = "io.typst.spigradle.nukkit")
-```
-
-</details>
 
 ## Description file generation
 
@@ -129,10 +170,10 @@ About the `plugin.yml`, See [Official Sample](https://github.com/NukkitX/Example
 
 ```groovy
 nukkit {
-    authors 'Me'
-    depend 'ProtocolLib', 'Vault'
-    api '1.0.5'
-    load STARTUP
+    authors = ['Me']
+    depend = ['ProtocolLib', 'Vault']
+    api = ['1.0.5']
+    load = 'STARTUP'
     commands {
         give {
             aliases 'giv', 'i'

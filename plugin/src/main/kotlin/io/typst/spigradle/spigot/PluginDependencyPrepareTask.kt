@@ -108,7 +108,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
 
     @TaskAction
     fun prepare() {
-        // TODO: don't recursively for soft depend
+        // don't recursively for soft depend?
         val thePluginNames = pluginNames.get()
         val downloadSoftDepends = downloadSoftDepend.get()
         if (thePluginNames.isEmpty()) {

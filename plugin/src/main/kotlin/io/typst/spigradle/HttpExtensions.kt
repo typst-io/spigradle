@@ -33,7 +33,7 @@ internal fun <A> fetchHttpGet(uri: URI, handler: HttpResponse.BodyHandler<A>): H
 
     val response = client.send(req, handler)
     if (response.statusCode() / 100 != 2) {
-        throw IllegalStateException("Download failed: HTTP ${response.statusCode()}")
+        throw IllegalStateException("Download failed: HTTP $uri ${response.statusCode()}")
     }
     return response
 }

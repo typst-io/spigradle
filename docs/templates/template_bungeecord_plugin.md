@@ -36,56 +36,97 @@ gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 
 [Full Example Here](https://github.com/spigradle/spigradle-sample/tree/master/bungeecord)
 
-Groovy DSL
+### Using Version Catalog (Recommended)
 
+**settings.gradle.kts**
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("bungees") {
+            from("io.typst:bungee-catalog:$SPIGRADLE_VERSION")
+        }
+    }
+}
+```
+
+**build.gradle.kts**
+```kotlin
+plugins {
+    java
+    alias(bungees.plugins.bungee)
+}
+
+repositories {
+    mavenCentral()
+    bungeeRepos {
+        bungeecord()
+    }
+}
+
+dependencies {
+    compileOnly(bungees.bungeecord.api)
+}
+```
+
+<details>
+<summary>Groovy (settings.gradle)</summary>
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create('bungees') {
+            from('io.typst:bungee-catalog:$SPIGRADLE_VERSION')
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Groovy (build.gradle)</summary>
+
+```groovy
+plugins {
+    id 'java'
+    alias bungees.plugins.bungee
+}
+
+repositories {
+    mavenCentral()
+    bungeeRepos {
+        bungeecord()
+    }
+}
+
+dependencies {
+    compileOnly bungees.bungeecord.api
+}
+```
+
+</details>
+
+### Without Version Catalog
+
+**Groovy DSL**
 ```groovy
 plugins {
     id 'io.typst.spigradle.bungee' version '$SPIGRADLE_VERSION'
 }
 ```
-Kotlin DSL
 
+**Kotlin DSL**
 ```kotlin
 plugins {
     id("io.typst.spigradle.bungee") version "$SPIGRADLE_VERSION"
 }
 ```
-
-<details>
-<summary>Groovy Legacy</summary>
-
-```groovy
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'io.typst:spigradle:$SPIGRADLE_VERSION'
-    }
-}
-
-apply plugin: 'io.typst.spigradle.bungee'
-```
-
-</details>
-
-<details>
-<summary>Kotlin Legacy</summary>
-
-```groovy
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("io.typst:spigradle:$SPIGRADLE_VERSION")
-    }
-}
-
-apply(plugin = "io.typst.spigradle.bungee")
-```
-
-</details>
 
 ## Description file generation
 

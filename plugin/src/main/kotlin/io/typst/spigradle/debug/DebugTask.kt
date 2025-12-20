@@ -278,34 +278,33 @@ internal object DebugTask {
 
             dependsOn(prepareTask)
 
-            val os = System.getProperty("os.name").lowercase()
-            val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath
+            doLast {
+                val os = System.getProperty("os.name").lowercase()
+                val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath
 
-            val cmds = if ("windows" in os) {
-                val scriptPath = File(debugDirPath, "starter.bat").absolutePath
-                listOf(
-                    "cmd", "/c",
-                    "start", "\"${project.name}\"",
-                    "/D", debugDirPath,
-                    scriptPath
-                )
-            } else if ("mac" in os) {
-                val scriptPath = File(debugDirPath, "starter").absolutePath
-                // single quote 사용, single quote 자체는 이스케이프
-                val escapedDir = debugDirPath.replace("'", "'\\''")
-                val escapedScript = scriptPath.replace("'", "'\\''")
-                val appleScript = """
+                val cmds = if ("windows" in os) {
+                    val scriptPath = File(debugDirPath, "starter.bat").absolutePath
+                    listOf(
+                        "cmd", "/c",
+                        "start", "\"${project.name}\"",
+                        "/D", debugDirPath,
+                        scriptPath
+                    )
+                } else if ("mac" in os) {
+                    val scriptPath = File(debugDirPath, "starter").absolutePath
+                    // single quote 사용, single quote 자체는 이스케이프
+                    val escapedDir = debugDirPath.replace("'", "'\\''")
+                    val escapedScript = scriptPath.replace("'", "'\\''")
+                    val appleScript = """
                     tell application "Terminal"
                         do script "cd '$escapedDir' && '$escapedScript'"
                         activate
                     end tell
                 """.trimIndent()
-                listOf("osascript", "-e", appleScript)
-            } else {
-                emptyList()
-            }
-
-            doLast {
+                    listOf("osascript", "-e", appleScript)
+                } else {
+                    emptyList()
+                }
                 var theCmds = cmds
                 if (cmds.isEmpty()) {
                     val scriptPath = File(debugDirPath, "starter").absolutePath

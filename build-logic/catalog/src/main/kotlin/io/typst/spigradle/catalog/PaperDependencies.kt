@@ -35,7 +35,7 @@ enum class PaperDependencies(
             "org.spigotmc",
             "spigot",
             "1.21.10-R0.1-SNAPSHOT",
-            "spigot-all",
+            "spigot-server",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
             versionRef = "spigot",
@@ -179,7 +179,7 @@ enum class PaperDependencies(
             "me.clip",
             "placeholderapi",
             "2.11.7",
-            "placeholderApi",
+            "placeholderapi",
         )
     ),
     ;
