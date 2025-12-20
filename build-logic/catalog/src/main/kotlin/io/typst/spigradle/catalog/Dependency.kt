@@ -20,10 +20,10 @@ data class Dependency(
     val group: String,
     val artifact: String,
     val version: String,
-    val alias: String,
+    val label: String,
     val isLocal: Boolean = false,
     val tags: List<String> = emptyList(),
-    val versionRef: String = alias,
+    val versionRef: String = label,
 ) {
     fun getTaggedVersion(inputVersion: String?): String {
         if (inputVersion == null) return version
@@ -37,9 +37,11 @@ data class Dependency(
         }
     }
 
-    fun format(inputVersion: String? = null): String {
-        return listOfNotNull(group, artifact, getTaggedVersion(inputVersion))
-            .joinToString(":")
+    fun toGA(): String =
+        "${group}:${artifact}"
+
+    fun toGAV(inputVersion: String? = null): String {
+        return "${toGA()}:${getTaggedVersion(inputVersion)}"
     }
 
     companion object {

@@ -22,24 +22,28 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFile
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.provider.Property
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
-import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
-import org.gradle.work.InputChanges
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.log
 
-internal fun Project.getMainDetectOutputFile(type: String): Provider<RegularFile> =
-    layout.buildDirectory.file("spigradle/${type}_main")
+internal fun Project.getSubclassDetectionOutputFile(platformName: String, propertyName: String): Provider<RegularFile> =
+    layout.buildDirectory.file("spigradle/${platformName}_${propertyName}_fallback")
+
+internal fun Project.getSubclassDetectionFallbackProperty(
+    platformName: String,
+    property: PluginDescriptionProperty,
+): Provider<PluginDescriptionProperty> =
+    getSubclassDetectionOutputFile(platformName, property.name).map {
+        property.copy(valueFallbackFile = it)
+    }
 
 /**
  * Finds the main class that extends the given super-class using bytecode analysis.
@@ -124,46 +128,44 @@ abstract class SubclassDetection : DefaultTask() {
     }
 
     /**
-     * The name of super-class used to detect a sub-class.
+     *  The map, superclass's full qualified class name to OutputFile.
+     *  The output file will be written a plain text, the subclass's FQCN.
      */
-    @get:Input
-    abstract val superClassName: Property<String>
+    @get:OutputFiles
+    abstract val outputFileBySuperclass: MapProperty<String, RegularFile>
 
     /**
-     * The class directories used to target of the sub-class detection.
+     * The class directories used to target of the subclass detection.
      */
     @get:SkipWhenEmpty
     @get:InputFiles
     abstract val classDirectories: ConfigurableFileCollection
 
-    /**
-     * The path of plain text includes the detection result.
-     */
-    @get:OutputFile
-    abstract val outputFile: RegularFileProperty
-
     @TaskAction
-    fun inspect(inputChanges: InputChanges) {
-        // TODO: read byte array instead of ASM?
+    fun inspect() {
         val contextR = AtomicReference(DetectionContext())
         val options = ClassReader.SKIP_CODE and ClassReader.SKIP_DEBUG and ClassReader.SKIP_FRAMES
 
-        val parentName = superClassName.get()
-        val fileChanges = inputChanges.getFileChanges(classDirectories)
+        val outputFileBySuperclass = outputFileBySuperclass.get()
         var error = false
-        for (change in fileChanges) {
-            val file = change.file
-            if (file.extension == "class" && file.isFile) {
-                try {
-                    file.inputStream().buffered().use {
-                        ClassReader(it).accept(SubclassDetector(contextR), options)
-                    }
-                } catch (ex: Exception) {
-                    project.logger.log(LogLevel.DEBUG, "[Spigradle] Error while reading class bytecode", ex)
-                    error = true
+
+        for (file in classDirectories.asFileTree.files) {
+            if (file.extension != "class" || !file.isFile) continue
+            logger.log(LogLevel.DEBUG, "visit class: ${file.name}")
+            try {
+                file.inputStream().buffered().use {
+                    ClassReader(it).accept(SubclassDetector(contextR), options)
                 }
+            } catch (ex: Exception) {
+                project.logger.log(
+                    LogLevel.WARN,
+                    "[Spigradle] Error while reading class '${file.name}' bytecode",
+                    ex
+                )
+                error = true
             }
-            if (contextR.get().findMainClass(parentName) != null) {
+            val ctx = contextR.get()
+            if (outputFileBySuperclass.keys.all { ctx.findMainClass(it) != null }) {
                 break
             }
         }
@@ -173,11 +175,21 @@ abstract class SubclassDetection : DefaultTask() {
                 "[Spigradle] Some errors has occurred while reading class bytecode using ASM. Please update Spigradle. You can append `--debug` option in the $name task to see logs."
             )
         }
-        val detectedClass = contextR.get().findMainClass(parentName)
-        if (detectedClass != null) {
-            outputFile.get().asFile.apply {
-                parentFile.mkdirs()
-            }.writeText(detectedClass.name.replace('/', '.'))
+
+        val ctx = contextR.get()
+        for ((superclassName, outputFile) in outputFileBySuperclass) {
+            val subclassDef = ctx.findMainClass(superclassName)
+            if (subclassDef != null) {
+                outputFile.asFile.apply {
+                    parentFile.mkdirs()
+                }.writeText(subclassDef.name.replace("/", "."))
+            } else {
+                runCatching {
+                    outputFile.asFile.delete()
+                }
+                logger.log(LogLevel.WARN, "Couldn't find a subclass extends $superclassName")
+                logger.log(LogLevel.WARN, ctx.toString())
+            }
         }
     }
 
@@ -185,21 +197,21 @@ abstract class SubclassDetection : DefaultTask() {
         internal fun register(
             project: Project,
             taskName: String,
-            detectOutputFile: Provider<RegularFile>,
+            outputFileBySuperclass: Provider<Map<String, RegularFile>>,
         ): TaskProvider<SubclassDetection> {
             return project.tasks.register(taskName, SubclassDetection::class) {
-                val compileJava = project.tasks.named<JavaCompile>("compileJava")
-                dependsOn(compileJava)
-                /*
-                NOTE:
-                If put a FileCollection into the `from` makes this task ordered after `classes`.
-                Therefore put List<File> instead.
-                 */
                 project.pluginManager.withPlugin("java") {
                     val sourceSets = project.extensions.getByType(SourceSetContainer::class)
-                    classDirectories.from(sourceSets["main"].output.classesDirs.files)
+                    val mainSourceSet = sourceSets.named("main")
+                    classDirectories.from(mainSourceSet.map {
+                        it.output.classesDirs
+                    })
+
+                    dependsOn(mainSourceSet.map {
+                        project.tasks.named(it.compileJavaTaskName)
+                    })
                 }
-                outputFile.convention(detectOutputFile) // defaults to pathFile
+                this.outputFileBySuperclass.convention(outputFileBySuperclass)
             }
         }
     }
@@ -214,9 +226,9 @@ internal class SubclassDetector(
         name: String,
         signature: String?,
         superName: String?,
-        interfaces: Array<out String>?,
+        interfaces: Array<String>?,
     ) {
-        val classDef = ClassDefinition.fromASM(access, name, superName)
+        val classDef = ClassDefinition.fromASM(access, name, superName, interfaces?.toSet() ?: emptySet())
         contextR.updateAndGet { ctx ->
             ctx.addClassDef(classDef)
         }

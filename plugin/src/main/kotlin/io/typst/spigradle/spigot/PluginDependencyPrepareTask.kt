@@ -88,7 +88,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
      * project's Spigot plugin.
      */
     @get:Input
-    abstract val pluginNames: ListProperty<String>
+    abstract val pluginNames: SetProperty<String>
 
     @get:Input
     val downloadSoftDepend: Property<Boolean> = project.objects.property(Boolean::class.java)

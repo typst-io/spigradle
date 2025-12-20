@@ -111,8 +111,8 @@ abstract class NukkitExtension @Inject constructor(private val project: Project)
     abstract val commands: NamedDomainObjectContainer<Command>
     abstract val permissions: NamedDomainObjectContainer<Permission>
 
-    fun toMap(): Map<String, Any> {
-        return listOf(
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
             "main" to main.orNull,
             "name" to name.orNull,
             "version" to version.orNull,
@@ -131,10 +131,6 @@ abstract class NukkitExtension @Inject constructor(private val project: Project)
             "permissions" to permissions.toList().associate {
                 it.name to it.toMap()
             }.ifEmpty { null },
-        ).flatMap { (k, v) ->
-            if (v != null) {
-                listOf(k to v)
-            } else emptyList()
-        }.toMap()
+        )
     }
 }

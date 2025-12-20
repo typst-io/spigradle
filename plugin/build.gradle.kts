@@ -7,6 +7,8 @@ plugins {
 
 description = "An intelligent Gradle plugin for developing Minecraft resources."
 
+version = property("spigradle.version")!!
+
 dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.asm)
@@ -22,7 +24,9 @@ dependencies {
 }
 
 configurations {
-    testImplementation.get().dependencies += implementation.get().dependencies
+    testImplementation {
+        extendsFrom(implementation.get())
+    }
 }
 
 tasks {

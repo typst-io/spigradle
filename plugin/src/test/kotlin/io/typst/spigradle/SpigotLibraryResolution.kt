@@ -16,13 +16,13 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.catalog.SpigotDependencies
+import io.typst.spigradle.catalog.PaperDependencies
+import io.typst.spigradle.spigot.SpigotPlugin
 import io.typst.spigradle.util.testGradleTask
 import org.junit.jupiter.api.io.TempDir
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
 import java.io.File
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,7 +31,7 @@ class SpigotLibraryResolution {
     fun `resolve libraries and serialize`(@TempDir dir: File) {
         val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
         testGradleTask(
-            "generateSpigotDescription", dir, """
+            SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME, dir, """
             plugins {
                 id 'java'
                 id 'io.typst.spigradle.spigot'
@@ -46,12 +46,13 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly('${SpigotDependencies.SPIGOT_API.format("1.20.1")}')
+                compileOnly('${PaperDependencies.SPIGOT_API.format("1.20.1")}')
                 compileOnlySpigot("$okhttp")
             }
         """.trimIndent()
         )
-        val ymlFile = dir.resolve("build").resolve("tmp").resolve("generateSpigotDescription").resolve("plugin.yml")
+        val ymlFile = dir.resolve("build").resolve("tmp").resolve(SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
+            .resolve("plugin.yml")
         val settings = LoadSettings.builder()
             .build()
         val yaml = Load(settings).loadFromString(ymlFile.readText()) as Map<String, Any?>
@@ -64,7 +65,7 @@ class SpigotLibraryResolution {
     fun `ignore resolution if the property presented`(@TempDir dir: File) {
         val dep = "me.mygroup:myname:1.0.0"
         testGradleTask(
-            "generateSpigotDescription", dir, """
+            SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME, dir, """
             plugins {
                 id 'java'
                 id 'io.typst.spigradle.spigot'
@@ -80,12 +81,13 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format("1.18.1")}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format("1.18.1")}")
                 implementation("com.squareup.okhttp3:okhttp:4.9.0")
             }
         """.trimIndent()
         )
-        val ymlFile = dir.resolve("build").resolve("tmp").resolve("generateSpigotDescription").resolve("plugin.yml")
+        val ymlFile = dir.resolve("build").resolve("tmp").resolve(SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
+            .resolve("plugin.yml")
         val load = Load(LoadSettings.builder().build())
         val yaml = load.loadFromString(ymlFile.readText()) as Map<String, Any>
         val libs = yaml["libraries"] as? List<*>

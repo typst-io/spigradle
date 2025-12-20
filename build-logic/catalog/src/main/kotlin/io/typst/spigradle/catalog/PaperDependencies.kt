@@ -17,7 +17,7 @@
 package io.typst.spigradle.catalog
 
 // NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
-enum class SpigotDependencies(
+enum class PaperDependencies(
     val dependency: Dependency,
 ) {
     SPIGOT_API(
@@ -174,9 +174,17 @@ enum class SpigotDependencies(
             "mockbukkit"
         )
     ),
+    PLACEHOLDER_API(
+        Dependency(
+            "me.clip",
+            "placeholderapi",
+            "2.11.7",
+            "placeholderApi",
+        )
+    ),
     ;
 
     fun format(version: String? = null): String {
-        return dependency.format(version)
+        return dependency.toGAV(version)
     }
 }

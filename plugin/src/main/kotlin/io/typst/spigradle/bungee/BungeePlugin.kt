@@ -16,10 +16,9 @@
 
 package io.typst.spigradle.bungee
 
-import io.typst.spigradle.ModuleRegistrationContext
-import io.typst.spigradle.asCamelCase
+import io.typst.spigradle.PlatformPluginSpec
+import io.typst.spigradle.PluginDescriptionProperty
 import io.typst.spigradle.bungee.BungeeBasePlugin.Companion.PLATFORM_NAME
-import io.typst.spigradle.getMainDetectOutputFile
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,25 +37,17 @@ import org.gradle.api.plugins.JavaBasePlugin
  */
 class BungeePlugin : Plugin<Project> {
     companion object {
-        @JvmStatic
-        val GENERATE_DESCRIPTION_TASK_NAME: String = "generate${PLATFORM_NAME.asCamelCase(true)}Description"
-        @JvmStatic
-        val DETECT_MAIN_TASK_NAME: String = "detect${PLATFORM_NAME.asCamelCase(true)}Main"
+        internal val spec: PlatformPluginSpec = PlatformPluginSpec(
+            PLATFORM_NAME,
+            "bungee.yml",
+            listOf(PluginDescriptionProperty("main", "net/md_5/bungee/api/plugin/Plugin", mandatory = true))
+        )
 
-        fun createModuleRegistrationContext(
-            project: Project,
-            extension: BungeeExtension,
-        ): ModuleRegistrationContext<BungeeExtension> {
-            return ModuleRegistrationContext(
-                PLATFORM_NAME,
-                "bungee.yml",
-                extension,
-                project.getMainDetectOutputFile(PLATFORM_NAME),
-                GENERATE_DESCRIPTION_TASK_NAME,
-                DETECT_MAIN_TASK_NAME,
-                "net/md_5/bungee/api/plugin/Plugin"
-            )
-        }
+        @JvmStatic
+        val GENERATE_PLUGIN_DESCRIPTION_TASK_NAME: String = spec.generateDescriptionTaskName
+
+        @JvmStatic
+        val DETECT_ENTRYPOINTS_TASK_NAME: String = spec.detectEntrypointsTaskName
     }
 
     override fun apply(project: Project) {
@@ -64,9 +55,7 @@ class BungeePlugin : Plugin<Project> {
         project.pluginManager.apply(BungeeBasePlugin::class.java)
 
         val extension = project.extensions.getByType(BungeeExtension::class.java)
-        val ctx = createModuleRegistrationContext(project, extension)
-        registerDescGenTask(project, ctx) { desc ->
-            desc.toMap()
-        }
+        val ctx = spec.createModuleRegistrationContext(project, project.provider { extension.toMap() })
+        registerDescGenTask(project, ctx)
     }
 }

@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.catalog.SpigotDependencies
+import io.typst.spigradle.catalog.PaperDependencies
 import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -31,9 +31,9 @@ class BuildVersionInference {
         val smallVer = "0.0.1-R0.1-SNAPSHOT"
         listOf("compileOnly", "implementation").forEach {
             listOf(
-                SpigotDependencies.SPIGOT,
-                SpigotDependencies.SPIGOT_API,
-                SpigotDependencies.PAPER_API,
+                PaperDependencies.SPIGOT,
+                PaperDependencies.SPIGOT_API,
+                PaperDependencies.PAPER_API,
             ).forEach { dep ->
                 prepareProject().run {
                     dependencies {

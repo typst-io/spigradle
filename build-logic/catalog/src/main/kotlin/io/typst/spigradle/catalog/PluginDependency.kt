@@ -16,29 +16,19 @@
 
 package io.typst.spigradle.catalog
 
-// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
-enum class BungeeDependencies(
-    val dependency: Dependency,
+data class PluginDependency(
+    val id: String,
+    val version: String,
+    val label: String,
+    val versionRef: String = label,
 ) {
-    BUNGEE_CORD(
+    fun toLibrary(): Dependency =
         Dependency(
-            "net.md-5",
-            "bungeecord-api",
-            "1.21-R0.4",
-            "bungeecord-api"
+            id,
+            "$id.gradle.plugin",
+            version,
+            "${label}-plugin",
+            isLocal = true,
+            versionRef = versionRef
         )
-    ),
-    BRIGADIER(
-        Dependency(
-            "com.mojang",
-            "brigadier",
-            "1.0.18",
-            "brigadier"
-        )
-    ),
-    ;
-
-    fun format(version: String? = null): String {
-        return dependency.toGAV(version)
-    }
 }

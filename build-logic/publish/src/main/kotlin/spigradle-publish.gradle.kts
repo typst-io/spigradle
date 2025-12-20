@@ -45,6 +45,20 @@ gradlePlugin {
             tags = listOf("minecraft", "paper", "spigot", "bukkit")
             implementationClass = "io.typst.spigradle.spigot.SpigotPlugin"
         }
+//        create("paperBase") {
+//            id = "io.typst.spigradle.paper-base"
+//            displayName = "Spigradle Paper base plugin."
+//            description = "The Paper base plugin."
+//            tags = listOf("minecraft", "paper", "spigot", "bukkit")
+//            implementationClass = "io.typst.spigradle.paper.PaperBasePlugin"
+//        }
+//        create("paper") {
+//            id = "io.typst.spigradle.paper"
+//            displayName = "Spigradle Paper plugin"
+//            description = formatDesc("Paper")
+//            tags = listOf("minecraft", "paper", "spigot", "bukkit")
+//            implementationClass = "io.typst.spigradle.paper.PaperPlugin"
+//        }
         create("bungeeBase") {
             id = "io.typst.spigradle.bungee-base"
             displayName = "Spigradle BungeeCord base plugin"

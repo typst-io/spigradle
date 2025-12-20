@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.catalog
+package io.typst.spigradle.paper
 
-// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
-enum class NukkitDependencies(
-    val dependency: Dependency,
-) {
-    NUKKIT(
-        Dependency(
-            "cn.nukkit",
-            "nukkit",
-            "1.0-SNAPSHOT",
-            "nukkit",
-            false,
-            Dependency.SNAPSHOT_TAG
-        )
-    ),
+import org.gradle.api.Named
+import org.gradle.api.provider.Property
 
-    NUKKIT_X(
-        NUKKIT.dependency.copy(
-            label = "nukkitX",
-        )
-    ),
-    ;
+abstract class PaperPluginDependency : Named {
+    abstract val load: Property<String>
+    abstract val required: Property<Boolean>
+    abstract val joinClasspath: Property<Boolean>
 
-    fun format(version: String? = null): String {
-        return dependency.toGAV(version)
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "load" to load.orNull,
+            "required" to required.orNull,
+            "join-classpath" to joinClasspath.orNull
+        ).filterValues { it != null }
     }
 }

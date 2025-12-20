@@ -22,7 +22,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 import javax.inject.Inject
 
-abstract class NukkitRepositoryExtension @Inject constructor(val project: Project) {
+abstract class NukkitRepositoryExtension @Inject constructor(private val project: Project) {
     /**
      * The repo shortcut for [Repositories.SONATYPE], related with Bungeecord.
      */

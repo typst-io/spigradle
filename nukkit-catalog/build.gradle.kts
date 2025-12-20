@@ -1,5 +1,5 @@
-import io.typst.spigradle.catalog.Dependency
 import io.typst.spigradle.catalog.NukkitDependencies
+import io.typst.spigradle.catalog.PluginDependency
 
 plugins {
     id("io.typst.spigradle.catalog") // build-logic/**/SpigradleCatalogPlugin.kt
@@ -9,41 +9,27 @@ plugins {
 version = property("catalog.nukkit.version")!!
 description = "NukkitX version catalog for Gradle"
 
-/*
-
-    SPIGRADLOE_PLUGIN(
-        Dependency(
-            "io.typst.spigradle.nukkit",
-            "io.typst.spigradle.nukkit.gradle.plugin",
-            "4.0.0",
-            "spigradleNukkit-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
-    )
- */
-
 spigradleCatalog {
+    val nukkitPlugins = listOf(
+        PluginDependency(
+            "${project.group}.spigradle.nukkit",
+            property("spigradle.version")!!.toString(),
+            "nukkit",
+            versionRef = "spigradle"
+        ),
+        PluginDependency(
+            "${project.group}.spigradle.nukkit-base",
+            property("spigradle.version")!!.toString(),
+            "nukkitBase",
+            versionRef = "spigradle"
+        ),
+    )
+    val nukkitPluginLibs = nukkitPlugins.map {
+        it.toLibrary()
+    }
     libraries.set(
         NukkitDependencies.entries.map { it.dependency }
-                + Dependency(
-            "io.typst.spigradle.nukkit",
-            "io.typst.spigradle.nukkit.gradle.plugin",
-            property("version")!!.toString(),
-            "spigradleNukkit-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
+                + nukkitPluginLibs
     )
-    plugins.set(
-        listOf(
-            Dependency(
-                project.group.toString(),
-                "spigradle.nukkit",
-                property("version")!!.toString(),
-                "nukkit",
-                versionRef = "spigradle"
-            )
-        )
-    )
+    plugins.set(nukkitPlugins)
 }

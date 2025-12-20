@@ -1,5 +1,5 @@
 import io.typst.spigradle.catalog.BungeeDependencies
-import io.typst.spigradle.catalog.Dependency
+import io.typst.spigradle.catalog.PluginDependency
 
 plugins {
     id("io.typst.spigradle.catalog") // build-logic/**/SpigradleCatalogPlugin.kt
@@ -10,26 +10,28 @@ version = property("catalog.bungee.version")!!
 description = "BungeeCord version catalog for Gradle"
 
 spigradleCatalog {
+    val bungeePlugins = listOf(
+        PluginDependency(
+            "${project.group}.spigradle.bungee",
+            property("spigradle.version")!!.toString(),
+            "bungee",
+            versionRef = "spigradle"
+        ),
+        PluginDependency(
+            "${project.group}.spigradle.bungee-base",
+            property("spigradle.version")!!.toString(),
+            "bungeeBase",
+            versionRef = "spigradle"
+        ),
+    )
+    val bungeePluginLibs = bungeePlugins.map {
+        it.toLibrary()
+    }
     libraries.set(
         BungeeDependencies.entries.map { it.dependency }
-                + Dependency(
-            "io.typst.spigradle.bungee",
-            "io.typst.spigradle.bungee.gradle.plugin",
-            property("version")!!.toString(),
-            "spigradleBungee-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
+                + bungeePluginLibs
     )
     plugins.set(
-        listOf(
-            Dependency(
-                project.group.toString(),
-                "spigradle.bungee",
-                property("spigradle.catalog.version")!!.toString(),
-                "bungee",
-                versionRef = "spigradle"
-            )
-        )
+        bungeePlugins
     )
 }

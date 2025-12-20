@@ -106,3 +106,4 @@ The following must be updated consistently:
 ## Good articles
 
 - Common Gradle mistakes: https://marcelkliemannel.com/articles/2022/common-gradle-plugin-mistakes-and-good-practices
+- Catalog naming conventions: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions

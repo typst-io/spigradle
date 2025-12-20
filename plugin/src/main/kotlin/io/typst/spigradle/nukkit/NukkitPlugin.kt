@@ -16,9 +16,9 @@
 
 package io.typst.spigradle.nukkit
 
-import io.typst.spigradle.ModuleRegistrationContext
-import io.typst.spigradle.asCamelCase
-import io.typst.spigradle.getMainDetectOutputFile
+import io.typst.spigradle.PlatformPluginSpec
+import io.typst.spigradle.PluginDescriptionProperty
+import io.typst.spigradle.nukkit.NukkitBasePlugin.Companion.PLATFORM_NAME
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,24 +37,19 @@ import org.gradle.api.plugins.JavaBasePlugin
  */
 class NukkitPlugin : Plugin<Project> {
     companion object {
-        val platformName = "nukkit"
-        val genDescTask: String = "generate${platformName.asCamelCase(true)}Description"
-        val mainDetectTask: String = "detect${platformName.asCamelCase(true)}Main"
+        internal val spec: PlatformPluginSpec = PlatformPluginSpec(
+            PLATFORM_NAME,
+            "plugin.yml",
+            listOf(
+                PluginDescriptionProperty("main", "cn/nukkit/plugin/PluginBase", mandatory = true)
+            ),
+        )
 
-        fun createModuleRegistrationContext(
-            project: Project,
-            extension: NukkitExtension,
-        ): ModuleRegistrationContext<NukkitExtension> {
-            return ModuleRegistrationContext(
-                platformName,
-                "plugin.yml",
-                extension,
-                project.getMainDetectOutputFile(platformName),
-                genDescTask,
-                mainDetectTask,
-                "cn/nukkit/plugin/PluginBase"
-            )
-        }
+        @JvmStatic
+        val GENERATE_PLUGIN_DESCRIPTION_TASK_NAME: String = spec.generateDescriptionTaskName
+
+        @JvmStatic
+        val DETECT_ENTRYPOINTS_TASK_NAME: String = spec.detectEntrypointsTaskName
     }
 
     override fun apply(project: Project) {
@@ -62,9 +57,7 @@ class NukkitPlugin : Plugin<Project> {
         project.pluginManager.apply(NukkitBasePlugin::class.java)
 
         val extension = project.extensions.getByType(NukkitExtension::class.java)
-        val ctx = createModuleRegistrationContext(project, extension)
-        registerDescGenTask(project, ctx) { desc ->
-            desc.toMap()
-        }
+        val ctx = spec.createModuleRegistrationContext(project, project.provider { extension.toMap() })
+        registerDescGenTask(project, ctx)
     }
 }

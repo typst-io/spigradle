@@ -23,7 +23,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 import javax.inject.Inject
 
-abstract class BungeeRepositoryExtension @Inject constructor(val project: Project) {
+abstract class BungeeRepositoryExtension @Inject constructor(private val project: Project) {
     /**
      * The repo shortcut for sonatype, related with BungeeCord dependencies.
      */

@@ -40,7 +40,7 @@ enum class CommonDependencies(
         Dependency(
             "io.typst",
             "view-bukkit-kotlin",
-            "10.0.5",
+            "10.1.1",
             "typst-view-bukkitKotlin",
             versionRef = "typst-view",
         )
@@ -49,7 +49,7 @@ enum class CommonDependencies(
         Dependency(
             "io.typst",
             "command-kotlin",
-            "3.1.6",
+            "3.1.7",
             "typst-command-kotlin",
             versionRef = "typst-command"
         )
@@ -58,7 +58,7 @@ enum class CommonDependencies(
         Dependency(
             "io.typst",
             "command-bukkit",
-            "3.1.6",
+            "3.1.7",
             "typst-command-bukkit",
             versionRef = "typst-command"
         )
@@ -67,7 +67,7 @@ enum class CommonDependencies(
         Dependency(
             "io.typst",
             "inventory-bukkit-kotlin",
-            "2.7.5",
+            "2.7.6",
             "typst-inventory-bukkitKotlin",
             versionRef = "typst-inventory"
         )
@@ -77,7 +77,7 @@ enum class CommonDependencies(
             "org.jooq",
             "jooq",
             "3.19.29",
-            alias = "jooq-core",
+            label = "jooq-core",
             versionRef = "jooq"
         )
     ),
@@ -86,7 +86,7 @@ enum class CommonDependencies(
             "org.jooq",
             "jooq-meta",
             "3.19.29",
-            alias = "jooq-meta",
+            label = "jooq-meta",
             versionRef = "jooq"
         )
     ),
@@ -95,7 +95,7 @@ enum class CommonDependencies(
             "com.zaxxer",
             "HikariCP",
             "7.0.2",
-            alias = "hikariCP",
+            label = "hikariCP",
             versionRef = "hikariCP"
         )
     ),
@@ -104,7 +104,7 @@ enum class CommonDependencies(
             "org.flywaydb",
             "flyway-core",
             "11.19.0",
-            alias = "flyway-core",
+            label = "flyway-core",
             versionRef = "flyway"
         )
     ),
@@ -113,25 +113,15 @@ enum class CommonDependencies(
             "org.flywaydb",
             "flyway-mysql",
             "11.19.0",
-            alias = "flyway-mysql",
+            label = "flyway-mysql",
             versionRef = "flyway"
-        )
-    ),
-    IDEA_EXT_PLUGIN(
-        Dependency(
-            "org.jetbrains.gradle.plugin.idea-ext",
-            "gradle-idea-ext",
-            "1.3",
-            "ideaExt-plugin",
-            versionRef = "ideaExt",
-            isLocal = true,
         )
     ),
     BUKKIT_KOTLIN_SERIALIZATION(
         Dependency(
             "io.typst",
             "bukkit-kotlin-serialization",
-            "4.0.0",
+            "4.0.2",
             "typst.bukkitKotlinSerialization"
         )
     ),
@@ -148,13 +138,13 @@ enum class CommonDependencies(
             "com.charleskorn.kaml",
             "kaml-jvm",
             "0.104.0",
-            alias = "kaml"
+            label = "kaml"
         )
     ),
 
     ;
 
     fun format(version: String?): String {
-        return dependency.format(version)
+        return dependency.toGAV(version)
     }
 }

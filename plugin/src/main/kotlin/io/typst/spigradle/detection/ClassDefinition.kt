@@ -23,6 +23,7 @@ internal data class ClassDefinition(
     val abstractClass: Boolean,
     val name: String,
     val parentName: String? = null,
+    val interfaces: Set<String> = emptySet(),
 ) {
     companion object {
         val empty: ClassDefinition = ClassDefinition(
@@ -32,12 +33,13 @@ internal data class ClassDefinition(
             null
         )
 
-        fun fromASM(access: Int, name: String, superName: String? = null): ClassDefinition {
+        fun fromASM(access: Int, name: String, superName: String?, interfaces: Set<String>): ClassDefinition {
             return ClassDefinition(
                 checkPublic(access),
                 checkAbstract(access),
                 name,
-                superName
+                superName,
+                interfaces
             )
         }
 

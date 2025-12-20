@@ -14,41 +14,32 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.spigot
+package io.typst.spigradle.paper
 
 import io.typst.spigradle.debug.DebugExtension
+import io.typst.spigradle.spigot.PaperRepositoryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.create
 
-/**
- * The Spigot base plugin that provides:
- *
- * Extensions (configuration blocks, NOT tasks):
- * - spigot([SpigotExtension]): extension for the Spigot environment
- * - repositories#spigotRepos([PaperRepositoryExtension]): extension for Spigot repository DSL.
- * - debugSpigot([DebugExtension]): extension for Spigot (Paper) debugging (configures `debug${ProjectName}` task)
- *     - jvmArgs: defaults to `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}`
- *     - programArgs: defaults to `nogui`
- */
-class SpigotBasePlugin : Plugin<Project> {
+class PaperBasePlugin : Plugin<Project> {
     companion object {
         @JvmStatic
-        val PLATFORM_NAME: String = "spigot"
+        val PLATFORM_NAME: String = "paper"
     }
 
     override fun apply(project: Project) {
         // register repo extension
         (project.repositories as ExtensionAware).extensions.create(
-            "spigotRepos",
+            "paperRepos",
             PaperRepositoryExtension::class,
             project
         )
-        // register spigot extension
-        project.extensions.create(PLATFORM_NAME, SpigotExtension::class)
+        // register paper extension
+        project.extensions.create(PLATFORM_NAME, PaperExtension::class)
         // register paper debug extension
-        project.extensions.create("debugSpigot", DebugExtension::class.java).apply {
+        project.extensions.create("debugPaper", DebugExtension::class.java).apply {
             jvmArgs.convention(jvmDebugPort.map { port ->
                 listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${port}")
             })

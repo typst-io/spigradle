@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.catalog
+package io.typst.spigradle
 
-import org.gradle.api.provider.ListProperty
+import org.gradle.api.file.RegularFile
 
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<PluginDependency>
+internal data class PluginDescriptionProperty(
+    val name: String,
+    val superclass: String = "",
+    val valueFallbackFile: RegularFile? = null,
+    val mandatory: Boolean = false,
+) {
+    val isFileFallbackProperty: Boolean get() = superclass.isNotEmpty()
 }

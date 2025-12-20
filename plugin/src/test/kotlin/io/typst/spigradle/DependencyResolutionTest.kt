@@ -6,11 +6,11 @@ import io.typst.spigradle.bungee.BungeeRepositories
 import io.typst.spigradle.catalog.BungeeDependencies
 import io.typst.spigradle.catalog.CommonDependencies
 import io.typst.spigradle.catalog.NukkitDependencies
-import io.typst.spigradle.catalog.SpigotDependencies
+import io.typst.spigradle.catalog.PaperDependencies
 import io.typst.spigradle.nukkit.NukkitPlugin
 import io.typst.spigradle.nukkit.NukkitRepositories
 import io.typst.spigradle.spigot.SpigotPlugin
-import io.typst.spigradle.spigot.SpigotRepositories
+import io.typst.spigradle.spigot.PaperRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult
@@ -68,41 +68,41 @@ class DependencyResolutionTest {
     @Test
     fun `validate spigot dependencies`() {
         val apis = listOf(
-            SpigotDependencies.PURPUR.dependency,
-            SpigotDependencies.PAPER_API.dependency,
-            SpigotDependencies.SPIGOT_API.dependency
-        ).associateBy { it.alias }
-        val baseDeps = SpigotDependencies.entries.filter {
-            it.dependency.alias !in apis && !it.dependency.isLocal
+            PaperDependencies.PURPUR.dependency,
+            PaperDependencies.PAPER_API.dependency,
+            PaperDependencies.SPIGOT_API.dependency
+        ).associateBy { it.label }
+        val baseDeps = PaperDependencies.entries.filter {
+            it.dependency.label !in apis && !it.dependency.isLocal
         }
 
         // base
         validate(
-            baseDeps.map { it.dependency.format() },
-            SpigotRepositories.entries.map { it.address },
+            baseDeps.map { it.dependency.toGAV() },
+            PaperRepositories.entries.map { it.address },
             SpigotPlugin::class.java
         )
 
         // purpur
         validate(
-            listOf(SpigotDependencies.PURPUR.dependency.format()),
-            SpigotRepositories.entries.map {
+            listOf(PaperDependencies.PURPUR.dependency.toGAV()),
+            PaperRepositories.entries.map {
                 it.address
             },
             SpigotPlugin::class.java
         )
         // spigot
         validate(
-            listOf(SpigotDependencies.SPIGOT_API.dependency.format()),
-            SpigotRepositories.entries.map {
+            listOf(PaperDependencies.SPIGOT_API.dependency.toGAV()),
+            PaperRepositories.entries.map {
                 it.address
             },
             SpigotPlugin::class.java
         )
         // paper
         validate(
-            listOf(SpigotDependencies.PAPER_API.dependency.format()),
-            SpigotRepositories.entries.map {
+            listOf(PaperDependencies.PAPER_API.dependency.toGAV()),
+            PaperRepositories.entries.map {
                 it.address
             },
             SpigotPlugin::class.java
@@ -115,7 +115,7 @@ class DependencyResolutionTest {
             BungeeDependencies.entries
                 .flatMap {
                     if (!it.dependency.isLocal) {
-                        listOf(it.dependency.format())
+                        listOf(it.dependency.toGAV())
                     } else emptyList()
                 },
             BungeeRepositories.entries.map {
@@ -131,7 +131,7 @@ class DependencyResolutionTest {
             NukkitDependencies.entries
                 .flatMap {
                     if (!it.dependency.isLocal) {
-                        listOf(it.dependency.format())
+                        listOf(it.dependency.toGAV())
                     } else emptyList()
                 },
             NukkitRepositories.entries.map {
@@ -147,7 +147,7 @@ class DependencyResolutionTest {
             CommonDependencies.entries
                 .flatMap {
                     if (!it.dependency.isLocal) {
-                        listOf(it.dependency.format())
+                        listOf(it.dependency.toGAV())
                     } else emptyList()
                 },
             Repositories.entries.map {

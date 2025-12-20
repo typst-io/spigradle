@@ -22,9 +22,12 @@ internal data class DetectionContext(
 ) {
     fun addClassDef(x: ClassDefinition): DetectionContext {
         val newMap = map + (x.name to x)
-        val newGraph = if (x.parentName != null) {
+        var newGraph = if (x.parentName != null) {
             graph.addEdge(x.parentName, x.name)
         } else graph.addNode(x.name)
+        for (superInterface in x.interfaces) {
+            newGraph = newGraph.addEdge(superInterface, x.name)
+        }
         return copy(
             map = newMap,
             graph = newGraph

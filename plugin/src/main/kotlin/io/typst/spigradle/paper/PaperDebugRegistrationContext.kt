@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package io.typst.spigradle.catalog
+package io.typst.spigradle.paper
 
-import org.gradle.api.provider.ListProperty
+import io.typst.spigradle.debug.DebugRegistrationContext
+import org.gradle.api.provider.Provider
 
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<PluginDependency>
-}
+internal data class PaperDebugRegistrationContext(
+    val ctx: DebugRegistrationContext,
+    val depend: Provider<Set<String>>,
+    val softDepend: Provider<Set<String>>,
+)

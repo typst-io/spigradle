@@ -6,16 +6,16 @@ import kotlin.test.Test
 class SpigotGradleTest {
     @Test
     fun kotlin() {
-        testGradleTaskWithResource("/spigot/kotlin", SpigotPlugin.GENERATE_DESCRIPTION_TASK_NAME)
+        testGradleTaskWithResource("/spigot/kotlin", SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
     }
 
     @Test
     fun groovy() {
-        testGradleTaskWithResource("/spigot/groovy", SpigotPlugin.GENERATE_DESCRIPTION_TASK_NAME)
+        testGradleTaskWithResource("/spigot/groovy", SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
     }
 
     @Test
     fun shadowLibraries() {
-        testGradleTaskWithResource("/spigot/shadowLibraries", SpigotPlugin.GENERATE_DESCRIPTION_TASK_NAME)
+        testGradleTaskWithResource("/spigot/shadowLibraries", SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
     }
 }

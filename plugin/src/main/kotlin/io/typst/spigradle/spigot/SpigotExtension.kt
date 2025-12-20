@@ -21,7 +21,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.kotlin.dsl.property
+import org.gradle.api.provider.SetProperty
 import javax.inject.Inject
 
 /**
@@ -119,8 +119,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    val name: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.name.asCamelCase(true) })
+    abstract val name: Property<String>
 
     /**
      * The version of your plugin.
@@ -129,10 +128,9 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      *
      * See: [https://www.spigotmc.org/wiki/plugin-yml/]
      */
-    val version: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.version.toString() })
-    val description: Property<String> =
-        project.objects.property<String>().convention(project.provider { project.description })
+    abstract val version: Property<String>
+
+    abstract val description: Property<String>
 
     abstract val website: Property<String>
     abstract val authors: ListProperty<String>
@@ -149,8 +147,8 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      */
     abstract val load: Property<String>
     abstract val prefix: Property<String>
-    abstract val depend: ListProperty<String>
-    abstract val softDepend: ListProperty<String>
+    abstract val depend: SetProperty<String>
+    abstract val softDepend: SetProperty<String>
     abstract val loadBefore: ListProperty<String>
 
     /**
@@ -217,9 +215,18 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      */
     abstract val permissions: NamedDomainObjectContainer<Permission>
 
-    fun toMap(): Map<String, Any> {
-        return listOf(
-            "main" to main.orNull,
+    init {
+        name.convention(project.provider { project.name.asCamelCase(true) })
+        version.convention(project.provider { project.version.toString() })
+        description.convention(project.provider { project.description })
+    }
+
+    val POSTWORLD: String = "POSTWORLD"
+    val STARTUP: String = "STARTUP"
+
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "main" to main.orNull, // to retain order (file fallback property)
             "name" to name.orNull,
             "version" to version.orNull,
             "description" to description.orNull,
@@ -238,10 +245,6 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
             "permissions" to permissions.toList().associate {
                 it.name to it.toMap()
             }.ifEmpty { null },
-        ).flatMap { (k, v) ->
-            if (v != null) {
-                listOf(k to v)
-            } else emptyList()
-        }.toMap()
+        )
     }
 }

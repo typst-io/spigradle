@@ -16,6 +16,7 @@
 
 package io.typst.spigradle.catalog
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.catalog.CatalogPluginExtension
@@ -28,15 +29,37 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
         project.pluginManager.apply("maven-publish")
         val ext = project.extensions.getByName("catalog") as CatalogPluginExtension
 
+        // configure after the user's configuration, because there's no lazy property in versionCatalog
         project.afterEvaluate {
+            // validate distinct
+            val pluginMap = mutableMapOf<String, PluginDependency>()
+            val libraryMap = mutableMapOf<String, Dependency>()
+            for (dep in spigradleCatalog.plugins.get()) {
+                val thePlugin = pluginMap[dep.label]
+                if (thePlugin == null) {
+                    pluginMap[dep.label] = dep
+                } else {
+                    throw GradleException("Duplicated the plugin label '${dep.label}' between '${thePlugin.id}' and '${dep.id}'!")
+                }
+            }
+            for (dep in spigradleCatalog.libraries.get()) {
+                val theLibrary = libraryMap[dep.label]
+                if (theLibrary == null) {
+                    pluginMap[dep.label]
+                } else {
+                    throw GradleException("Duplicated the library label '${dep.label}' between '${theLibrary.toGA()}' and '${dep.toGA()}'!")
+                }
+            }
+
+            // configure
             ext.versionCatalog {
                 for (dep in spigradleCatalog.libraries.get()) {
                     version(dep.versionRef, dep.version)
-                    library(dep.alias, dep.group, dep.artifact).versionRef(dep.versionRef)
+                    library(dep.label, dep.group, dep.artifact).versionRef(dep.versionRef)
                 }
                 for (dep in spigradleCatalog.plugins.get()) {
                     version(dep.versionRef, dep.version)
-                    plugin(dep.alias, "${dep.group}.${dep.artifact}").versionRef(dep.versionRef)
+                    plugin(dep.label, dep.id).versionRef(dep.versionRef)
                 }
             }
         }

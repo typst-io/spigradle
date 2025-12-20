@@ -19,12 +19,42 @@ package io.typst.spigradle
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 
-data class ModuleRegistrationContext<A>(
+internal data class ModuleRegistrationContext(
     val platformName: String,
     val descFileName: String,
-    val extension: A,
-    val mainDetectOutputFile: Provider<RegularFile>,
-    val descGenTask: String,
-    val mainDetectTask: String,
-    val mainSuperClass: String = "",
-)
+    val descriptionProperties: Provider<Map<String, Any?>>,
+    val pluginDescriptionProperties: Provider<List<PluginDescriptionProperty>>,
+    val detectEntrypointsTaskName: String,
+    val generateDescriptionTaskName: String,
+) {
+    fun getOutputFileBySuperclass(): Provider<Map<String, RegularFile>> {
+        return pluginDescriptionProperties.map {
+            it.mapNotNull { prop ->
+                val file = prop.valueFallbackFile
+                if (file != null) {
+                    prop.superclass to file
+                } else null
+            }.toMap()
+        }
+    }
+
+    fun getFileFallbackProperties(): Provider<Map<String, RegularFile>> {
+        return pluginDescriptionProperties.map { properties ->
+            properties
+                .mapNotNull {
+                    if (it.valueFallbackFile != null) {
+                        it.name to it.valueFallbackFile
+                    } else null
+                }
+                .associate { (property, file) ->
+                    property to file
+                }
+        }
+    }
+
+    fun getDetectionOutputFiles(): Provider<List<RegularFile>> {
+        return pluginDescriptionProperties.map { properties ->
+            properties.mapNotNull { it.valueFallbackFile }
+        }
+    }
+}

@@ -1,5 +1,5 @@
-import io.typst.spigradle.catalog.Dependency
-import io.typst.spigradle.catalog.SpigotDependencies
+import io.typst.spigradle.catalog.PluginDependency
+import io.typst.spigradle.catalog.PaperDependencies
 
 plugins {
     id("io.typst.spigradle.catalog") // build-logic/**/SpigradleCatalogPlugin.kt
@@ -10,26 +10,26 @@ version = property("catalog.spigot.version")!!
 description = "Spigot version catalog for Gradle"
 
 spigradleCatalog {
+    val spigotPlugins = listOf(
+        PluginDependency(
+            "${project.group}.spigradle.spigot",
+            property("spigradle.version")!!.toString(),
+            "spigot",
+            versionRef = "spigradle"
+        ),
+        PluginDependency(
+            "${project.group}.spigradle.spigot-base",
+            property("spigradle.version")!!.toString(),
+            "spigotBase",
+            versionRef = "spigradle"
+        ),
+    )
+    val spigotPluginLibs = spigotPlugins.map {
+        it.toLibrary()
+    }
     libraries.set(
-        SpigotDependencies.entries.map { it.dependency }
-                + Dependency(
-            "io.typst.spigradle.spigot",
-            "io.typst.spigradle.spigot.gradle.plugin",
-            property("version")!!.toString(),
-            "spigradleSpigot-plugin",
-            versionRef = "spigradle",
-            isLocal = true,
-        )
+        PaperDependencies.entries.map { it.dependency }
+                + spigotPluginLibs
     )
-    plugins.set(
-        listOf(
-            Dependency(
-                project.group.toString(),
-                "spigradle.spigot",
-                property("version")!!.toString(),
-                "spigot",
-                versionRef = "spigradle"
-            )
-        )
-    )
+    plugins.set(spigotPlugins)
 }

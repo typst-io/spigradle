@@ -17,13 +17,12 @@
 package io.typst.spigradle.spigot
 
 import io.typst.spigradle.Repositories
-import io.typst.spigradle.spigot.SpigotRepositories
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.kotlin.dsl.maven
 import javax.inject.Inject
 
-abstract class SpigotRepositoryExtension @Inject constructor(val project: Project) {
+abstract class PaperRepositoryExtension @Inject constructor(private val project: Project) {
     /**
      * The repo shortcut for [Repositories.SONATYPE], related with Bungeecord.
      */
@@ -33,20 +32,21 @@ abstract class SpigotRepositoryExtension @Inject constructor(val project: Projec
      * The repo shortcut for [Repositories.JITPACK], related with Vault.
      */
     fun jitpack(): MavenArtifactRepository = project.repositories.maven(Repositories.JITPACK.address)
+
     /**
      * The repo shortcut for spigotmc, related with Spigot, MockBukkit...
      */
-    fun spigotmc(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.SPIGOT_MC.address)
+    fun spigotmc(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.SPIGOT_MC.address)
 
     /**
      * The repo shortcut for papermc, related with Paper.
      */
-    fun papermc(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.PAPER_MC.address)
+    fun papermc(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.PAPER_MC.address)
 
     /**
      * The repo shortcut for protocolLib, related with ProtocolLib.
      */
-    fun protocolLib(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.PROTOCOL_LIB.address)
+    fun protocolLib(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.PROTOCOL_LIB.address)
 
     /**
      * The repo shortcut for Jitpack, related with Vault.
@@ -56,12 +56,12 @@ abstract class SpigotRepositoryExtension @Inject constructor(val project: Projec
     /**
      * The repo shortcut for enginehub, related with worldedit, worldguard, commandhelper...
      */
-    fun enginehub(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.ENGINE_HUB.address)
+    fun enginehub(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.ENGINE_HUB.address)
 
     /**
      * The repo shortcut for codemc, related with bStats, bStatsLite.
      */
-    fun codemc(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.CODE_MC.address)
+    fun codemc(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.CODE_MC.address)
 
     /**
      * The repo shortcut for BStats same as codemc, related with bStats and bStatsLite.
@@ -71,7 +71,7 @@ abstract class SpigotRepositoryExtension @Inject constructor(val project: Projec
     /**
      * The repo shortcut for enderZone, related with EssentialsX.
      */
-    fun enderZone(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.ENDER_ZONE.address)
+    fun enderZone(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.ENDER_ZONE.address)
 
     /**
      * The repo shortcut for essentialsX same as enderZone, related with EssentialsX.
@@ -81,10 +81,16 @@ abstract class SpigotRepositoryExtension @Inject constructor(val project: Projec
     /**
      * The repo shortcut for frostcast, related with BanManager.
      */
-    fun frostcast(): MavenArtifactRepository = project.repositories.maven(SpigotRepositories.FROSTCAST.address)
+    fun frostcast(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.FROSTCAST.address)
 
     /**
      * The repo shortcut for banManager same as frostcast, related with BanManager.
      */
     fun banManager(): MavenArtifactRepository = frostcast()
+
+    /*
+     * The repo shortcut for PlaceholderAPI.
+     */
+    fun placeholderApi(): MavenArtifactRepository =
+        project.repositories.maven(PaperRepositories.PLACEHOLDER_API.address)
 }

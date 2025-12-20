@@ -16,12 +16,15 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.*
+import io.typst.spigradle.PlatformPluginSpec
+import io.typst.spigradle.PluginDescriptionProperty
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
-import io.typst.spigradle.debug.DebugTask
+import io.typst.spigradle.hasJavaPlugin
+import io.typst.spigradle.paper.PaperDebugRegistrationContext
+import io.typst.spigradle.paper.PaperDebugTask
+import io.typst.spigradle.registerDescGenTask
 import io.typst.spigradle.spigot.SpigotBasePlugin.Companion.PLATFORM_NAME
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
@@ -73,11 +76,19 @@ import org.gradle.api.tasks.bundling.Jar
  */
 class SpigotPlugin : Plugin<Project> {
     companion object {
-        @JvmStatic
-        val GENERATE_DESCRIPTION_TASK_NAME: String = "generate${PLATFORM_NAME.asCamelCase(true)}Description"
+        internal val spec: PlatformPluginSpec = PlatformPluginSpec(
+            PLATFORM_NAME,
+            "plugin.yml",
+            listOf(
+                PluginDescriptionProperty("main", "org/bukkit/plugin/java/JavaPlugin", mandatory = true)
+            )
+        )
 
         @JvmStatic
-        val DETECT_MAIN_TASK_NAME: String = "detect${PLATFORM_NAME.asCamelCase(true)}Main"
+        val GENERATE_PLUGIN_DESCRIPTION_TASK_NAME: String = spec.generateDescriptionTaskName
+
+        @JvmStatic
+        val DETECT_ENTRYPOINTS_TASK_NAME: String = spec.detectEntrypointsTaskName
 
         internal fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
@@ -99,18 +110,31 @@ class SpigotPlugin : Plugin<Project> {
             }
         }
 
-        internal fun createModuleRegistrationContext(
+        internal fun createPaperDebugRegistrationContext(
             project: Project,
-            extension: SpigotExtension,
-        ): ModuleRegistrationContext<SpigotExtension> {
-            return ModuleRegistrationContext(
+        ): PaperDebugRegistrationContext {
+            val extension = project.extensions.getByType(SpigotExtension::class.java)
+            val debugExtension = project.extensions.getByType(DebugExtension::class.java)
+            val jarTask = if (project.hasJavaPlugin) {
+                debugExtension.projectJarTask.convention(project.tasks.named("jar", Jar::class.java))
+            } else null
+            val subCtx = DebugRegistrationContext(
                 PLATFORM_NAME,
-                "plugin.yml",
-                extension,
-                project.getMainDetectOutputFile(PLATFORM_NAME),
-                GENERATE_DESCRIPTION_TASK_NAME,
-                DETECT_MAIN_TASK_NAME,
-                "org/bukkit/plugin/java/JavaPlugin"
+                extension.version,
+                "",
+                "plugins",
+                jarTask,
+                debugExtension.jvmArgs,
+                debugExtension.programArgs,
+                debugExtension.jvmDebugPort,
+                debugExtension.javaHome.map { it.file("bin/java") },
+                false,
+                debugExtension.eula
+            )
+            return PaperDebugRegistrationContext(
+                subCtx,
+                extension.depend,
+                extension.softDepend
             )
         }
     }
@@ -166,76 +190,9 @@ class SpigotPlugin : Plugin<Project> {
         }
 
         // configure tasks
-        val ctx = createModuleRegistrationContext(project, extension)
-        registerDescGenTask(project, ctx) { desc ->
-            desc.toMap()
-        }
-        setupSpigotDebug(project, extension)
-    }
-
-    private fun setupSpigotDebug(project: Project, extension: SpigotExtension) {
-        val paperDebugExt = project.extensions.getByType(DebugExtension::class.java).apply {
-            jvmArgs.convention(jvmDebugPort.map { port ->
-                listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${port}")
-            })
-            programArgs.convention(listOf("nogui"))
-        }
-        val jarTask = if (project.hasJavaPlugin) {
-            paperDebugExt.projectJarTask.convention(project.tasks.named("jar", Jar::class.java))
-        } else null
-        val ctx = DebugRegistrationContext(
-            "paper",
-            paperDebugExt.version,
-            "",
-            "plugins",
-            jarTask,
-            paperDebugExt.jvmArgs,
-            paperDebugExt.programArgs,
-            paperDebugExt.jvmDebugPort,
-            paperDebugExt.javaHome.map { it.file("bin/java") },
-            false,
-            paperDebugExt.eula
-        )
-        val downloadPaper = project.tasks.register("downloadPaper", PaperDownloadTask::class.java) {
-            group = ctx.taskGroupName
-
-            version.set(paperDebugExt.version)
-            outputFile.set(ctx.getDownloadOutputFile(project))
-        }
-        val preparePluginDependencies =
-            project.tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {
-                group = ctx.taskGroupName
-
-                pluginNames.set(paperDebugExt.downloadSoftDepend.map {
-                    if (it) {
-                        (extension.depend.orNull ?: emptyList()) + (extension.softDepend.orNull ?: emptyList())
-                    } else extension.depend.orNull ?: emptyList()
-                })
-                downloadSoftDepend.set(paperDebugExt.downloadSoftDepend)
-                outputDir.set(ctx.getDebugArtifactDir(project))
-                // for up-to-date check
-                inputs.property("javaVersion", paperDebugExt.version)
-
-                project.pluginManager.withPlugin("java") {
-                    resolvableConfigurations.convention(
-                        project.configurations.named("compileClasspath").map(::setOf)
-                    )
-                }
-
-                doFirst {
-                    // NOTE: minJavaVer required consistent maintenance
-                    // REFERENCE: https://docs.papermc.io/paper/getting-started/#requirements
-                    val minimumJavaVersion = getMinecraftMinimumJavaVersion(paperDebugExt.version.get())
-                    val javaVersion = paperDebugExt.javaVersion.orNull?.asInt()
-                    if (javaVersion != null && javaVersion < minimumJavaVersion) {
-                        // https://docs.gradle.org/current/userguide/reporting_problems.html
-                        throw GradleException("Paper ${paperDebugExt.version.get()} requires at least Java ${minimumJavaVersion}! Please set the `java.toolchain.languageVersion`, or `debugSpigot.javaVersion` to JavaLanguageVersion(21), or kotlin.jvmToolchain(21) if Kotlin!")
-                    }
-                }
-            }
-        DebugTask.register(
-            project,
-            ctx.copy(downloadTask = downloadPaper, extraTasks = listOf(preparePluginDependencies))
-        )
+        val ctx = spec.createModuleRegistrationContext(project, project.provider { extension.toMap() })
+        registerDescGenTask(project, ctx)
+        val debugCtx = createPaperDebugRegistrationContext(project)
+        PaperDebugTask.register(project, debugCtx)
     }
 }

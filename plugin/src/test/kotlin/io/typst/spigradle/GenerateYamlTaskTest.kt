@@ -1,7 +1,7 @@
 package io.typst.spigradle
 
-import io.typst.spigradle.spigot.SpigotBasePlugin
 import io.typst.spigradle.spigot.SpigotExtension
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.normaliseLineSeparators
@@ -38,11 +38,12 @@ class GenerateYamlTaskTest {
         val extension = project.extensions.create<SpigotExtension>("spigot", project).apply {
             main.set("SpigradleMain")
         }
+        val ctx = SpigotPlugin.createModuleRegistrationContext(project)
         yamlTask.apply {
             properties.set(
-                project.getMainDetectivePropertiesProvider(
+                project.getFallbackProperties(
                     extension.toMap(),
-                    project.getMainDetectOutputFile(SpigotBasePlugin.PLATFORM_NAME)
+                    ctx.getFileFallbackProperties()
                 )
             )
             outputFiles.from(file)
@@ -96,12 +97,13 @@ class GenerateYamlTaskTest {
                 }
             }
         }
+        val ctx = SpigotPlugin.createModuleRegistrationContext(project)
         yamlTask.apply {
             outputFiles.from(file)
             properties.set(
-                project.getMainDetectivePropertiesProvider(
+                project.getFallbackProperties(
                     ext.toMap(),
-                    project.getMainDetectOutputFile(SpigotBasePlugin.PLATFORM_NAME)
+                    ctx.getFileFallbackProperties()
                 )
             )
             generate()

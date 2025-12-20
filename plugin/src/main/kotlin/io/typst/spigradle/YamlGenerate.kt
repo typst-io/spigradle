@@ -17,6 +17,7 @@
 package io.typst.spigradle
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
@@ -107,46 +108,61 @@ abstract class YamlGenerate : DefaultTask() {
     }
 }
 
-internal fun Project.getMainDetectivePropertiesProvider(
-    map: Map<String, Any>,
-    detectResultFile: Provider<RegularFile>,
+internal fun Project.getFallbackProperties(
+    mapProperty: Provider<Map<String, Any?>>,
+    fallbackPropertiesF: Provider<Map<String, RegularFile>>,
 ): Provider<Map<String, Any>> {
-    return provider {
-        if (!map.containsKey("main")) {
-            val detectResult = runCatching {
-                detectResultFile.get().asFile.readText()
-            }.getOrNull() ?: runCatching {
-                detectResultFile.get().asFile.parentFile.resolve("plugin_main").readText()
+    return fallbackPropertiesF.map { fallbackProperties ->
+        val map = mapProperty.get()
+        val ret = map.toMutableMap()
+        for ((key, file) in fallbackProperties) {
+            if (map[key] != null) continue
+            val fileText = runCatching {
+                file.asFile.readText()
             }.getOrNull()
-            val newMap = LinkedHashMap<String, Any>()
-            if (detectResult != null) {
-                newMap["main"] = detectResult
+            if (fileText != null) {
+                ret[key] = fileText
             }
-            newMap.putAll(map)
-            newMap as Map<String, Any>
-        } else {
-            map
         }
+        // remove nulls
+        ret.flatMap { (k, v) ->
+            if (v != null) {
+                listOf(k to v)
+            } else emptyList()
+        }.toMap()
     }
 }
 
-internal fun <A> registerDescGenTask(
+internal fun registerDescGenTask(
     project: Project,
-    ctx: ModuleRegistrationContext<A>,
-    serializer: (A) -> Map<String, Any>,
+    ctx: ModuleRegistrationContext,
 ): Pair<TaskProvider<SubclassDetection>, TaskProvider<YamlGenerate>> {
-    val detectionTask = SubclassDetection.register(project, ctx.mainDetectTask, ctx.mainDetectOutputFile)
+    val detectionTask =
+        SubclassDetection.register(project, ctx.detectEntrypointsTaskName, ctx.getOutputFileBySuperclass())
     detectionTask.configure {
         group = ctx.platformName
-        superClassName.set(ctx.mainSuperClass)
-        outputFile.set(ctx.mainDetectOutputFile)
     }
-    val generationTask = project.tasks.register(ctx.descGenTask, YamlGenerate::class) {
+    val generationTask = project.tasks.register(ctx.generateDescriptionTaskName, YamlGenerate::class) {
         group = ctx.platformName
-        inputs.files(ctx.mainDetectOutputFile)
-        properties.set(project.getMainDetectivePropertiesProvider(serializer(ctx.extension), ctx.mainDetectOutputFile))
+        inputs.files(ctx.getDetectionOutputFiles())
+        properties.set(
+            project.getFallbackProperties(
+                ctx.descriptionProperties,
+                ctx.getFileFallbackProperties()
+            )
+        )
         outputFiles.from(temporaryDir.resolve(ctx.descFileName))
         outputFiles.from(findResourceDirs(project, ctx.descFileName))
+
+        doLast {
+            val properties = properties.get()
+            for (property in ctx.pluginDescriptionProperties.get()) {
+                if (!property.mandatory) continue
+                if (property.name !in properties) {
+                    throw GradleException("The mandatory '${property.name}' property is not presented!")
+                }
+            }
+        }
     }
     /*
     NOTE: Task ordering part
@@ -185,11 +201,4 @@ internal fun findResourceDirs(project: Project, fileName: String): List<File> {
         }
     }
     return files
-}
-
-internal fun registerYamlGenTask(project: Project, taskName: String, fileName: String): TaskProvider<YamlGenerate> {
-    return project.tasks.register(taskName, YamlGenerate::class) {
-        outputFiles.from(temporaryDir.resolve(fileName))
-        outputFiles.from(findResourceDirs(project, fileName))
-    }
 }

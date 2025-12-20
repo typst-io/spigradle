@@ -16,7 +16,6 @@
 
 package io.typst.spigradle.nukkit
 
-import io.typst.spigradle.nukkit.NukkitPlugin.Companion.platformName
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -30,9 +29,14 @@ import org.gradle.kotlin.dsl.create
  * - repositories#nukkitRepos([NukkitRepositoryExtension]): extension for Nukkit repository DSL.
  */
 class NukkitBasePlugin : Plugin<Project> {
+    companion object {
+        @JvmStatic
+        val PLATFORM_NAME: String = "nukkit"
+    }
+
     override fun apply(project: Project) {
         // register nukkit extension
-        project.extensions.create(platformName, NukkitExtension::class)
+        project.extensions.create(PLATFORM_NAME, NukkitExtension::class)
         // register repo ext
         (project.repositories as ExtensionAware).extensions.create(
             "nukkitRepos",

@@ -19,9 +19,24 @@ package io.typst.spigradle
 import groovy.lang.GroovyObject
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtraPropertiesExtension
+import org.gradle.api.provider.Provider
 
 internal val Any.groovyExtension get() = (this as GroovyObject).getProperty("ext") as ExtraPropertiesExtension
 
 internal val Project.hasJavaPlugin: Boolean get() = pluginManager.hasPlugin("java")
 
 internal val Project.hasJavaBasePlugin: Boolean get() = pluginManager.hasPlugin("java-base")
+
+internal fun <A : Any> List<Provider<out A>>.sequence(project: Project): Provider<List<A>> {
+    return project.provider {
+        map {
+            it.get()
+        }
+    }
+}
+
+internal fun <A, B : Any> Map<out A, Provider<out B>>.sequenceMap(project: Project): Provider<Map<A, B>> {
+    return toList().map { (a, fb) ->
+        fb.map { a to it }
+    }.sequence(project).map { it.toMap() }
+}

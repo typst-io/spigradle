@@ -16,7 +16,7 @@
 
 package io.typst.spigradle.spigot
 
-enum class SpigotRepositories(val address: String, val alias: String) {
+enum class PaperRepositories(val address: String, val alias: String) {
     // @SerialName("purpurmc"), purpur
     PURPUR_MC("https://repo.purpurmc.org/snapshots", "purpurmc"),
 
@@ -38,5 +38,8 @@ enum class SpigotRepositories(val address: String, val alias: String) {
     ENDER_ZONE(ESSENTIALS_X.address, "enderzone"),
 
     // banManager
-    FROSTCAST("https://ci.frostcast.net/plugin/repository/everything", "frostcast")
+    FROSTCAST("https://ci.frostcast.net/plugin/repository/everything", "frostcast"),
+
+    // placeholder-api
+    PLACEHOLDER_API("https://repo.extendedclip.com/content/repositories/placeholderapi", "placeholderApi"),
 }

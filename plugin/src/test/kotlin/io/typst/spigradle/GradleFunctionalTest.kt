@@ -16,8 +16,11 @@
 
 package io.typst.spigradle
 
+import io.typst.spigradle.bungee.BungeePlugin
 import io.typst.spigradle.catalog.BungeeDependencies
-import io.typst.spigradle.catalog.SpigotDependencies
+import io.typst.spigradle.catalog.PaperDependencies
+import io.typst.spigradle.nukkit.NukkitPlugin
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
@@ -25,7 +28,6 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -80,6 +82,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `main detection task incremental`() {
+        val superclass = SpigotPlugin.spec.propertyBySuperclass.entries.first().key
         buildFile.writeText(
             """
             plugins {
@@ -93,7 +96,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
@@ -101,9 +104,9 @@ class GradleFunctionalTest {
                 }
             }
             
-            detectSpigotMain {
+            ${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME} {
                 doLast {
-                    assert outputFile.get().getAsFile().text == mainParam
+                    assert outputFileBySuperclass.get()["$superclass"].getAsFile().text == mainParam
                 }
             }
         """.trimIndent()
@@ -129,12 +132,13 @@ class GradleFunctionalTest {
         )
 
         val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=Main").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME}")?.outcome)
         println(result.output)
     }
 
     @Test
     fun `main detection task update`() {
+        val superclass = SpigotPlugin.spec.propertyBySuperclass.entries.first().key
         buildFile.writeText(
             """
             plugins {
@@ -148,16 +152,16 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
                     languageVersion.set(JavaLanguageVersion.of(21))
                 }
             }
-            detectSpigotMain {
+            ${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME} {
                 doLast {
-                    assert outputFile.get().getAsFile().text == mainParam
+                    assert outputFileBySuperclass.get()["$superclass"].getAsFile().text == mainParam
                 }
             }
         """.trimIndent()
@@ -172,7 +176,7 @@ class GradleFunctionalTest {
         )
         assertDoesNotThrow {
             val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=Main").build()
-            assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+            assertEquals(TaskOutcome.SUCCESS, result.task(":${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME}")?.outcome)
             println(result.output)
         }
 
@@ -185,12 +189,12 @@ class GradleFunctionalTest {
         """.trimIndent()
         )
         val result = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=MainB").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":detectSpigotMain")?.outcome)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME}")?.outcome)
         println(result.output)
 
         // step 3: up to date
         val resultB = createGradleRunner().withArguments("assemble", "-s", "-i", "-PmainParam=MainB").build()
-        assertEquals(TaskOutcome.UP_TO_DATE, resultB.task(":detectSpigotMain")?.outcome)
+        assertEquals(TaskOutcome.UP_TO_DATE, resultB.task(":${SpigotPlugin.DETECT_ENTRYPOINTS_TASK_NAME}")?.outcome)
         println(resultB.output)
     }
 
@@ -209,7 +213,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
             }
             java {
                 toolchain {
@@ -245,7 +249,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
                 implementation(kotlin("stdlib"))
             }
             spigot {
@@ -301,7 +305,7 @@ class GradleFunctionalTest {
             description 'My awesome plugin'
             version '3.2.1'
             spigot.main = 'AwesomePlugin'
-            generateSpigotDescription { doLast {
+            ${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} { doLast {
                 [
                     "main": "AwesomePlugin",
                     "version": project.version,
@@ -310,13 +314,16 @@ class GradleFunctionalTest {
             } }
         """.trimIndent()
         )
-        val result = createGradleRunner().withArguments("generateSpigotDescription").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":generateSpigotDescription")?.outcome)
+        val result = createGradleRunner().withArguments(SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME).build()
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            result.task(":${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}")?.outcome
+        )
     }
 
     @Test
     fun `serialize bungee description`() {
-        val bungeeDescFile = dir.resolve("build/tmp/generateBungeeDescription/bungee.yml")
+        val bungeeDescFile = dir.resolve("build/tmp/${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}/bungee.yml")
         buildFile.writeGroovy(
             """
             plugins {
@@ -327,8 +334,12 @@ class GradleFunctionalTest {
             bungee.main = 'MyPlugin'
         """.trimIndent()
         )
-        val result = createGradleRunner().withArguments("generateBungeeDescription", "-s").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":generateBungeeDescription")?.outcome)
+        val result =
+            createGradleRunner().withArguments(BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME, "-s").build()
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            result.task(":${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}")?.outcome
+        )
         assertEquals(
             """
             |main: MyPlugin
@@ -340,7 +351,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `serialize nukkit description`() {
-        val nukkitDescFile = dir.resolve("build/tmp/generateNukkitDescription/plugin.yml")
+        val nukkitDescFile = dir.resolve("build/tmp/${NukkitPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}/plugin.yml")
         buildFile.writeGroovy(
             """
             plugins {
@@ -351,8 +362,12 @@ class GradleFunctionalTest {
             nukkit.main = 'MyPlugin'
         """.trimIndent()
         )
-        val result = createGradleRunner().withArguments("generateNukkitDescription", "-s").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":generateNukkitDescription")?.outcome)
+        val result =
+            createGradleRunner().withArguments(NukkitPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME, "-s").build()
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            result.task(":${NukkitPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}")?.outcome
+        )
         assertEquals(
             """
             |main: MyPlugin
@@ -384,18 +399,18 @@ class GradleFunctionalTest {
             }
             
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
                 compileOnly("${BungeeDependencies.BUNGEE_CORD.format()}")
             }
             
-            generateSpigotDescription {
+            ${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties["main"].get() == "Main"
+                    assert properties.get()["main"] == "Main"
                 }
             }
-            generateBungeeDescription {
+            ${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties["main"].get() == "MainB"
+                    assert properties.get()["main"] == "MainB"
                 }
             }
         """.trimIndent()
@@ -415,9 +430,19 @@ class GradleFunctionalTest {
         """.trimIndent()
         )
         val result =
-            createGradleRunner().withArguments("generateSpigotDescription", "generateBungeeDescription", "-i").build()
-        assertEquals(TaskOutcome.SUCCESS, result.task(":generateSpigotDescription")?.outcome)
-        assertEquals(TaskOutcome.SUCCESS, result.task(":generateBungeeDescription")?.outcome)
+            createGradleRunner().withArguments(
+                SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME,
+                BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME,
+                "-i"
+            ).build()
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            result.task(":${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}")?.outcome
+        )
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            result.task(":${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}")?.outcome
+        )
     }
 
     @Test
@@ -435,7 +460,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")                                                     
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")                                                     
             }
         """.trimIndent()
         )
@@ -467,7 +492,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${SpigotDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
             }
         """.trimIndent()
         )
