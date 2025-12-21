@@ -38,7 +38,7 @@ dependencyResolutionManagement {
             // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
         }
         create("commons") {
-            from("io.typst:common-catalog:1.0.0")
+            from("io.typst:common-catalog:1.0.1")
         }
     }
 }
