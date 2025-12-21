@@ -46,7 +46,7 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly('${PaperDependencies.SPIGOT_API.format("1.20.1")}')
+                compileOnly('${PaperDependencies.SPIGOT_API.dependency.toGAV("1.20.1")}')
                 compileOnlySpigot("$okhttp")
             }
         """.trimIndent()
@@ -81,7 +81,7 @@ class SpigotLibraryResolution {
             }
             
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format("1.18.1")}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV("1.18.1")}")
                 implementation("com.squareup.okhttp3:okhttp:4.9.0")
             }
         """.trimIndent()

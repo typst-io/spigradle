@@ -16,10 +16,7 @@
 
 package io.typst.spigradle.catalog
 
-import org.gradle.api.provider.ListProperty
-
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<PluginDependency>
-    abstract val versions: ListProperty<Version>
-}
+data class Version(
+    val version: String,
+    val label: String = "",
+)

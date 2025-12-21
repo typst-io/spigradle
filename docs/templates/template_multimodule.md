@@ -128,7 +128,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         // Centralized versions from gradle.properties
         // For Spigot modules
-        create("spigots") {
+        create("papers") {
             from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
         }
         // For BungeeCord modules
@@ -294,7 +294,7 @@ plugins {
     id 'java'
 
     // Spigradle plugin (via version catalog)
-    alias(spigots.plugins.spigot)
+    alias(papers.plugins.spigot)
 
     // Optional (commons catalog only)
     // alias(commons.plugins.ideaExt)
@@ -315,7 +315,7 @@ dependencies {
     implementation project(':common')
 
     // Paper API (from catalog)
-    compileOnly spigots.paper
+    compileOnly papers.paper
 }
 
 spigot {
@@ -352,7 +352,7 @@ plugins {
     id("java")
 
     // Spigradle plugin (via version catalog)
-    alias(spigots.plugins.spigot)
+    alias(papers.plugins.spigot)
 
     // Optional (commons catalog only)
     // alias(commons.plugins.ideaExt)
@@ -373,7 +373,7 @@ dependencies {
     implementation(project(":common"))
 
     // Paper API (from catalog)
-    compileOnly(spigots.paper.api)
+    compileOnly(papers.paper.api)
 }
 
 spigot {
@@ -579,7 +579,7 @@ For plugins that expose a public API for other developers:
 plugins {
     id 'java'
     // Optionally apply platform plugin via catalog if your API needs it.
-    // alias(spigots.plugins.spigot)
+    // alias(papers.plugins.spigot)
 }
 
 repositories {
@@ -589,10 +589,10 @@ repositories {
 
 dependencies {
     // API typically doesn't depend on implementation
-    compileOnly spigots.paper  // Only if needed
+    compileOnly papers.paper  // Only if needed
 }
 
-// tasks.detectSpigotMain.enabled = false
+// tasks.detectSpigotEntrypoints.enabled = false
 
 java {
     toolchain {
@@ -606,7 +606,7 @@ java {
 plugins {
     id("java")
     // Optionally apply platform plugin via catalog if your API needs it.
-    // alias(spigots.plugins.base)
+    // alias(papers.plugins.base)
 }
 
 repositories {
@@ -616,10 +616,10 @@ repositories {
 
 dependencies {
     // API typically doesn't depend on implementation
-    compileOnly(spigots.paper.api)  // Only if needed
+    compileOnly(papers.paper.api)  // Only if needed
 }
 
-// tasks.detectSpigotMain.enabled = false
+// tasks.detectSpigotEntrypoints.enabled = false
 
 java {
     toolchain {
@@ -780,8 +780,8 @@ repositories {
 
 dependencies {
     // Add Spigradle plugin(s) to convention plugin classpath if needed
-    implementation(spigots.spigradleSpigot)
-    implementation(spigots.spigradleBungee)
+    implementation(papers.spigradleSpigot)
+    implementation(papers.spigradleBungee)
 }
 ```
 
@@ -808,7 +808,7 @@ java {
 ```kotlin
 plugins {
     id("common-conventions")
-    alias(spigots.plugins.spigot)
+    alias(papers.plugins.spigot)
 }
 
 repositories {
@@ -816,7 +816,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(spigots.paper.api)
+    compileOnly(papers.paper.api)
 }
 
 spigot {
@@ -961,7 +961,7 @@ Each platform module should declare its own dependencies:
 // spigot/build.gradle
 dependencies {
     implementation project(':common')
-    compileOnly spigots.paper
+    compileOnly papers.paper
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 
@@ -978,7 +978,7 @@ dependencies {
 // spigot/build.gradle.kts
 dependencies {
     implementation(project(":common"))
-    compileOnly(spigots.paper.api)
+    compileOnly(papers.paper.api)
     implementation("com.google.code.gson:gson:2.10.1")
 }
 
@@ -1015,7 +1015,7 @@ For Bukkit plugin, use the `libraries` option in plugin.yml instead of shadowJar
 // spigot/build.gradle
 plugins {
     id 'java'
-    alias(spigots.plugins.spigot)
+    alias(papers.plugins.spigot)
 }
 
 // ...
@@ -1033,7 +1033,7 @@ dependencies {
 // spigot/build.gradle.kts
 plugins {
     id("java")
-    alias(spigots.plugins.spigot)
+    alias(papers.plugins.spigot)
 }
 
 // ...

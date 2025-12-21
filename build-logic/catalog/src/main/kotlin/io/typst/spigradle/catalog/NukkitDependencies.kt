@@ -24,21 +24,19 @@ enum class NukkitDependencies(
         Dependency(
             "cn.nukkit",
             "nukkit",
-            "1.0-SNAPSHOT",
+            NukkitVersions.NUKKIT.version,
             "nukkit",
-            false,
-            Dependency.SNAPSHOT_TAG
+            tags = Dependency.SNAPSHOT_TAG,
         )
     ),
-
     NUKKIT_X(
-        NUKKIT.dependency.copy(
-            label = "nukkitX",
+        Dependency(
+            "cn.nukkit",
+            "nukkit",
+            NukkitVersions.NUKKIT.version,
+            "nukkitX",
+            tags = Dependency.SNAPSHOT_TAG,
         )
     ),
     ;
-
-    fun format(version: String? = null): String {
-        return dependency.toGAV(version)
-    }
 }

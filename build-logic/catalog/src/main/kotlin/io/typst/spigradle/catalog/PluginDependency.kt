@@ -18,9 +18,8 @@ package io.typst.spigradle.catalog
 
 data class PluginDependency(
     val id: String,
-    val version: String,
+    val version: Version,
     val label: String,
-    val versionRef: String = label,
 ) {
     fun toLibrary(): Dependency =
         Dependency(
@@ -29,6 +28,5 @@ data class PluginDependency(
             version,
             "gradle-${label}-plugin",
             isLocal = true,
-            versionRef = versionRef
         )
 }

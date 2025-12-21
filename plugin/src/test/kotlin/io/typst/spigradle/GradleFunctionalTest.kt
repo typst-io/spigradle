@@ -96,7 +96,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
             }
             java {
                 toolchain {
@@ -152,7 +152,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
             }
             java {
                 toolchain {
@@ -213,7 +213,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
             }
             java {
                 toolchain {
@@ -249,7 +249,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
                 implementation(kotlin("stdlib"))
             }
             spigot {
@@ -399,8 +399,8 @@ class GradleFunctionalTest {
             }
             
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
-                compileOnly("${BungeeDependencies.BUNGEE_CORD.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
+                compileOnly("${BungeeDependencies.BUNGEECORD_API.dependency.toGAV()}")
             }
             
             ${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
@@ -460,7 +460,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")                                                     
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")                                                     
             }
         """.trimIndent()
         )
@@ -492,7 +492,7 @@ class GradleFunctionalTest {
                 }
             }
             dependencies {
-                compileOnly("${PaperDependencies.SPIGOT_API.format()}")
+                compileOnly("${PaperDependencies.SPIGOT_API.dependency.toGAV()}")
             }
         """.trimIndent()
         )

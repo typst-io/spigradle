@@ -24,112 +24,103 @@ enum class CommonDependencies(
         Dependency(
             "org.projectlombok",
             "lombok",
-            "1.18.38",
-            "lombok"
+            CommonVersions.LOMBOK.version,
+            "lombok",
         )
     ),
     AHOCORASICK(
         Dependency(
             "org.ahocorasick",
             "ahocorasick",
-            "0.6.3",
-            "ahocorasick"
+            CommonVersions.AHOCORASICK.version,
+            "ahocorasick",
         )
     ),
     VIEW_BUKKIT_KOTLIN(
         Dependency(
             "io.typst",
             "view-bukkit-kotlin",
-            "10.1.1",
+            CommonVersions.TYPST_VIEW.version,
             "typst-view-bukkitKotlin",
-            versionRef = "typst-view",
         )
     ),
     COMMAND_KOTLIN(
         Dependency(
             "io.typst",
             "command-kotlin",
-            "3.1.7",
+            CommonVersions.TYPST_COMMAND.version,
             "typst-command-kotlin",
-            versionRef = "typst-command"
         )
     ),
     COMMAND_BUKKIT(
         Dependency(
             "io.typst",
             "command-bukkit",
-            "3.1.7",
+            CommonVersions.TYPST_COMMAND.version,
             "typst-command-bukkit",
-            versionRef = "typst-command"
         )
     ),
     INVENTORY_BUKKIT_KOTLIN(
         Dependency(
             "io.typst",
             "inventory-bukkit-kotlin",
-            "2.7.6",
+            CommonVersions.TYPST_INVENTORY.version,
             "typst-inventory-bukkitKotlin",
-            versionRef = "typst-inventory"
         )
     ),
     JOOQ(
         Dependency(
             "org.jooq",
             "jooq",
-            "3.19.29",
-            label = "jooq-core",
-            versionRef = "jooq"
+            CommonVersions.JOOQ.version,
+            "jooq-core",
         )
     ),
     JOOQ_META(
         Dependency(
             "org.jooq",
             "jooq-meta",
-            "3.19.29",
-            label = "jooq-meta",
-            versionRef = "jooq"
+            CommonVersions.JOOQ.version,
+            "jooq-meta",
         )
     ),
     HIKARI_CP(
         Dependency(
             "com.zaxxer",
             "HikariCP",
-            "7.0.2",
-            label = "hikariCP",
-            versionRef = "hikariCP"
+            CommonVersions.HIKARI_CP.version,
+            "hikariCP",
         )
     ),
     FLYWAY_CORE(
         Dependency(
             "org.flywaydb",
             "flyway-core",
-            "11.19.0",
-            label = "flyway-core",
-            versionRef = "flyway"
+            CommonVersions.FLYWAY.version,
+            "flyway-core",
         )
     ),
     FLYWAY_MYSQL(
         Dependency(
             "org.flywaydb",
             "flyway-mysql",
-            "11.19.0",
-            label = "flyway-mysql",
-            versionRef = "flyway"
+            CommonVersions.FLYWAY.version,
+            "flyway-mysql",
         )
     ),
     BUKKIT_KOTLIN_SERIALIZATION(
         Dependency(
             "io.typst",
             "bukkit-kotlin-serialization",
-            "4.0.2",
-            "typst.bukkitKotlinSerialization"
+            CommonVersions.BUKKIT_KOTLIN_SERIALIZATION.version,
+            "typst-bukkitKotlinSerialization",
         )
     ),
     KOTLINX_SERIALIZATION(
         Dependency(
             "org.jetbrains.kotlinx",
             "kotlinx-serialization-json",
-            "1.9.0",
+            CommonVersions.KOTLINX_SERIALIZATION.version,
             "kotlinx-serialization-json",
         )
     ),
@@ -137,14 +128,33 @@ enum class CommonDependencies(
         Dependency(
             "com.charleskorn.kaml",
             "kaml-jvm",
-            "0.104.0",
-            label = "kaml"
+            CommonVersions.KAML.version,
+            "kaml",
         )
     ),
-
+    JUNIT_BOM(
+        Dependency(
+            "org.junit",
+            "junit-bom",
+            CommonVersions.JUNIT.version,
+            "junit-bom",
+        )
+    ),
+    JUNIT_JUPITER(
+        Dependency(
+            "org.junit.jupiter",
+            "junit-jupiter",
+            CommonVersions.JUNIT.version,
+            "junit-jupiter"
+        )
+    ),
+    JUNIT_PLATFORM_LAUNCHER(
+        Dependency(
+            "org.junit.platform",
+            "junit-platform-launcher",
+            CommonVersions.JUNIT.version,
+            "junit-platform-launcher",
+        )
+    )
     ;
-
-    fun format(version: String?): String {
-        return dependency.toGAV(version)
-    }
 }

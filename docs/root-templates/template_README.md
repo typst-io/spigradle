@@ -10,7 +10,7 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ## Features
 
-- Auto-generate `plugin.yml` / `bungee.yml` with main class detection
+- Auto-generate `plugin.yml` with main class detection
 - Debug task with server download and IDEA integration
 - Repository and dependency shortcuts
 
@@ -27,7 +27,7 @@ dependencyResolutionManagement {
         create("spigots") {
             from("io.typst:spigot-catalog:1.0.0")
             // if you need to override the version:
-            // version("spigot", "1.21.10-R0.1-SNAPSHOT")
+            // version("spigot-api", "1.21.10-R0.1-SNAPSHOT")
         }
         create("commons") {
             from("io.typst:common-catalog:1.0.0")
@@ -122,11 +122,11 @@ The detection process follows these steps:
 
 ### Platform-specific detection targets
 
-| Platform   | Detected Base Class                         | Task Name             |
-|------------|---------------------------------------------|-----------------------|
-| Spigot     | `org.bukkit.plugin.java.JavaPlugin`         | `detectSpigotMain`    |
-| BungeeCord | `net.md_5.bungee.api.plugin.Plugin`         | `detectBungeeMain`    |
-| NukkitX    | `cn.nukkit.plugin.PluginBase`               | `detectNukkitMain`    |
+| Platform   | Detected Base Class                         | Task Name                  |
+|------------|---------------------------------------------|----------------------------|
+| Spigot     | `org.bukkit.plugin.java.JavaPlugin`         | `detectSpigotEntrypoints`  |
+| BungeeCord | `net.md_5.bungee.api.plugin.Plugin`         | `detectBungeeEntrypoints`  |
+| NukkitX    | `cn.nukkit.plugin.PluginBase`               | `detectNukkitEntrypoints`  |
 
 ### Key features
 

@@ -37,13 +37,13 @@ class BuildVersionInference {
             ).forEach { dep ->
                 prepareProject().run {
                     dependencies {
-                        add(it, dep.format(ver))
+                        add(it, dep.dependency.toGAV(ver))
                     }
                     dependencies {
-                        add(it, dep.format(bigVer))
+                        add(it, dep.dependency.toGAV(bigVer))
                     }
                     dependencies {
-                        add(it, dep.format(smallVer))
+                        add(it, dep.dependency.toGAV(smallVer))
                     }
                 }
             }

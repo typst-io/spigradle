@@ -20,25 +20,21 @@ package io.typst.spigradle.catalog
 enum class BungeeDependencies(
     val dependency: Dependency,
 ) {
-    BUNGEE_CORD(
+    BUNGEECORD_API(
         Dependency(
             "net.md-5",
             "bungeecord-api",
-            "1.21-R0.4",
-            "bungeecord-api"
+            BungeeVersions.BUNGEECORD_API.version,
+            "bungeecord-api",
         )
     ),
     BRIGADIER(
         Dependency(
             "com.mojang",
             "brigadier",
-            "1.0.18",
-            "brigadier"
+            BungeeVersions.BRIGADIER.version,
+            "brigadier",
         )
     ),
     ;
-
-    fun format(version: String? = null): String {
-        return dependency.toGAV(version)
-    }
 }

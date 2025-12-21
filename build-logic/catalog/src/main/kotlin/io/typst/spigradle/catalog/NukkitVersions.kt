@@ -16,10 +16,6 @@
 
 package io.typst.spigradle.catalog
 
-import org.gradle.api.provider.ListProperty
-
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<PluginDependency>
-    abstract val versions: ListProperty<Version>
+enum class NukkitVersions(val version: Version) {
+    NUKKIT(Version("1.0-SNAPSHOT", "nukkit")),
 }

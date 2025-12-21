@@ -24,81 +24,74 @@ enum class PaperDependencies(
         Dependency(
             "org.spigotmc",
             "spigot-api",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "spigot-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     SPIGOT(
         Dependency(
             "org.spigotmc",
             "spigot",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "spigot-server",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     PURPUR(
         Dependency(
             "org.purpurmc.purpur",
             "purpur-api",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "purpur-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     PAPER_API(
         Dependency(
             "io.papermc.paper",
             "paper-api",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "paper-api",
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     MINECRAFT_SERVER(
         Dependency(
             SPIGOT.dependency.group,
             "minecraft-server",
-            "1.21.10-SNAPSHOT",
+            PaperVersions.PAPER_SERVER.version,
             "minecraftServer",
             true,
-            tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
+            tags = Dependency.SNAPSHOT_TAG,
         )
     ),
     BUKKIT(
         Dependency(
             "org.bukkit",
             "bukkit",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "bukkit",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     CRAFTBUKKIT(
         Dependency(
             "org.bukkit",
             "craftbukkit",
-            "1.21.10-R0.1-SNAPSHOT",
+            PaperVersions.PAPER_API.version,
             "craftbukkit",
             true,
             tags = Dependency.SPIGOT_VERSION_TAGS,
-            versionRef = "spigot",
         )
     ),
     PROTOCOL_LIB(
         Dependency(
             "net.dmulloy2",
             "ProtocolLib",
-            "5.4.0",
+            PaperVersions.PROTOCOL_LIB.version,
             "protocolLib"
         )
     ),
@@ -106,7 +99,7 @@ enum class PaperDependencies(
         Dependency(
             "com.github.MilkBowl",
             "VaultAPI",
-            "1.7",
+            PaperVersions.VAULT_API.version,
             "vault-api"
         )
     ),
@@ -114,7 +107,7 @@ enum class PaperDependencies(
         Dependency(
             "net.luckperms",
             "api",
-            "5.5",
+            PaperVersions.LUCKPERMS.version,
             "luckperms-api",
         )
     ),
@@ -122,15 +115,15 @@ enum class PaperDependencies(
         Dependency(
             "com.sk89q.worldedit",
             "worldedit-bukkit",
-            "7.3.17",
-            "worldedit",
+            PaperVersions.WORLD_EDIT.version,
+            "worldedit"
         )
     ),
     WORLDGUARD(
         Dependency(
             "com.sk89q.worldguard",
             "worldguard-bukkit",
-            "7.0.14",
+            PaperVersions.WORLD_GUARD.version,
             "worldguard",
         )
     ),
@@ -138,7 +131,7 @@ enum class PaperDependencies(
         Dependency(
             "net.essentialsx",
             "EssentialsX",
-            "2.21.1",
+            PaperVersions.ESSENTIALS_X.version,
             "essentialsX",
         )
     ),
@@ -146,15 +139,15 @@ enum class PaperDependencies(
         Dependency(
             "me.confuser.banmanager",
             "BanManagerBukkit",
-            "7.7.0-SNAPSHOT",
+            PaperVersions.BAN_MANAGER.version,
             "banManager",
         )
     ),
-    COMMANDHELPER(
+    COMMAND_HELPER(
         Dependency(
             "com.sk89q",
             "commandhelper",
-            "3.3.4-SNAPSHOT",
+            PaperVersions.COMMAND_HELPER.version,
             "commandhelper",
         )
     ),
@@ -162,7 +155,7 @@ enum class PaperDependencies(
         Dependency(
             "org.bstats",
             "bstats-bukkit",
-            "3.0.2",
+            PaperVersions.B_STATS.version,
             "bstats",
         )
     ),
@@ -170,21 +163,17 @@ enum class PaperDependencies(
         Dependency(
             "org.mockbukkit.mockbukkit",
             "mockbukkit-v1.21",
-            "4.98.0",
-            "mockbukkit"
+            PaperVersions.MOCK_BUKKIT.version,
+            "mockbukkit",
         )
     ),
     PLACEHOLDER_API(
         Dependency(
             "me.clip",
             "placeholderapi",
-            "2.11.7",
+            PaperVersions.PLACEHOLDER_API.version,
             "placeholderapi",
         )
     ),
     ;
-
-    fun format(version: String? = null): String {
-        return dependency.toGAV(version)
-    }
 }

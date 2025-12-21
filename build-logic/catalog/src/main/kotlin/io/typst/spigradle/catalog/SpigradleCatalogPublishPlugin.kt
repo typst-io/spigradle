@@ -34,6 +34,15 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
             // validate distinct
             val pluginMap = mutableMapOf<String, PluginDependency>()
             val libraryMap = mutableMapOf<String, Dependency>()
+            val versionMap = mutableMapOf<String, Version>()
+            for (ver in spigradleCatalog.versions.get()) {
+                val theVersion = versionMap[ver.label]
+                if (theVersion == null) {
+                    versionMap[ver.label] = ver
+                } else {
+                    throw GradleException("Duplicated the version label '${ver.label}' between '${ver.version}' and '${ver.version}'!")
+                }
+            }
             for (dep in spigradleCatalog.plugins.get()) {
                 val thePlugin = pluginMap[dep.label]
                 if (thePlugin == null) {
@@ -53,13 +62,14 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
 
             // configure
             ext.versionCatalog {
+                for ((version, label) in spigradleCatalog.versions.get()) {
+                    version(label, version)
+                }
                 for (dep in spigradleCatalog.libraries.get()) {
-                    version(dep.versionRef, dep.version)
-                    library(dep.label, dep.group, dep.artifact).versionRef(dep.versionRef)
+                    library(dep.label, dep.group, dep.artifact).versionRef(dep.version.label)
                 }
                 for (dep in spigradleCatalog.plugins.get()) {
-                    version(dep.versionRef, dep.version)
-                    plugin(dep.label, dep.id).versionRef(dep.versionRef)
+                    plugin(dep.label, dep.id).versionRef(dep.version.label)
                 }
             }
         }

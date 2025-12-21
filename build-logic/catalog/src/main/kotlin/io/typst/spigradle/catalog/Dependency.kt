@@ -19,14 +19,13 @@ package io.typst.spigradle.catalog
 data class Dependency(
     val group: String,
     val artifact: String,
-    val version: String,
+    val version: Version,
     val label: String,
     val isLocal: Boolean = false,
     val tags: List<String> = emptyList(),
-    val versionRef: String = label,
 ) {
-    fun getTaggedVersion(inputVersion: String?): String {
-        if (inputVersion == null) return version
+    fun getTaggedVersion(inputVersion: String? = null): String {
+        if (inputVersion == null) return version.version
         if (tags.isEmpty()) return inputVersion
         return buildString {
             val pieces = inputVersion.split("-")

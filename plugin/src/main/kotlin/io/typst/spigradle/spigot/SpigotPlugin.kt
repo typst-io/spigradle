@@ -16,15 +16,11 @@
 
 package io.typst.spigradle.spigot
 
-import io.typst.spigradle.ModuleRegistrationContext
-import io.typst.spigradle.PlatformPluginSpec
-import io.typst.spigradle.PluginDescriptionProperty
+import io.typst.spigradle.*
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
-import io.typst.spigradle.hasJavaPlugin
 import io.typst.spigradle.paper.PaperDebugRegistrationContext
 import io.typst.spigradle.paper.PaperDebugTask
-import io.typst.spigradle.registerDescGenTask
 import io.typst.spigradle.spigot.SpigotBasePlugin.Companion.PLATFORM_NAME
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -91,6 +87,12 @@ class SpigotPlugin : Plugin<Project> {
         @JvmStatic
         val DETECT_ENTRYPOINTS_TASK_NAME: String = spec.detectEntrypointsTaskName
 
+        @JvmStatic
+        val COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME: String = "compileOnlySpigot"
+
+        @JvmStatic
+        val SPIGOT_LIBRARIES_CLASSPATH_CONFIGURATION_NAME: String = "spigotLibrariesClasspath"
+
         internal fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
             val minor = versions[1].toInt()
@@ -153,7 +155,7 @@ class SpigotPlugin : Plugin<Project> {
         // register dependency configuration
         val pluginLibsProp = if (project.hasJavaPlugin) {
             // register configuration: https://docs.gradle.org/current/userguide/declaring_configurations.html#sec:defining-custom-configurations
-            val compileOnlySpigot = project.configurations.create("compileOnlySpigot").apply {
+            val compileOnlySpigot = project.configurations.create(COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME).apply {
                 isCanBeConsumed = false
                 isCanBeResolved = false
                 description = "Compile only dependencies that will be exported to plugin.yml libraries."
@@ -161,11 +163,11 @@ class SpigotPlugin : Plugin<Project> {
             project.configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).configure {
                 extendsFrom(compileOnlySpigot)
             }
-            val spigotLibrariesClasspath = project.configurations.create("spigotLibrariesClasspath").apply {
+            val spigotLibrariesClasspath = project.configurations.create(SPIGOT_LIBRARIES_CLASSPATH_CONFIGURATION_NAME).apply {
                 isCanBeConsumed = false
                 isCanBeResolved = true
                 extendsFrom(compileOnlySpigot)
-                description = "Resolvable view of compileOnlySpigot for generating plugin.yml libraries."
+                description = "Resolvable view of ${COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME} for generating plugin.yml libraries."
 
                 attributes {
                     attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_API))

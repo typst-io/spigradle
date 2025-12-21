@@ -16,10 +16,7 @@
 
 package io.typst.spigradle.catalog
 
-import org.gradle.api.provider.ListProperty
-
-abstract class SpigradleCatalogExtension {
-    abstract val libraries: ListProperty<Dependency>
-    abstract val plugins: ListProperty<PluginDependency>
-    abstract val versions: ListProperty<Version>
+enum class BungeeVersions(val version: Version) {
+    BUNGEECORD_API(Version("1.21-R0.4", "bungeecord")),
+    BRIGADIER(Version("1.0.18", "brigadier")),
 }

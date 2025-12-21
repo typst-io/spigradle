@@ -1,11 +1,12 @@
 package io.typst.spigradle
 
 import io.typst.spigradle.catalog.Dependency
+import io.typst.spigradle.catalog.Version
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class VersionModifierTest {
-    val initial = Dependency("", "", "", "")
+    val initial = Dependency("", "", Version(""), "")
 
     @Test
     fun `snapshot appender`() {
