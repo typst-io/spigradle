@@ -10,7 +10,7 @@ The Spigot plugin ID has been renamed for consistency:
 
 ```diff
 plugins {
--   id("io.typst.spigradle") version "4.0.0"
+-   id("io.typst.spigradle") version "3.7.3"
 +   id("io.typst.spigradle.spigot") version "4.0.0"
 }
 ```
