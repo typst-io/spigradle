@@ -33,6 +33,8 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the fo
 
 - [Testing with MockBukkit](#testing-with-mockbukkit)
 
+- [Working with paperweight-userdev](#working-with-paperweight-userdev)
+
 - [Migration Tips](#migration-tips)
 
 - [Templates](#templates)
@@ -489,6 +491,34 @@ task copyPluginYaml(type: Copy, dependsOn: spigotPluginYaml) {
 }
 
 tasks.test.dependsOn(copyPluginYaml)
+```
+
+## Working with paperweight-userdev
+
+Prerequisite: https://docs.papermc.io/paper/dev/userdev/
+
+### build.gradle.kts
+```
+plugins {
+    // ...
+    alias(spigots.plugins.paperweight.userdev)
+}
+
+dependencies {
+    paperweight.paperDevBundle(spigots.versions.spigot.api) // this is a replacement for spigot-api/paper-api 
+    // ...
+}
+
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+}
+
+debugSpigot {
+    // ...
+    jarFile = tasks.reobfJar.flatMap { it.outputJar } // For debug, to copy the reobfJar
+}
 ```
 
 ## Migration Tips

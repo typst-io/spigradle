@@ -13,6 +13,7 @@ description = "Spigot version catalog for Gradle"
 
 spigradleCatalog {
     val spigradleVersion = Version(property("spigradle.version")!!.toString(), "spigradle")
+    val paperweightVersion = Version("2.0.0-beta.19", "paperweight")
     val spigotPlugins = listOf(
         PluginDependency(
             "${project.group}.spigradle.spigot",
@@ -24,11 +25,16 @@ spigradleCatalog {
             spigradleVersion,
             "spigotBase",
         ),
+        PluginDependency(
+            "io.papermc.paperweight.userdev",
+            paperweightVersion,
+            "paperweight-userdev"
+        )
     )
     val spigotPluginLibs = spigotPlugins.map {
         it.toLibrary()
     }
-    versions.set(PaperVersions.entries.map { it.version } + spigradleVersion)
+    versions.set(PaperVersions.entries.map { it.version } + spigradleVersion + paperweightVersion)
     libraries.set(
         PaperDependencies.entries.map { it.dependency }
                 + spigotPluginLibs
