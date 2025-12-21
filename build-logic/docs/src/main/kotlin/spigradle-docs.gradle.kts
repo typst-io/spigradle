@@ -42,7 +42,8 @@ tasks {
     val spigradleVersion = project.providers.gradleProperty("spigradle.version")
     val updateTemplateDocs by registering {
         group = "spigradle build"
-        val docsDir = project.rootDir.resolve("docs")
+        val rootDir = project.rootDir
+        val docsDir = rootDir.resolve("docs")
         fun CopySpec.configure() {
             expand(
                 "GRADLE_VERSION" to gradle.gradleVersion,
@@ -70,7 +71,7 @@ tasks {
             copy {
                 from(docsDir.resolve("root-templates"))
                 include("*.md")
-                into(layout.projectDirectory)
+                into(rootDir)
                 configure()
             }
         }
