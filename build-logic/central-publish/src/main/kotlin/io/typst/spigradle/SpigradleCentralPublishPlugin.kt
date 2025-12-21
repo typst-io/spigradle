@@ -47,7 +47,7 @@ class SpigradleCentralPublishPlugin : Plugin<Project> {
                 }
                 pom {
                     name.set("${project.group}:${project.name}")
-                    description.set(project.description)
+                    description.set(project.provider { project.description.toString() })
                     url.set("https://github.com/typst-io/spigradle")
                     licenses {
                         license {

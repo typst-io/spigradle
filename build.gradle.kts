@@ -33,8 +33,9 @@ allprojects {
 
 project.tasks.register("publishCentralPortal") {
     group = "publishing"
+    val projectGroup = group
     doLast {
-        val url = URL("https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${project.group}")
+        val url = URL("https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${projectGroup}")
         println(url)
         val con = url.openConnection() as java.net.HttpURLConnection
         val username = project.findProperty("ossrhUsername")?.toString()
