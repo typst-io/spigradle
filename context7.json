@@ -1,5 +1,5 @@
 {
     "$schema": "https://context7.com/schema/context7.json",
     "excludeFolders": ["docs/templates/**", "docs/root-templates/**"],
-    "excludeFiles": ["CHANGELOG.md", "multimodule.md"]
+    "excludeFiles": ["CHANGELOG.md", "multimodule.md", "migration.md"]
 }
