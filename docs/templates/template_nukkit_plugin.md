@@ -46,7 +46,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("nukkits") {
-            from("io.typst:nukkit-catalog:$SPIGRADLE_VERSION")
+            from("io.typst:nukkit-catalog:$NUKKIT_CATALOG_VERSION")
         }
     }
 }
@@ -81,7 +81,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('nukkits') {
-            from('io.typst:nukkit-catalog:$SPIGRADLE_VERSION')
+            from('io.typst:nukkit-catalog:$NUKKIT_CATALOG_VERSION')
         }
     }
 }

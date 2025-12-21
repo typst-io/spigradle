@@ -91,19 +91,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
-        // Centralized versions from gradle.properties
         // For Spigot modules
         create('spigots') {
-            from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+            from("io.typst:spigot-catalog:$SPIGOT_CATALOG_VERSION")
         }
         // For BungeeCord modules
         create('bungees') {
-            from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+            from("io.typst:bungee-catalog:$BUNGEE_CATALOG_VERSION")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create('commons') {
-            from("io.typst:common-catalog:\${property("catalog.common.version")}")
+            from("io.typst:common-catalog:$COMMON_CATALOG_VERSION")
         }
     }
 }
@@ -126,19 +125,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
-        // Centralized versions from gradle.properties
         // For Spigot modules
         create("papers") {
-            from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+            from("io.typst:spigot-catalog:$SPIGOT_CATALOG_VERSION")
         }
         // For BungeeCord modules
         create("bungees") {
-            from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+            from("io.typst:bungee-catalog:$BUNGEE_CATALOG_VERSION")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create("commons") {
-            from("io.typst:common-catalog:\${property("catalog.common.version")}")
+            from("io.typst:common-catalog:$COMMON_CATALOG_VERSION")
         }
     }
 }
@@ -750,19 +748,18 @@ my-plugin/
 rootProject.name = "build-logic"
 
 versionCatalogs {
-    // Centralized versions from gradle.properties
     // For Spigot modules
     create('spigots') {
-        from("io.typst:spigot-catalog:\${property("catalog.spigot.version")}")
+        from("io.typst:spigot-catalog:$SPIGOT_CATALOG_VERSION")
     }
     // For BungeeCord modules
     create('bungees') {
-        from("io.typst:bungee-catalog:\${property("catalog.bungee.version")}")
+        from("io.typst:bungee-catalog:$BUNGEE_CATALOG_VERSION")
     }
     // For common plugins/dependencies (idea-ext, lombok, etc.)
     // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
     create('commons') {
-        from("io.typst:common-catalog:\${property("catalog.common.version")}")
+        from("io.typst:common-catalog:$COMMON_CATALOG_VERSION")
     }
 }
 ```

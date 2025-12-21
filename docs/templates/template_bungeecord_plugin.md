@@ -46,7 +46,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("bungees") {
-            from("io.typst:bungee-catalog:$SPIGRADLE_VERSION")
+            from("io.typst:bungee-catalog:$BUNGEE_CATALOG_VERSION")
         }
     }
 }
@@ -81,7 +81,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('bungees') {
-            from('io.typst:bungee-catalog:$SPIGRADLE_VERSION')
+            from('io.typst:bungee-catalog:$BUNGEE_CATALOG_VERSION')
         }
     }
 }
