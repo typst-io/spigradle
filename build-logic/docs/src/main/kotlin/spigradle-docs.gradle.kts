@@ -16,7 +16,7 @@ dokka {
         jdkVersion = 17
 
         sourceLink {
-            localDirectory.set(rootDir)
+            localDirectory.set(layout.projectDirectory)
             remoteUrl("https://github.com/typst-io/spigradle/tree/master")
             remoteLineSuffix.set("#L")
         }

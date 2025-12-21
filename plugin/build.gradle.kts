@@ -51,4 +51,8 @@ tasks {
             project.rootDir.resolve("version.txt").writeText(version.toString())
         }
     }
+
+    dokka {
+        moduleName = "spigradle"
+    }
 }
