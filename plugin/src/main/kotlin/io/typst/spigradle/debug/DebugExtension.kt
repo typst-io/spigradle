@@ -16,7 +16,6 @@
 
 package io.typst.spigradle.debug
 
-import io.typst.spigradle.hasJavaBasePlugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFileProperty
@@ -202,7 +201,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      */
     val javaVersion: Property<JavaLanguageVersion> = project.objects.property(JavaLanguageVersion::class.java)
         .convention(project.provider {
-            if (project.hasJavaBasePlugin) {
+            if (project.pluginManager.hasPlugin("java")) {
                 val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
                 val toolchainSpec = javaExt.toolchain
                 val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)

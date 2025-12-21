@@ -18,12 +18,12 @@ package io.typst.spigradle.debug
 
 import io.typst.spigradle.Download
 import io.typst.spigradle.asCamelCase
-import io.typst.spigradle.hasJavaBasePlugin
-import io.typst.spigradle.hasJavaPlugin
+import io.typst.spigradle.propertyPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.TaskProvider
@@ -166,6 +166,7 @@ internal object DebugTask {
      * @return TaskProvider for the main debug task
      */
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
+        val javaPlugin = project.propertyPlugin("java")
         val download = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
             project.tasks.register(ctx.downloadTaskName, Download::class.java) {
                 group = ctx.taskGroupName
@@ -174,13 +175,11 @@ internal object DebugTask {
                 outputFile.set(ctx.getDownloadOutputFile(project))
             }
         } else null
-        val copyArtifactJarTask = if (project.hasJavaPlugin) {
+        val copyArtifact = javaPlugin.flatMap {
             project.tasks.register("copyArtifactJar", Copy::class.java) {
                 group = ctx.taskGroupName
 
-                if (ctx.jarFile != null) {
-                    from(ctx.jarFile)
-                }
+                from(ctx.jarFile)
                 dependsOn(project.tasks.named("assemble"))
                 val debugDir = ctx.getPlatformDebugDir(project)
                 outputs.file(debugDir.file("eula.txt"))
@@ -197,7 +196,7 @@ internal object DebugTask {
                     }
                 }
             }
-        } else null
+        }
         val jar = ctx.getDownloadOutputFile(project)
         project.tasks.register("cleanDebug${project.name.asCamelCase(true)}", Delete::class.java) {
             group = ctx.taskGroupName
@@ -212,7 +211,7 @@ internal object DebugTask {
             delete(ctx.getDownloadBaseDir(project))
         }
         val createJavaDebugScriptTask =
-            if (project.hasJavaBasePlugin) {
+            javaPlugin.flatMap {
                 project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
                     group = ctx.taskGroupName
 
@@ -222,18 +221,12 @@ internal object DebugTask {
                     programArgs.set(ctx.programArgs)
                     jarFile.set(jar.map { it.asFile.absolutePath })
                 }
-            } else null
-        val debugTasks = mutableListOf<TaskProvider<out Task>>()
+            }
+        val debugTasks = mutableListOf<Provider<out Task>>()
         if (download != null) {
             debugTasks += download
         }
-        if (copyArtifactJarTask != null) {
-            debugTasks += copyArtifactJarTask
-        }
-        if (createJavaDebugScriptTask != null) {
-            debugTasks += createJavaDebugScriptTask
-        }
-        debugTasks += ctx.extraTasks
+        debugTasks += listOf(copyArtifact, createJavaDebugScriptTask) + ctx.extraTasks
         val prepareTask = project.tasks.register("prepare${project.name.asCamelCase(true)}") {
             group = ctx.taskGroupName
             description = "A lifecycle task to prepare debugs"

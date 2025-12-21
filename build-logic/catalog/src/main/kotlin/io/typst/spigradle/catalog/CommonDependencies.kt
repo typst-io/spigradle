@@ -155,6 +155,22 @@ enum class CommonDependencies(
             CommonVersions.JUNIT.version,
             "junit-platform-launcher",
         )
-    )
+    ),
+    MOCKITO_CORE(
+        Dependency(
+            "org.mockito",
+            "mockito-core",
+            CommonVersions.MOCKITO.version,
+            "mockito-core"
+        )
+    ),
+    ASSERTJ_CORE(
+        Dependency(
+            "org.assertj",
+            "assertj-core",
+            CommonVersions.ASSERTJ.version,
+            "assertj-core",
+        )
+    ),
     ;
 }

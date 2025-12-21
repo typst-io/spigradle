@@ -18,18 +18,15 @@ package io.typst.spigradle.spigot
 
 import io.typst.spigradle.*
 import io.typst.spigradle.debug.DebugExtension
-import io.typst.spigradle.debug.DebugRegistrationContext
 import io.typst.spigradle.paper.PaperDebugRegistrationContext
 import io.typst.spigradle.paper.PaperDebugTask
+import io.typst.spigradle.paper.PaperPlugin
 import io.typst.spigradle.spigot.SpigotBasePlugin.Companion.PLATFORM_NAME
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.artifacts.result.ResolvedDependencyResult
 import org.gradle.api.attributes.Usage
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.tasks.bundling.Jar
 
 /**
  * The Spigot plugin that provides:
@@ -122,26 +119,8 @@ class SpigotPlugin : Plugin<Project> {
             project: Project,
         ): PaperDebugRegistrationContext {
             val extension = project.extensions.getByType(SpigotExtension::class.java)
-            val debugExtension = project.extensions.getByType(DebugExtension::class.java)
-            val jarFile = if (project.hasJavaPlugin) {
-                val jarFile = project.tasks.named("jar", Jar::class.java).flatMap { it.archiveFile }
-                debugExtension.jarFile.convention(jarFile)
-            } else null
-            val ctx = DebugRegistrationContext(
-                PLATFORM_NAME,
-                extension.version,
-                "",
-                "plugins",
-                jarFile,
-                debugExtension.jvmArgs,
-                debugExtension.programArgs,
-                debugExtension.jvmDebugPort,
-                debugExtension.javaHome.map { it.file("bin/java") },
-                false,
-                debugExtension.eula
-            )
-            return PaperDebugRegistrationContext(
-                ctx,
+            return PaperPlugin.createPaperDebugRegistrationContext(
+                project,
                 extension.depend.map { it.toSet() },
                 extension.softDepend.map { it.toSet() }
             )
@@ -153,8 +132,10 @@ class SpigotPlugin : Plugin<Project> {
         project.pluginManager.apply(JavaBasePlugin::class.java)
         project.pluginManager.apply(SpigotBasePlugin::class.java)
 
-        // register dependency configuration
-        val pluginLibsProp = if (project.hasJavaPlugin) {
+        // configure extension
+        val extension = project.extensions.getByType(SpigotExtension::class.java)
+
+        project.pluginManager.withPlugin("java") {
             // register configuration: https://docs.gradle.org/current/userguide/declaring_configurations.html#sec:defining-custom-configurations
             val compileOnlySpigot = project.configurations.create(COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME).apply {
                 isCanBeConsumed = false
@@ -164,37 +145,22 @@ class SpigotPlugin : Plugin<Project> {
             project.configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).configure {
                 extendsFrom(compileOnlySpigot)
             }
-            val spigotLibrariesClasspath = project.configurations.create(SPIGOT_LIBRARIES_CLASSPATH_CONFIGURATION_NAME).apply {
-                isCanBeConsumed = false
-                isCanBeResolved = true
-                extendsFrom(compileOnlySpigot)
-                description = "Resolvable view of ${COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME} for generating plugin.yml libraries."
+            val spigotLibrariesClasspath =
+                project.configurations.create(SPIGOT_LIBRARIES_CLASSPATH_CONFIGURATION_NAME).apply {
+                    isCanBeConsumed = false
+                    isCanBeResolved = true
+                    isTransitive = false
+                    extendsFrom(compileOnlySpigot)
+                    description =
+                        "Resolvable view of ${COMPILE_ONLY_SPIGOT_CONFIGURATION_NAME} for generating plugin.yml libraries."
 
-                attributes {
-                    attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_API))
+                    attributes {
+                        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_API))
+                    }
                 }
+            val pluginLibsProp = project.provider {
+                spigotLibrariesClasspath.toGAVStrings()
             }
-            project.provider {
-                spigotLibrariesClasspath.incoming.resolutionResult.root
-                    .dependencies
-                    .asSequence()
-                    .mapNotNull {
-                        if (it is ResolvedDependencyResult && !it.isConstraint) {
-                            it.selected.id as? ModuleComponentIdentifier
-                        } else null
-                    }
-                    .map { id ->
-                        "${id.group}:${id.module}:${id.version}"
-                    }
-                    .distinct()
-                    .sorted()
-                    .toList()
-            }
-        } else null
-
-        // configure extension
-        val extension = project.extensions.getByType(SpigotExtension::class.java)
-        if (pluginLibsProp != null) {
             extension.libraries.convention(pluginLibsProp)
         }
 

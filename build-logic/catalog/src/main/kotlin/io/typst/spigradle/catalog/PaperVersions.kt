@@ -30,4 +30,5 @@ enum class PaperVersions(val version: Version) {
     B_STATS(Version("3.0.2", "bStats")),
     MOCK_BUKKIT(Version("4.98.0", "mockBukkit")),
     PLACEHOLDER_API(Version("2.11.7", "plcaeholderapi")),
+    AFC(Version("0.5.1-SNAPSHOT", "acf")),
 }

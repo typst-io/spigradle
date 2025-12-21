@@ -175,5 +175,13 @@ enum class PaperDependencies(
             "placeholderapi",
         )
     ),
+    ACF_PAPER(
+        Dependency(
+            "co.aikar",
+            "acf-paper",
+            PaperVersions.AFC.version,
+            "acf-paper",
+        )
+    ),
     ;
 }

@@ -29,4 +29,6 @@ enum class CommonVersions(val version: Version) {
     KOTLINX_SERIALIZATION(Version("1.9.0", "kotlinxSerialization")),
     KAML(Version("0.104.0", "kaml")),
     JUNIT(Version("6.0.1", "junit")),
+    MOCKITO(Version("5.21.0", "mockito")),
+    ASSERTJ(Version("3.27.6", "assertj")),
 }

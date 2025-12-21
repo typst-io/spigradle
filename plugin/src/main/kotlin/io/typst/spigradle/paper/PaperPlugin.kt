@@ -20,12 +20,13 @@ import io.typst.spigradle.PlatformPluginSpec
 import io.typst.spigradle.PluginDescriptionProperty
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
-import io.typst.spigradle.hasJavaPlugin
 import io.typst.spigradle.paper.PaperBasePlugin.Companion.PLATFORM_NAME
+import io.typst.spigradle.propertyPlugin
 import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.bundling.Jar
 
 // NOTE: won't release yet until the paper-plugin.yml becomes stable.
@@ -50,16 +51,18 @@ class PaperPlugin : Plugin<Project> {
 
         internal fun createPaperDebugRegistrationContext(
             project: Project,
+            depend: Provider<Set<String>>,
+            softDepend: Provider<Set<String>>,
         ): PaperDebugRegistrationContext {
-            val extension = project.extensions.getByType(PaperExtension::class.java)
             val debugExtension = project.extensions.getByType(DebugExtension::class.java)
-            val jarFile = if (project.hasJavaPlugin) {
+            val javaPlugin = project.propertyPlugin("java")
+            val jarFile = javaPlugin.flatMap {
                 val jarFile = project.tasks.named("jar", Jar::class.java).flatMap { it.archiveFile }
                 debugExtension.jarFile.convention(jarFile)
-            } else null
+            }
             val subCtx = DebugRegistrationContext(
                 PLATFORM_NAME,
-                extension.version,
+                debugExtension.version,
                 "",
                 "plugins",
                 jarFile,
@@ -72,21 +75,30 @@ class PaperPlugin : Plugin<Project> {
             )
             return PaperDebugRegistrationContext(
                 subCtx,
-                project.provider {
-                    extension.serverDependencies.flatMap {
-                        if (it.load.get() == "BEFORE" && it.required.get()) {
-                            listOf(it.name)
-                        } else emptyList()
-                    }.toSet()
-                },
-                project.provider {
-                    extension.serverDependencies.flatMap {
-                        if (it.load.get() != "BEFORE" || it.required.get()) {
-                            listOf(it.name)
-                        } else emptyList()
-                    }.toSet()
-                }
+                depend,
+                softDepend
             )
+        }
+
+        internal fun createPaperDebugRegistrationContext(
+            project: Project,
+        ): PaperDebugRegistrationContext {
+            val extension = project.extensions.getByType(PaperExtension::class.java)
+            val depend = project.provider {
+                extension.serverDependencies.flatMap {
+                    if (it.load.get() == "BEFORE" && it.required.get()) {
+                        listOf(it.name)
+                    } else emptyList()
+                }.toSet()
+            }
+            val softDepend = project.provider {
+                extension.serverDependencies.flatMap {
+                    if (it.load.get() != "BEFORE" || it.required.get()) {
+                        listOf(it.name)
+                    } else emptyList()
+                }.toSet()
+            }
+            return createPaperDebugRegistrationContext(project, depend, softDepend)
         }
     }
 

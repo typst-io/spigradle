@@ -42,4 +42,7 @@ enum class PaperRepositories(val address: String, val alias: String) {
 
     // placeholder-api
     PLACEHOLDER_API("https://repo.extendedclip.com/content/repositories/placeholderapi", "placeholderApi"),
+
+    // aikar ACF
+    AIKAR("https://repo.aikar.co/content/groups/aikar/", "aikar"),
 }

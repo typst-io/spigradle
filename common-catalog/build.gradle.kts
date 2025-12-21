@@ -13,17 +13,24 @@ description = "Spigradle common version catalog for Gradle"
 
 spigradleCatalog {
     val ideaExtVersion = Version("1.3", "ideaExt")
+    val shadowJarVersion = Version("9.3.0", "shadowJar")
+    val commonVersions = listOf(ideaExtVersion, shadowJarVersion)
     val commonPlugins = listOf(
         PluginDependency(
             "org.jetbrains.gradle.plugin.idea-ext",
             ideaExtVersion,
             "ideaExt",
+        ),
+        PluginDependency(
+            "com.gradleup.shadow",
+            shadowJarVersion,
+            "shadowJar"
         )
     )
     val commonPluginLibs = commonPlugins.map {
         it.toLibrary()
     }
-    versions.set(CommonVersions.entries.map { it.version } + ideaExtVersion)
+    versions.set(CommonVersions.entries.map { it.version } + commonVersions)
     libraries.set(CommonDependencies.entries.map { it.dependency } + commonPluginLibs)
     plugins.set(commonPlugins)
 }

@@ -32,7 +32,7 @@ internal data class DebugRegistrationContext(
     val platformVersion: Property<String>,
     val downloadURI: String,
     val debugArtifactRelativeDir: String,
-    val jarFile: Provider<RegularFile>?,
+    val jarFile: Provider<RegularFile>,
     val jvmArgs: ListProperty<String>,
     val programArgs: ListProperty<String>,
     val jvmDebugPort: Property<Int>,

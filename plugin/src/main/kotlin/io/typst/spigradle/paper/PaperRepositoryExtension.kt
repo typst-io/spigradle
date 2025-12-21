@@ -88,9 +88,13 @@ abstract class PaperRepositoryExtension @Inject constructor(private val project:
      */
     fun banManager(): MavenArtifactRepository = frostcast()
 
-    /*
+    /**
      * The repo shortcut for PlaceholderAPI.
      */
-    fun placeholderApi(): MavenArtifactRepository =
-        project.repositories.maven(PaperRepositories.PLACEHOLDER_API.address)
+    fun placeholderApi(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.PLACEHOLDER_API.address)
+
+    /**
+     * The repo shortcut for ACF, ...
+     */
+    fun aikar(): MavenArtifactRepository = project.repositories.maven(PaperRepositories.AIKAR.address)
 }
