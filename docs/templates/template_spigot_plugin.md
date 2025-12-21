@@ -27,8 +27,6 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the fo
 
 - [Tasks](#tasks)
 
-- [Why not spigot-annotations?](#why-not-spigot-annotations)
-
 - [Testing with MockBukkit](#testing-with-mockbukkit)
 
 - [Working with paperweight-userdev](#working-with-paperweight-userdev)
@@ -424,57 +422,6 @@ Spigradle automatically creates two run configurations (NOTE: These are only gen
 
 See [debugSpigot extension](#debugspigot-extension---debugextension) for configuration options like version, EULA
 acceptance, JVM arguments, and debug port.
-
-## Why not spigot-annotations?
-
-```kotlin
-@Plugin(name = "SamplePlugin", version = "1.0-SNAPSHOT")
-@Commands(
-    @Command(
-        name = "foo",
-        desc = "Foo command",
-        aliases = ["foobar", "fubar"],
-        permission = "test.foo",
-        permissionMessage = "You do not have permission!",
-        usage = "/<command> [test|stop]"
-    )
-)
-@Permission(name = "test.foo", desc = "Allows foo command", defaultValue = PermissionDefault.OP)
-class SamplePlugin : JavaPlugin()
-```
-
-If you use Gradle, the following reasons why
-no [spigot-annotations](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/plugin-annotations/browse):
-
-1. Duplicate information of the `name` and `version`, these already provided in `build.gradle` and `settings.gradle`.
-2. The Annotation doesn't suit for providing complex information like `commands` and `permissions`.
-3. Using Gradle, we can configure all things programmatically.
-
-Replacement on build.gradle:
-
-```groovy
-spigot {
-    // The 'name' and 'version' will be set to project.version and project.name,
-    // But we may set those manually for the example
-    name.set('Manual name')
-    version.set('Manual version')
-    commands {
-        register('foo') {
-            aliases = ['foobar', 'fubar']
-            description = 'Foo command'
-            permission = 'test.foo'
-            permissionMessage = 'You do not have permission!'
-            usage = '/<command> [test|stop]'
-        }
-    }
-    permissions {
-        register('test.foo') {
-            description = 'Allows foo command'
-            defaults = 'op'
-        }
-    }
-}
-```
 
 ## Testing with MockBukkit
 

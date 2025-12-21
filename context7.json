@@ -1,7 +1,5 @@
 {
     "$schema": "https://context7.com/schema/context7.json",
-    "url": "https://context7.com/typst-io/spigradle",
-    "public_key": "pk_XSc8upPhEMCWtfvOC53C4",
-    "excludeFolders": ["docs/templates", "docs/root-templates"],
-    "excludeFiles": ["CHANGELOG.md"]
+    "excludeFolders": ["docs/templates/**", "docs/root-templates/**"],
+    "excludeFiles": ["CHANGELOG.md", "multimodule.md"]
 }
