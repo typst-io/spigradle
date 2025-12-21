@@ -64,7 +64,7 @@ dependencies {
     compileOnly(spigots.paper.api)
     compileOnly(spigots.protocolLib)
     compileOnly(spigots.vault) {
-        transitive = false
+        isTransitive = false
     }
 }
 
