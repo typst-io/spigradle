@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    alias(bungees.plugins.bungee)
+}
+
+repositories {
+    mavenCentral()
+    bungeeRepos {
+        sonatype()
+        minecraftLibraries()
+    }
+}
+
+dependencies {
+    compileOnly(bungees.bungeecord.api)
+}
+
+bungee {
+    author = 'EntryPoint'
+}

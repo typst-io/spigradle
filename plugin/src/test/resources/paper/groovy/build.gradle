@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    alias papers.plugins.paper
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly papers.paper.api
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+paper {
+    apiVersion = '1.21'
+    description = 'A sample Paper plugin'
+}
+
+build.doLast {
+    def pluginFile = new File(sourceSets.main.output.resourcesDir, 'paper-plugin.yml')
+    if (pluginFile.isFile()) {
+        println(pluginFile.absolutePath)
+        println(pluginFile.text)
+    } else {
+        throw new GradleException("Error!")
+    }
+}

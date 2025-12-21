@@ -10,38 +10,67 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ## Features
 
-- Auto-generate `plugin.yml` / `bungee.yml` with main class detection
+- Auto-generate `plugin.yml` with main class detection
 - Debug task with server download and IDEA integration
 - Repository and dependency shortcuts
 
 ## Quick Start
 
+### settings.gradle.kts
 ```kotlin
-import io.typst.spigradle.spigot.*
-import io.typst.spigradle.*
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // apply the version catalog to use the new dependency shortcut
+        create("spigots") {
+            from("io.typst:spigot-catalog:1.0.0")
+            // if you need to override the version:
+            // version("spigot-api", "1.21.10-R0.1-SNAPSHOT")
+            // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
+        }
+        create("commons") {
+            from("io.typst:common-catalog:1.0.0")
+        }
+    }
+}
 
+// ...
+```
+
+### build.gradle.kts
+```kotlin
 plugins {
-    id("io.typst.spigradle") version "$SPIGRADLE_VERSION"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "$IDEA_EXT_VERSION" // optional, allows Spigradle generates Run Configurations for debug
+    java
+    alias(spigots.plugins.spigot)
+    alias(commons.plugins.ideaExt) // optional, allows Spigradle generates Run Configurations for debug
 }
 
 repositories {
     mavenCentral()
-    papermc()
+    spigotRepos {
+        spigotmc()
+        jitpack() // for vault
+    }
 }
 
 dependencies {
-    compileOnly(paper("1.21.8"))
+    compileOnly(spigots.paper.api)
+    compileOnly(spigots.protocolLib)
+    compileOnly(spigots.vault) {
+        transitive = false
+    }
 }
 
 spigot {
-    depends = listOf("ProtocolLib", "Vault")
+    depend = listOf("ProtocolLib", "Vault")
     apiVersion = "1.21"
 }
 
 debugSpigot { // extension for debug\${ProjectName} task
-    version.set("1.21.8")
-    eula.set(true)
+    version = "1.21.8"
+    eula = true
 }
 ```
 
@@ -57,18 +86,18 @@ debugSpigot { // extension for debug\${ProjectName} task
 
 ## Plugins
 
-- **Spigot**: `id 'io.typst.spigradle'` - [Documentation](docs/spigot_plugin.md)
+- **Spigot**: `id 'io.typst.spigradle.spigot'` - [Documentation](docs/spigot_plugin.md)
 - **BungeeCord**: `id 'io.typst.spigradle.bungee'` - [Documentation](docs/bungeecord_plugin.md)
 - **NukkitX**: `id 'io.typst.spigradle.nukkit'` - [Documentation](docs/nukkit_plugin.md)
 
 ## Requirements
 
-All the plugins require Gradle 8.0+, the latest version is recommended.
+All the plugins require Gradle 9.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
 ```
-gradlew wrapper --gradle-version \$GRADLE_VERSION --distribution-type all
+gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 ```
 
 ## Main Class Detection
@@ -103,11 +132,11 @@ The detection process follows these steps:
 
 ### Platform-specific detection targets
 
-| Platform   | Detected Base Class                         | Task Name             |
-|------------|---------------------------------------------|-----------------------|
-| Spigot     | `org.bukkit.plugin.java.JavaPlugin`         | `detectSpigotMain`    |
-| BungeeCord | `net.md_5.bungee.api.plugin.Plugin`         | `detectBungeeMain`    |
-| NukkitX    | `cn.nukkit.plugin.PluginBase`               | `detectNukkitMain`    |
+| Platform   | Detected Base Class                         | Task Name                  |
+|------------|---------------------------------------------|----------------------------|
+| Spigot     | `org.bukkit.plugin.java.JavaPlugin`         | `detectSpigotEntrypoints`  |
+| BungeeCord | `net.md_5.bungee.api.plugin.Plugin`         | `detectBungeeEntrypoints`  |
+| NukkitX    | `cn.nukkit.plugin.PluginBase`               | `detectNukkitEntrypoints`  |
 
 ### Key features
 
@@ -123,14 +152,14 @@ If you need to manually specify the main class (e.g., multiple valid candidates)
 **Groovy:**
 ```groovy
 spigot {
-    main.set("com.example.MyCustomMain")
+    main = 'com.example.MyCustomMain'
 }
 ```
 
 **Kotlin:**
 ```kotlin
 spigot {
-    main.set("com.example.MyCustomMain")
+    main = "com.example.MyCustomMain"
 }
 ```
 
@@ -153,35 +182,65 @@ Spigradle provides convenient shortcuts for adding Maven repositories commonly u
 
 ### Repository shortcuts
 
-| Name                 | URL                                                            | Relations                               | Aliases       |
-|----------------------|----------------------------------------------------------------|-----------------------------------------|---------------|
-| spigotmc()           | https://hub.spigotmc.org/nexus/content/repositories/snapshots/ |                                         | spigot()      |
-| sonatype()           | https://oss.sonatype.org/content/repositories/snapshots/       |                                         | bungeecord()  |
-| papermc()            | https://papermc.io/repo/repository/maven-public/               |                                         | paper()       |
-| jitpack()            | https://jitpack.io                                             | Vault                                   | vault()       |
-| protocolLib()        | https://repo.dmulloy2.net/nexus/repository/public/             |                                         |               |
-| enginehub()          | https://maven.enginehub.org/repo/                              | worldguard, worldedit, commandhelper... |               |
-| codemc()             | https://repo.codemc.org/repository/maven-public/               | BStats                                  | bStats()      |
-| enderZone()          | https://ci.ender.zone/plugin/repository/everything/            | EssentialsX                             | essentialsX() |
-| frostcast()          | https://ci.frostcast.net/plugin/repository/everything          | BanManager                              | banManager()  |
-| nukkitX()            | https://repo.nukkitx.com/maven-snapshots                       | NukkitX                                 |               |
-| minecraftLibraries() | https://libraries.minecraft.net                                | Brigadier(from BungeeCord)              |               |
+Repository shortcuts are now available via platform-specific blocks: `spigotRepos {}`, `bungeeRepos {}`, `nukkitRepos {}`.
+
+#### Spigot repositories (via `spigotRepos {}`)
+
+| Name          | URL                                                            | Relations                               |
+|---------------|----------------------------------------------------------------|-----------------------------------------|
+| spigotmc()    | https://hub.spigotmc.org/nexus/content/repositories/snapshots/ | Spigot API                              |
+| papermc()     | https://repo.papermc.io/repository/maven-public/               | Paper API                               |
+| purpurmc()    | https://repo.purpurmc.org/snapshots                            | Purpur API                              |
+| protocolLib() | https://repo.dmulloy2.net/nexus/repository/public/             | ProtocolLib                             |
+| enginehub()   | https://maven.enginehub.org/repo/                              | worldguard, worldedit, commandhelper... |
+| codemc()      | https://repo.codemc.org/repository/maven-public/               | bStats                                  |
+| essentialsX() | https://repo.essentialsx.net/releases/                         | EssentialsX                             |
+| frostcast()   | https://ci.frostcast.net/plugin/repository/everything          | BanManager                              |
+
+#### Bungee repositories (via `bungeeRepos {}`)
+
+| Name                 | URL                                                      | Relations                  |
+|----------------------|----------------------------------------------------------|----------------------------|
+| bungeecord()         | https://oss.sonatype.org/content/repositories/snapshots/ | BungeeCord API             |
+| sonatype()           | https://oss.sonatype.org/content/repositories/snapshots/ | (alias for bungeecord)     |
+| minecraftLibraries() | https://libraries.minecraft.net                          | Brigadier                  |
+
+#### Nukkit repositories (via `nukkitRepos {}`)
+
+| Name                 | URL                                          | Relations |
+|----------------------|----------------------------------------------|-----------|
+| nukkitX()            | https://repo.opencollab.dev/maven-snapshots  | NukkitX   |
+| openCollabRelease()  | https://repo.opencollab.dev/maven-releases   |           |
+| openCollabSnapshot() | https://repo.opencollab.dev/maven-snapshots  |           |
+
+#### Common repositories (via `Repositories`)
+
+| Name       | URL                                                      | Relations |
+|------------|----------------------------------------------------------|-----------|
+| sonatype() | https://oss.sonatype.org/content/repositories/snapshots/ |           |
+| jitpack()  | https://jitpack.io                                       | Vault     |
 
 ### Groovy usage
 
 ```groovy
 repositories {
-    enginehub()
+    mavenCentral()
+    spigotRepos {
+        papermc()
+        protocolLib()
+    }
 }
 ```
 
 ### Kotlin usage
 
 ```kotlin
-import io.typst.spigradle.spigot.*
-
 repositories {
-    enginehub()
+    mavenCentral()
+    spigotRepos {
+        papermc()
+        protocolLib()
+    }
 }
 ```
 
@@ -193,44 +252,43 @@ Spigradle provides shortcuts for common Minecraft plugin dependencies. Each shor
 
 ### Dependency shortcuts
 
-| Name              | Signature                                         | Default version      | Official repository      |
-|-------------------|---------------------------------------------------|----------------------|--------------------------|
-| spigot(version)   | org.spigotmc:spigot-api:\$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
-| spigotAll()       | org.spigotmc:spigot:\$version                     | 1.21.8-R0.1-SNAPSHOT | spigotmc()               |
-| bungeecord()      | net.md-5:bungeecord-api:\$version                 | 1.21-R0.4-SNAPSHOT   | sonatype()               |
-| minecraftServer() | org.spigotmc:minecraft-server:\$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools |
-| paper()           | com.destroystokyo.paper:paper-api:\$version       | 1.21.8-R0.1-SNAPSHOT | papermc()                |
-| bukkit()          | org.bukkit:bukkit:\$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
-| craftbukkit()     | org.bukkit:craftbukkit:\$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools |
-| lombok()          | org.projectlombok:lombok:\$version                | 1.18.38              | mavenCentral()           |
-| spigradle()       | io.typst:spigradle:\$version                      | $SPIGRADLE_VERSION   | mavenCentral()           |
-| protocolLib()     | com.comphenix.protocol:ProtocolLib:\$version      | 5.3.0                | protocolLib()            |
-| vault()           | com.github.MilkBowl:VaultAPI:\$version            | 1.7                  | jitpack()                |
-| vaultAll()        | com.github.MilkBowl:Vault:\$version               | 1.7.3                | jitpack()                |
-| luckPerms()       | me.lucko.luckperms:luckperms-api:\$version        | 5.5.9                | mavenCentral()           |
-| worldedit()       | com.sk89q.worldedit:worldedit-bukkit:\$version    | 7.3.15               | enginehub()              |
-| worldguard()      | com.sk89q.worldguard:worldguard-bukkit:\$version  | 7.0.14               | enginehub()              |
-| essentialsX()     | net.ess3:EssentialsX:\$version                    | 2.21.1               | enderZone()              |
-| banManager()      | me.confuser.banmanager:BanManagerBukkit:\$version | 7.9.0-SNAPSHOT       | frostcast()              |
-| commandhelper()   | com.sk89q:commandhelper:\$version                 | 3.3.5-SNAPSHOT       | enginehub()              |
-| bStats()          | org.bstats:bstats-bukkit:\$version                | 3.0.2                | codemc()                 |
-| nukkit            | cn.nukkit:nukkit:\$version                        | 2.0.0-SNAPSHOT       | nukkitX()                |
+Dependencies are now available via **Version Catalogs**. See [Quick Start](#quick-start) for setup.
+
+| Catalog Alias   | Signature                                         | Default version      | Official repository       |
+|-----------------|---------------------------------------------------|----------------------|---------------------------|
+| spigot-api      | org.spigotmc:spigot-api:\$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()                |
+| spigot-server   | org.spigotmc:spigot:\$version                     | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| paper-api       | io.papermc.paper:paper-api:\$version              | 1.21.8-R0.1-SNAPSHOT | papermc()                 |
+| purpur-api      | org.purpurmc.purpur:purpur-api:\$version          | 1.21.8-R0.1-SNAPSHOT | purpurmc()                |
+| bungeecord-api  | net.md-5:bungeecord-api:\$version                 | 1.21-R0.4            | sonatype()                |
+| minecraftServer | org.spigotmc:minecraft-server:\$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools  |
+| bukkit          | org.bukkit:bukkit:\$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| craftbukkit     | org.bukkit:craftbukkit:\$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| protocolLib     | net.dmulloy2:ProtocolLib:\$version                | 5.4.0                | mavenCentral()            |
+| vault-api       | com.github.MilkBowl:VaultAPI:\$version            | 1.7                  | jitpack()                 |
+| luckperms       | net.luckperms:api:\$version                       | 5.5                  | mavenCentral()            |
+| worldedit       | com.sk89q.worldedit:worldedit-bukkit:\$version    | 7.3.17               | enginehub()               |
+| worldguard      | com.sk89q.worldguard:worldguard-bukkit:\$version  | 7.0.14               | enginehub()               |
+| essentialsX     | net.essentialsx:EssentialsX:\$version             | 2.21.1               | essentialsX()             |
+| banManager      | me.confuser.banmanager:BanManagerBukkit:\$version | 7.7.0-SNAPSHOT       | frostcast()               |
+| commandHelper   | com.sk89q:commandhelper:\$version                 | 3.3.4-SNAPSHOT       | enginehub()               |
+| bStats          | org.bstats:bstats-bukkit:\$version                | 3.0.2                | codemc()                  |
+| mockBukkit      | org.mockbukkit.mockbukkit:mockbukkit-v1.21:\$ver  | 4.98.0               | mavenCentral()            |
+| nukkit          | cn.nukkit:nukkit:\$version                        | 1.0-SNAPSHOT         | openCollabSnapshot()      |
 
 ### Groovy usage
 
 ```groovy
 dependencies {
-    compileOnly spigot("1.21.8") // or just spigot()
+    compileOnly spigots.spigot.api
 }
 ```
 
 ### Kotlin usage
 
 ```kotlin
-import io.typst.spigradle.spigot.*
-
 dependencies {
-    compileOnly(spigot("1.21.8")) // or just spigot()
+    compileOnly(spigots.spigot.api)
 }
 ```
 

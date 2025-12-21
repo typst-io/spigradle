@@ -2,23 +2,44 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## TL;DR (What this repo is)
+Spigradle is a Gradle plugin for developing Spigot, Bungeecord, and NukkitX plugins.
+It provides:
+- Automatic plugin.yml / bungee.yml generation
+- Main class detection (ASM bytecode scan)
+- Dependency and repository shortcuts (via catalogs and DSL)
+- Debug tasks (Spigot only)
 
-Spigradle is a Gradle plugin for developing Spigot, Bungeecord, and NukkitX plugins. It provides automatic plugin.yml/bungee.yml generation, main class detection, dependency shortcuts, repository shortcuts, and debug tasks.
+---
 
-## Build Commands
+## Non-negotiables (DO / DON'T)
 
-### Building and Testing
+### DO
+- Use the project’s Gradle workflows below (build/test/docs).
+- Treat `debugSpigot { }` as an **extension**, not a task (task is `debug${ProjectName}`).
+- For Markdown docs: edit templates, then run `updateTemplateDocs`.
+- Add the required copyright header to **all new source files**.
+
+### DON'T
+- Do not edit generated Markdown files directly (`docs/*.md`, root generated docs).
+- Do not assume `SpigotExtension.load` is an enum: it’s `Property<String>`.
+
+---
+
+## Quick commands (copy/paste)
+
+### Build & test
 ```bash
-# Build the project
+# Build
 ./gradlew assemble
 
-# Run all tests (runs with 4 parallel forks)
+# Tests (runs with 8 parallel forks)
 ./gradlew test
 
 # Publish to local Maven repository
 ./gradlew publishToMavenLocal
 ```
+
 **Important**: Tests depend on `publishToMavenLocal`, so the plugin is automatically published locally before running tests.
 
 ### Documentation
@@ -26,130 +47,241 @@ Spigradle is a Gradle plugin for developing Spigot, Bungeecord, and NukkitX plug
 # Update documentation from templates
 ./gradlew updateTemplateDocs
 ```
-This processes files in `docs/templates/` and `docs/root-templates/`, expanding variables and adding edit warnings to generated files.
+This processes:
+- `docs/templates/` → `docs/*.md`
+- `docs/root-templates/` → `*.md` (project root)
 
-### Version Management
-```bash
-# Set project version
-./gradlew setVersion
+### Version management
+Project version is defined in `gradle.properties`.
+
+---
+
+## Repo map (modules)
+
+Multi-module Gradle project with composite builds:
+
 ```
-Version is read from `version.txt` via `VersionTask.readVersion(project)`.
+spigradle/
+├── plugin/                    # Main Gradle plugin module
+│   └── src/main/kotlin/io/typst/spigradle/
+├── spigot-catalog/            # Version Catalog for Spigot dependencies
+├── bungee-catalog/            # Version Catalog for BungeeCord dependencies
+├── nukkit-catalog/            # Version Catalog for NukkitX dependencies
+├── common-catalog/            # Version Catalog for common dependencies
+├── spigot-bom-1.16/           # BOM for Spigot 1.16 deps (placeholder)
+├── spigot-bom-1.20/           # BOM for Spigot 1.20 deps (placeholder)
+└── build-logic/               # Composite build: convention plugins
+    ├── catalog/               # Version Catalog generation plugin
+    ├── central-publish/       # Maven Central publication
+    ├── docs/                  # Dokka documentation configuration
+    ├── java/                  # Java toolchain configuration
+    └── publish/               # Gradle Plugin Portal publication
+```
 
-## Architecture
+### Module descriptions
+- `plugin`: Main Gradle plugin (Spigot/Bungee/Nukkit). Published as `io.typst:spigradle`.
+- `spigot-catalog`: Version Catalog for Spigot-related deps + Spigradle coords. Published as `io.typst:spigot-catalog`.
+  - Configured via `SpigradleCatalogPublishPlugin` in `build-logic/catalog/`.
+  - Includes all deps from `PaperDependencies` enum and Spigradle plugin coordinates.
+- `bungee-catalog`: Published as `io.typst:bungee-catalog`.
+- `nukkit-catalog`: Published as `io.typst:nukkit-catalog`.
+- `common-catalog`: Common deps (Lombok, jOOQ, HikariCP, etc). Published as `io.typst:common-catalog`.
+  - Includes deps from `CommonDependencies` enum.
+- `spigot-bom-*`: Placeholder modules (not implemented yet).
+- `build-logic`: Internal convention plugins for building this repo. Catalog versions are independently versioned in `gradle.properties`.
 
-### Plugin IDs and Implementation Classes
+---
 
-The project publishes four Gradle plugins:
+## Plugin IDs (public surface)
 
-1. **`io.typst.spigradle.base`** → `io.typst.spigradle.SpigradlePlugin`
-   - Base plugin providing repository and dependency shortcuts
+### Main plugins
+1. `io.typst.spigradle.spigot` → `io.typst.spigradle.spigot.SpigotPlugin`
+2. `io.typst.spigradle.bungee` → `io.typst.spigradle.bungee.BungeePlugin`
+3. `io.typst.spigradle.nukkit` → `io.typst.spigradle.nukkit.NukkitPlugin`
 
-2. **`io.typst.spigradle`** → `io.typst.spigradle.spigot.SpigotPlugin`
-   - Main Spigot plugin with full functionality
+### Base plugins (extensions/repository DSL only; no YAML generation)
+4. `io.typst.spigradle.spigot-base` → `io.typst.spigradle.spigot.SpigotBasePlugin`
+5. `io.typst.spigradle.bungee-base` → `io.typst.spigradle.bungee.BungeeBasePlugin`
+6. `io.typst.spigradle.nukkit-base` → `io.typst.spigradle.nukkit.NukkitBasePlugin`
 
-3. **`io.typst.spigradle.bungee`** → `io.typst.spigradle.bungee.BungeePlugin`
-   - Bungeecord plugin
+### Planned (not yet released)
+- `io.typst.spigradle.paper` → `io.typst.spigradle.paper.PaperPlugin`
+- `io.typst.spigradle.paper-base` → `io.typst.spigradle.paper.PaperBasePlugin`
 
-4. **`io.typst.spigradle.nukkit`** → `io.typst.spigradle.nukkit.NukkitPlugin`
-   - NukkitX plugin
+---
 
-### Core Components
+## Core architecture (where to look)
 
-#### Main Class Detection
-- Uses ASM 9.8 to scan compiled bytecode with optimized flags (`SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES`)
-- Task: `SubclassDetection` in `src/main/kotlin/io/typst/spigradle/SubclassDetection.kt`
-- Detection targets by platform:
+### Main class detection (ASM)
+- Task: `SubclassDetection`
+  - `plugin/src/main/kotlin/io/typst/spigradle/SubclassDetection.kt`
+- Uses ASM 9.9 with flags: `SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES`
+- Detection targets:
   - Spigot: `org/bukkit/plugin/java/JavaPlugin`
-  - BungeeCord: `net/md_5/bungee/api/plugin/Plugin`
-  - NukkitX: `cn/nukkit/plugin/PluginBase`
-- Detection algorithm:
-  1. Scans all `.class` files, extracts class name, superclass, interfaces, and modifiers
-  2. Builds directed graph of inheritance relationships in `DetectionContext`
-  3. Traverses graph to find classes that inherit from platform base class
-  4. Filters to find non-abstract, public class as main class
-  5. Writes result to output file in dot notation (e.g., `com.example.MyPlugin`)
-- Detection framework in `src/main/kotlin/io/typst/spigradle/detection/`
-  - `ClassDefinition.kt` - Represents class metadata (name, superclass, interfaces, modifiers)
-  - `DetectionContext.kt` - Manages detection state and inheritance graph
-  - `DirectedGraph.kt` - Graph utilities for class hierarchy traversal
+  - Bungee: `net/md_5/bungee/api/plugin/Plugin`
+  - Nukkit: `cn/nukkit/plugin/PluginBase`
 
-#### YAML Generation
-- Task: `YamlGenerate` in `src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
-- Generates `plugin.yml`(for Spigot, Nukkit), `bungee.yml`
-- Uses SnakeYAML Engine 2.9 for serialization
-- Each extension provides `encodeToMap()` to convert configuration to YAML
+Detection algorithm:
+1. Scan all `.class` files; read name/superclass/interfaces/modifiers
+2. Build a directed inheritance graph in `DetectionContext`
+3. Traverse to find classes inheriting from the platform base class
+4. Filter to non-abstract, public class as main class
+5. Write FQCN (dot notation) to output file
 
-#### Debug System (Spigot only)
+Detection framework:
+- `plugin/src/main/kotlin/io/typst/spigradle/detection/`
+  - `ClassDefinition.kt` - Class metadata
+  - `DetectionContext.kt` - Detection state + graph
+  - `DirectedGraph.kt` - Graph utilities
+
+### YAML generation
+- Task: `YamlGenerate`
+  - `plugin/src/main/kotlin/io/typst/spigradle/YamlGenerate.kt`
+- Generates:
+  - `plugin.yml` (Spigot, Nukkit)
+  - `bungee.yml` (Bungee)
+- YAML engine: SnakeYAML Engine 3.0.1
+- Extensions provide `encodeToMap()` to serialize to YAML
+
+### Debug system (Spigot only)
 - Downloads Paper/Spigot server automatically via `PaperDownloadTask`
-- Creates IntelliJ IDEA run configurations using `gradle-idea-ext` plugin
-- Tasks created:
-  - `debug${projectName}` - Main debug task (launches server in new terminal)
-  - `downloadPaper` - Downloads server JAR
-  - `preparePluginDependencies` - Downloads plugin dependencies
-  - `copyArtifactJar` - Copies plugin JAR to debug folder
-  - `createJavaDebugScript` - Generates starter scripts for Windows/Unix
-  - `cleanDebug${projectName}` - Cleans project debug folder
-  - `cleanCache${platformName}` - Cleans global cache
-- IDEA Run Configurations:
-  - `Debug${projectName}` ⭐ **Recommended** - Remote JVM Debug configuration
-    - Lightweight: Server runs in separate terminal, IDE stays responsive
-    - Workflow: Run `debug${projectName}` task first, then attach debugger
-  - `Run${projectName}` - JarApplication run configuration
-    - Heavy: Server process managed by IDE, increases memory usage
-    - Use only when absolute convenience is needed
-- Debug directory: `.gradle/spigradle-debug/${platform}`
+- Creates IntelliJ IDEA run configs via `gradle-idea-ext`
+- Debug dir: `.gradle/spigradle-debug/${platform}`
 - Global cache: `$GRADLE_USER_HOME/spigradle-debug-jars/`
-- Debug Extension properties:
-  - `jvmDebugPort` - JVM debug port (default: 5005)
-  - `jvmArgs` - Custom JVM arguments
-  - `programArgs` - Custom program arguments
 
-#### Repository and Dependency Shortcuts
-- Defined in:
-  - `Repositories.kt` - Common repositories
-  - `Dependencies.kt` - Common dependencies
-  - `spigot/*Repositories.kt`, `spigot/*Dependencies.kt` - Spigot-specific
-  - `bungee/*Repositories.kt`, `bungee/*Dependencies.kt` - Bungee-specific
-  - `nukkit/*Repositories.kt`, `nukkit/*Dependencies.kt` - Nukkit-specific
-- Groovy extensions registered via `setupGroovyExtensions()` to enable shorthand syntax
+Tasks created:
+- `debug${projectName}` - Main debug task (launches server in new terminal)
+- `downloadPaper` - Download server JAR
+- `preparePluginDependencies` - Download plugin deps
+- `copyArtifactJar` - Copy plugin JAR to debug folder
+- `createJavaDebugScript` - Generate starter scripts (Windows/Unix)
+- `cleanDebug${projectName}` - Clean project debug folder
+- `cleanCache${platformName}` - Clean global cache
 
-### Package Organization
+IDEA run configurations:
+- `Debug${projectName}` - Remote JVM Debug (recommended)
+  - Run `debug${projectName}` first, then attach debugger
+- `Run${projectName}` - JarApplication (heavy; IDE manages server process)
 
-- `io.typst.spigradle` - Core plugin, tasks, utilities
-- `io.typst.spigradle.spigot` - Spigot extensions, tasks, models (SpigotExtension, Command, Permission, Load)
-- `io.typst.spigradle.bungee` - Bungeecord extensions and models
-- `io.typst.spigradle.nukkit` - NukkitX extensions and models
-- `io.typst.spigradle.debug` - Debug infrastructure (DebugTask, DebugExtension, DebugRegistrationContext)
-- `io.typst.spigradle.detection` - Class detection framework using ASM
+Debug extension properties:
+- `jvmDebugPort` (default: 5005)
+- `jvmArgs`
+- `programArgs`
 
-### Build Configuration
+### HTTP download implementation
+- Java built-in `java.net.http`
+- `plugin/src/main/kotlin/io/typst/spigradle/HttpExtensions.kt`
+- Key functions:
+  - `fetchHttpGet(uri, handler)`
+  - `fetchHttpGetAsString(uri)`
+  - `fetchHttpGetAsByteArray(uri)`
+- Config:
+  - Redirect: `HttpClient.Redirect.NORMAL`
+  - User-Agent: `"spigradle"`
+  - Validates 2xx; throws `IllegalStateException` otherwise
 
-#### BuildSrc Convention Plugins
-Located in `buildSrc/src/main/kotlin/`:
+Used by:
+- `PaperDownloadTask` (PaperMC API)
+- `PluginDependencyPrepareTask` (Maven downloads)
 
-- `spigradle-meta.gradle.kts` - Generates `SpigradleMeta.kt` with VERSION constant
-- `spigradle-publish.gradle.kts` - Configures plugin publication with all four plugin IDs
-- `spigradle-docs.gradle.kts` - Dokka configuration and `updateTemplateDocs` task
+Paper download API:
+- `https://fill.papermc.io/v3/projects/paper/versions/{version}/builds`
 
-#### Key Dependencies (libs.versions.toml)
-- Kotlin 2.0.21 (matched to Gradle's embedded Kotlin version)
-- ASM 9.8 (bytecode manipulation)
-- SnakeYAML Engine 2.9 (YAML generation)
-- Gradle IDEA Ext 1.3 (IntelliJ run configurations)
-- Gradle Download Task 5.6.0 (downloading Paper/Spigot JARs)
-- Dokka 2.0.0 (API documentation)
-- JUnit 5.12.1 (testing with Gradle TestKit)
-- Spigot API 1.21.4-R0.1-SNAPSHOT (compile-only dependency)
+### Repository and dependency shortcuts
+Dependency enums (`build-logic/catalog/src/main/kotlin/io/typst/spigradle/catalog/`):
+- `CommonDependencies.kt`
+- `PaperDependencies.kt`
+- `BungeeDependencies.kt`
+- `NukkitDependencies.kt`
 
-#### Compatibility
-- Gradle 8.0+ required
-- Kotlin API/Language version: 1.8 (for Gradle 8.0+ compatibility)
-- JVM Toolchain: Java 17
+Repository enums (`plugin/src/main/kotlin/io/typst/spigradle/`):
+- `Repositories.kt`
+- `paper/PaperRepositories.kt`
+- `bungee/BungeeRepositories.kt`
+- `nukkit/NukkitRepositories.kt`
 
-## Code Conventions
+---
 
-### Copyright Headers
-All new source files must include:
+## Package organization (high-level)
+- `io.typst.spigradle.catalog` (build-logic) - Dependency enums + catalog generation
+- `io.typst.spigradle` (plugin) - Core plugin/tasks/utilities
+  - `PlatformPluginSpec.kt`
+  - `ModuleRegistrationContext.kt`
+  - `SubclassDetection.kt`
+  - `YamlGenerate.kt`
+- `io.typst.spigradle.spigot` - Spigot extensions/tasks/models
+  - NOTE: `SpigotExtension.load` is `Property<String>`
+    - Use `load.set("STARTUP")` or `load.set("POSTWORLD")`
+- `io.typst.spigradle.paper` - Paper-specific (not yet released)
+- `io.typst.spigradle.bungee` - Bungee extensions/models
+- `io.typst.spigradle.nukkit` - Nukkit extensions/models
+- `io.typst.spigradle.debug` - Debug infrastructure
+- `io.typst.spigradle.detection` - ASM detection framework
+
+---
+
+## Build logic (convention plugins)
+
+Located in `build-logic/`:
+- `catalog/`
+  - `SpigradleCatalogPublishPlugin.kt`
+  - `SpigradleCatalogExtension.kt`
+  - Applies `version-catalog` + `maven-publish`
+  - DSL: `spigradleCatalog { libraries.set(...); plugins.set(...) }`
+  - Used by catalog modules (`spigot-catalog`, `bungee-catalog`, etc.)
+
+- `central-publish/` - `SpigradleCentralPublishPlugin.kt` (Maven Central)
+- `docs/` - `spigradle-docs.gradle.kts` (Dokka + `updateTemplateDocs`)
+- `java/` - `spigradle-java.gradle.kts` (toolchain/version)
+- `publish/` - `spigradle-publish.gradle.kts` (Plugin Portal)
+
+Note on catalog plugins:
+- `build-logic/catalog/SpigradleCatalogPublishPlugin.kt` (internal convention plugin)
+- `plugin/src/main/kotlin/.../spigot/SpigotCatalogPlugin.kt` (published external plugin)
+  These are distinct plugins.
+
+---
+
+## Key versions (libs.versions.toml)
+- Kotlin 2.2.20 (matches Gradle embedded Kotlin)
+- ASM 9.9
+- SnakeYAML Engine 3.0.1
+- Gradle IDEA Ext 1.3
+- Gradle Plugin Publish 2.0.0
+- Dokka 2.1.0
+- JUnit Jupiter 6.0.1
+- Spigot API 1.21.10-R0.1-SNAPSHOT
+- Commons Lang3 3.20.0, Commons Text 1.15.0
+
+---
+
+## Compatibility requirements
+
+Build environment:
+- Gradle: 9.2.1 wrapper (min 9.0+)
+- Kotlin API/Language: 2.2 (stdlib 2.2.20)
+- JVM toolchain: Java 17
+
+Runtime (plugin users):
+- Gradle 9.0+
+- Java 17+
+
+Target platforms:
+- Spigot/Paper: 1.21.10+
+- BungeeCord: 1.21-R0.4+
+- NukkitX: Latest stable
+
+---
+
+## Working rules
+
+- When fixing code errors, always call `mcp__ide__getDiagnostics` first to get the exact error list before making changes.
+
+---
+
+## Code conventions
+
+### Copyright headers (required for new source files)
 ```kotlin
 /*
  * Copyright (c) 2025 Spigradle contributors.
@@ -168,48 +300,105 @@ All new source files must include:
  */
 ```
 
-### Markdown Documentation
+### Markdown documentation rules
 - Do not edit generated files directly
 - Edit templates in `docs/templates/` or `docs/root-templates/`
 - Run `./gradlew updateTemplateDocs` after changes
-- Generated files include edit warning comment
-- Key documentation files:
-  - `docs/templates/template_spigot_plugin.md` - Spigot plugin guide
-  - `docs/templates/template_bungeecord_plugin.md` - BungeeCord plugin guide
-  - `docs/templates/template_nukkit_plugin.md` - NukkitX plugin guide
-  - `docs/templates/template_multimodule.md` - Multi-module project guide
-  - `docs/templates/template_README.md` - Main README template
+- Generated files include an edit warning comment
 
-## Test Structure
+Key template files:
+- `docs/templates/template_spigot_plugin.md`
+- `docs/templates/template_bungeecord_plugin.md`
+- `docs/templates/template_nukkit_plugin.md`
+- `docs/templates/template_multimodule.md`
+- `docs/templates/template_README.md`
 
-Tests use Gradle TestKit for functional testing:
-- Test resources in `src/test/resources/{platform}/{dsl}/`
-  - `spigot/groovy/` - Groovy DSL test project
-  - `spigot/kotlin/` - Kotlin DSL test project
-  - Similar for bungee and nukkit
-- Test classes in `src/test/kotlin/io/typst/spigradle/`
-  - `SpigotGradleTest.kt`, `BungeeGradleTest.kt`, `NukkitGradleTest.kt`
-  - `MainDetectionTest.kt`, `NewMainDetectionTest.kt`
-  - `GenerateYamlTaskTest.kt`, `SpigotDebugTest.kt`
+#### Template expansion system (`updateTemplateDocs`)
+Variables expanded:
+- `${GRADLE_VERSION}` - from `gradle.gradleVersion`
+- `${SPIGRADLE_VERSION}` - from `project.version`
+- `${KOTLIN_VERSION}` - hardcoded `"2.2.20"`
+- `${SHADOW_JAR_VERSION}` - hardcoded `"9.2.2"`
+- `${IDEA_EXT_VERSION}` - hardcoded `"1.3"`
 
-## Key Implementation Patterns
+Processing rules:
+1. Expand variables using Gradle `expand()`
+2. Add edit warning after each markdown heading (`^#[#]?[#]? `)
+3. Rename files (remove `template_` prefix)
+4. `docs/templates/*.md` → `docs/*.md`
+5. `docs/root-templates/*.md` → `*.md`
 
-### Plugin Registration Flow
-1. Platform plugins (Spigot/Bungee/Nukkit) call `applySpigradlePlugin()` to apply base plugin
-2. Base plugin applies `java` plugin and registers Groovy extensions
-3. Platform plugin calls `registerDescGenTask()` to set up YAML generation
-4. YAML generation task depends on main class detection task
-5. Debug tasks registered only for Spigot
+Edit warning format:
+```markdown
+[comment]: <> (!! Do not edit this file but 'docs/templates' or 'docs/root-templates', See [CONTRIBUTING.md] !!)
+```
 
-### Extension Configuration
-- Extensions use Gradle Property API for lazy evaluation
-- `spigot { }`, `debugSpigot { }`, `bungee { }`, `nukkit { }` blocks in build files
-- Configuration encoded to YAML via `encodeToMap()` methods
-- **Important:** `debugSpigot` is an EXTENSION (configuration block), NOT a task
-  - The actual debug task is named `debug${ProjectName}` (e.g., `debugMyPlugin`)
-  - `debugSpigot { }` configures the debug task, but is not itself executable
+Note: Hardcoded versions in `build-logic/docs/src/main/kotlin/spigradle-docs.gradle.kts`
+should be kept in sync with `libs.versions.toml`.
 
-### Task Registration
-- Uses `project.tasks.register()` for lazy task creation
-- Task dependencies configured via `dependsOn()`
-- Tasks grouped under "spigradle" or platform-specific groups
+---
+
+## Tests (Gradle TestKit)
+
+Test resources:
+- `plugin/src/test/resources/{platform}/{dsl}/`
+  - `spigot/{groovy,kotlin}/`
+  - `bungee/{groovy,kotlin}/`
+  - `nukkit/{groovy,kotlin}/`
+
+Test classes (`plugin/src/test/kotlin/io/typst/spigradle/`):
+Platform integration:
+- `spigot/SpigotGradleTest.kt`
+- `bungee/BungeeGradleTest.kt`
+- `nukkit/NukkitGradleTest.kt`
+
+Core:
+- `MainDetectionTest.kt`
+- `NewMainDetectionTest.kt`
+- `GenerateYamlTaskTest.kt`
+- `spigot/SpigotDebugTest.kt`
+
+Utilities / integration:
+- `DependencyResolutionTest.kt`
+- `VersionModifierTest.kt`
+- `BuildVersionInference.kt`
+- `SpigotLibraryResolution.kt`
+
+Base:
+- `GradleFunctionalTest.kt`
+
+Test configuration:
+- Tests run with 8 parallel forks (`plugin/build.gradle.kts`)
+- Tests depend on catalog `publishToMavenLocal` for plugin availability
+
+---
+
+## Key implementation patterns (mental model)
+
+### Plugin registration flow
+1. Platform plugin (Spigot/Bungee/Nukkit) applies `java-base` and corresponding base plugin
+2. Base plugin registers extensions and repository DSL
+3. Platform plugin creates `ModuleRegistrationContext` via `PlatformPluginSpec`
+4. Platform plugin calls `registerDescGenTask()` to set up YAML generation
+5. YAML generation depends on main class detection task
+6. Debug tasks registered via `PaperDebugTask.register()` (Spigot only)
+
+### Extension configuration
+- Uses Gradle Property API (lazy evaluation)
+- Blocks in build scripts: `spigot { }`, `debugSpigot { }`, `bungee { }`, `nukkit { }`
+- Configuration is serialized via `encodeToMap()`
+
+Important:
+- `debugSpigot` is an **EXTENSION**, not a task.
+  - Task is `debug${ProjectName}` (e.g., `debugMyPlugin`)
+- `SpigotExtension.load`:
+  - `Property<String>` (not enum)
+  - Values: `"STARTUP"` or `"POSTWORLD"` (default)
+  - Kotlin DSL: `load.set("STARTUP")`
+  - Groovy DSL: `load = "STARTUP"`
+  - Docs may show `Load.STARTUP`, but `Load` is not a type in this codebase
+
+### Task registration
+- Uses `project.tasks.register()` (lazy)
+- Dependencies via `dependsOn()`
+- Group under `"spigradle"` or platform-specific groups

@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2022 Spigradle contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.typst.spigradle.detection
+
+import org.objectweb.asm.Opcodes
+
+internal data class ClassDefinition(
+    val publicClass: Boolean,
+    val abstractClass: Boolean,
+    val name: String,
+    val parentName: String? = null,
+    val interfaces: Set<String> = emptySet(),
+) {
+    companion object {
+        val empty: ClassDefinition = ClassDefinition(
+            true,
+            false,
+            "",
+            null
+        )
+
+        fun fromASM(access: Int, name: String, superName: String?, interfaces: Set<String>): ClassDefinition {
+            return ClassDefinition(
+                checkPublic(access),
+                checkAbstract(access),
+                name,
+                superName,
+                interfaces
+            )
+        }
+
+        fun checkPublic(access: Int): Boolean =
+            (access and Opcodes.ACC_PUBLIC) != 0
+
+        fun checkAbstract(access: Int): Boolean =
+            (access and Opcodes.ACC_ABSTRACT) != 0
+    }
+}

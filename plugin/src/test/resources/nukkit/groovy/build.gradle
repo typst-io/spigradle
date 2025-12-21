@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    alias(nukkits.plugins.nukkit)
+}
+
+repositories {
+    mavenCentral()
+    nukkitRepos {
+        openCollabRelease()
+        openCollabSnapshot()
+    }
+}
+
+dependencies {
+    compileOnly(nukkits.nukkitX)
+}
+
+nukkit {
+    authors = ['EntryPoint']
+}

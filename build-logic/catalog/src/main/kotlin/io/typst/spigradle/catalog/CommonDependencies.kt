@@ -1,0 +1,176 @@
+/*
+ * Copyright (c) 2025 Spigradle contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.typst.spigradle.catalog
+
+// NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
+enum class CommonDependencies(
+    val dependency: Dependency,
+) {
+    LOMBOK(
+        Dependency(
+            "org.projectlombok",
+            "lombok",
+            CommonVersions.LOMBOK.version,
+            "lombok",
+        )
+    ),
+    AHOCORASICK(
+        Dependency(
+            "org.ahocorasick",
+            "ahocorasick",
+            CommonVersions.AHOCORASICK.version,
+            "ahocorasick",
+        )
+    ),
+    VIEW_BUKKIT_KOTLIN(
+        Dependency(
+            "io.typst",
+            "view-bukkit-kotlin",
+            CommonVersions.TYPST_VIEW.version,
+            "typst-view-bukkitKotlin",
+        )
+    ),
+    COMMAND_KOTLIN(
+        Dependency(
+            "io.typst",
+            "command-kotlin",
+            CommonVersions.TYPST_COMMAND.version,
+            "typst-command-kotlin",
+        )
+    ),
+    COMMAND_BUKKIT(
+        Dependency(
+            "io.typst",
+            "command-bukkit",
+            CommonVersions.TYPST_COMMAND.version,
+            "typst-command-bukkit",
+        )
+    ),
+    INVENTORY_BUKKIT_KOTLIN(
+        Dependency(
+            "io.typst",
+            "inventory-bukkit-kotlin",
+            CommonVersions.TYPST_INVENTORY.version,
+            "typst-inventory-bukkitKotlin",
+        )
+    ),
+    JOOQ(
+        Dependency(
+            "org.jooq",
+            "jooq",
+            CommonVersions.JOOQ.version,
+            "jooq-core",
+        )
+    ),
+    JOOQ_META(
+        Dependency(
+            "org.jooq",
+            "jooq-meta",
+            CommonVersions.JOOQ.version,
+            "jooq-meta",
+        )
+    ),
+    HIKARI_CP(
+        Dependency(
+            "com.zaxxer",
+            "HikariCP",
+            CommonVersions.HIKARI_CP.version,
+            "hikariCP",
+        )
+    ),
+    FLYWAY_CORE(
+        Dependency(
+            "org.flywaydb",
+            "flyway-core",
+            CommonVersions.FLYWAY.version,
+            "flyway-core",
+        )
+    ),
+    FLYWAY_MYSQL(
+        Dependency(
+            "org.flywaydb",
+            "flyway-mysql",
+            CommonVersions.FLYWAY.version,
+            "flyway-mysql",
+        )
+    ),
+    BUKKIT_KOTLIN_SERIALIZATION(
+        Dependency(
+            "io.typst",
+            "bukkit-kotlin-serialization",
+            CommonVersions.BUKKIT_KOTLIN_SERIALIZATION.version,
+            "typst-bukkitKotlinSerialization",
+        )
+    ),
+    KOTLINX_SERIALIZATION(
+        Dependency(
+            "org.jetbrains.kotlinx",
+            "kotlinx-serialization-json",
+            CommonVersions.KOTLINX_SERIALIZATION.version,
+            "kotlinx-serialization-json",
+        )
+    ),
+    KAML(
+        Dependency(
+            "com.charleskorn.kaml",
+            "kaml-jvm",
+            CommonVersions.KAML.version,
+            "kaml",
+        )
+    ),
+    JUNIT_BOM(
+        Dependency(
+            "org.junit",
+            "junit-bom",
+            CommonVersions.JUNIT.version,
+            "junit-bom",
+        )
+    ),
+    JUNIT_JUPITER(
+        Dependency(
+            "org.junit.jupiter",
+            "junit-jupiter",
+            CommonVersions.JUNIT.version,
+            "junit-jupiter"
+        )
+    ),
+    JUNIT_PLATFORM_LAUNCHER(
+        Dependency(
+            "org.junit.platform",
+            "junit-platform-launcher",
+            CommonVersions.JUNIT.version,
+            "junit-platform-launcher",
+        )
+    ),
+    MOCKITO_CORE(
+        Dependency(
+            "org.mockito",
+            "mockito-core",
+            CommonVersions.MOCKITO.version,
+            "mockito-core"
+        )
+    ),
+    ASSERTJ_CORE(
+        Dependency(
+            "org.assertj",
+            "assertj-core",
+            CommonVersions.ASSERTJ.version,
+            "assertj-core",
+        )
+    ),
+    ;
+}

@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    alias(spigots.plugins.spigot)
+}
+
+repositories {
+    mavenCentral()
+    spigotRepos {
+        spigotmc()
+    }
+}
+
+dependencies {
+    implementation(spigots.spigot.api)
+}
+
+def spigotKeyword = 'spigot'
+
+build.doLast {
+    def pluginFile = new File(sourceSets.main.output.resourcesDir, 'plugin.yml')
+    def text = pluginFile.isFile() ? pluginFile.text : ""
+    if (!text.isEmpty() && !text.contains(spigotKeyword)) {
+        println(pluginFile.absolutePath)
+        println(text)
+    } else {
+        throw new GradleException("Error!")
+    }
+}
