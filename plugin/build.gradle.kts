@@ -45,4 +45,10 @@ tasks {
         }
         dependsOn(catalogPublishTasks)
     }
+
+    assemble {
+        doLast {
+            project.rootDir.resolve("version.txt").writeText(version.toString())
+        }
+    }
 }

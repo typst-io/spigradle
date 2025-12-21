@@ -5,6 +5,10 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
+dependencies {
+    dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin:2.1.0")
+}
+
 dokka {
     moduleName = project.name
 
