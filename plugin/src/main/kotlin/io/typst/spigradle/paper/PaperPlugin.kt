@@ -16,10 +16,13 @@
 
 package io.typst.spigradle.paper
 
-import io.typst.spigradle.*
+import io.typst.spigradle.PlatformPluginSpec
+import io.typst.spigradle.PluginDescriptionProperty
 import io.typst.spigradle.debug.DebugExtension
 import io.typst.spigradle.debug.DebugRegistrationContext
+import io.typst.spigradle.hasJavaPlugin
 import io.typst.spigradle.paper.PaperBasePlugin.Companion.PLATFORM_NAME
+import io.typst.spigradle.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -51,7 +54,7 @@ class PaperPlugin : Plugin<Project> {
             val extension = project.extensions.getByType(PaperExtension::class.java)
             val debugExtension = project.extensions.getByType(DebugExtension::class.java)
             val jarTask = if (project.hasJavaPlugin) {
-                debugExtension.projectJarTask.convention(project.tasks.named("jar", Jar::class.java))
+                debugExtension.jarTask.convention(project.tasks.named("jar", Jar::class.java))
             } else null
             val subCtx = DebugRegistrationContext(
                 PLATFORM_NAME,

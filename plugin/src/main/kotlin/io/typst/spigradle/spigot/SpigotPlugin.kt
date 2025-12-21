@@ -124,7 +124,7 @@ class SpigotPlugin : Plugin<Project> {
             val extension = project.extensions.getByType(SpigotExtension::class.java)
             val debugExtension = project.extensions.getByType(DebugExtension::class.java)
             val jarTask = if (project.hasJavaPlugin) {
-                debugExtension.projectJarTask.convention(project.tasks.named("jar", Jar::class.java))
+                debugExtension.jarTask.convention(project.tasks.named("jar", Jar::class.java))
             } else null
             val subCtx = DebugRegistrationContext(
                 PLATFORM_NAME,

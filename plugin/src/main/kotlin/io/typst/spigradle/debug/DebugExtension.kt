@@ -241,5 +241,5 @@ abstract class DebugExtension @Inject constructor(project: Project) {
             }
         })
 
-    abstract val projectJarTask: Property<Jar>
+    abstract val jarTask: Property<Jar>
 }
