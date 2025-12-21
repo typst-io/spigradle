@@ -3,7 +3,7 @@
 # Spigradle
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-yellowgreen.svg)](https://github.com/typst-io/spigradle/blob/master/LICENSE)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle?logo=gradle)](https://plugins.gradle.org/plugin/io.typst.spigradle)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.typst.spigradle.spigot?logo=gradle)](https://plugins.gradle.org/plugin/io.typst.spigradle.spigot)
 ![TeamCity build status](https://ci.typst.io/app/rest/builds/buildType:id:Spigradle_Build/statusIcon.svg)
 
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.typst/common-catalog?label=common-catalog&logo=apachemaven)
