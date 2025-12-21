@@ -256,33 +256,33 @@ Spigradle provides shortcuts for common Minecraft plugin dependencies. Each shor
 
 Dependencies are now available via **Version Catalogs**. See [Quick Start](#quick-start) for setup.
 
-| Catalog Alias     | Signature                                         | Default version      | Official repository       |
-|-------------------|---------------------------------------------------|----------------------|---------------------------|
-| spigot            | org.spigotmc:spigot-api:$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()                |
-| spigotAll         | org.spigotmc:spigot:$version                     | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
-| paper             | io.papermc.paper:paper-api:$version              | 1.21.8-R0.1-SNAPSHOT | papermc()                 |
-| purpur            | org.purpurmc.purpur:purpur-api:$version          | 1.21.8-R0.1-SNAPSHOT | purpurmc()                |
-| bungeecord        | net.md-5:bungeecord-api:$version                 | 1.21-R0.4            | sonatype()                |
-| minecraftServer   | org.spigotmc:minecraft-server:$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools  |
-| bukkit            | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
-| craftbukkit       | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
-| protocolLib       | net.dmulloy2:ProtocolLib:$version                | 5.4.0                | mavenCentral()            |
-| vault             | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                 |
-| luckperms         | net.luckperms:api:$version                       | 5.5                  | mavenCentral()            |
-| worldedit         | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.3.17               | enginehub()               |
-| worldguard        | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.14               | enginehub()               |
-| essentialsX       | net.essentialsx:EssentialsX:$version             | 2.21.1               | essentialsX()             |
-| banManager        | me.confuser.banmanager:BanManagerBukkit:$version | 7.7.0-SNAPSHOT       | frostcast()               |
-| commandHelper     | com.sk89q:commandhelper:$version                 | 3.3.4-SNAPSHOT       | enginehub()               |
-| bStats            | org.bstats:bstats-bukkit:$version                | 3.0.2                | codemc()                  |
-| mockBukkit        | org.mockbukkit.mockbukkit:mockbukkit-v1.21:$ver  | 4.98.0               | mavenCentral()            |
-| nukkit            | cn.nukkit:nukkit:$version                        | 1.0-SNAPSHOT         | openCollabSnapshot()      |
+| Catalog Alias   | Signature                                         | Default version      | Official repository       |
+|-----------------|---------------------------------------------------|----------------------|---------------------------|
+| spigot-api      | org.spigotmc:spigot-api:$version                 | 1.21.8-R0.1-SNAPSHOT | spigotmc()                |
+| spigot-server   | org.spigotmc:spigot:$version                     | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| paper-api       | io.papermc.paper:paper-api:$version              | 1.21.8-R0.1-SNAPSHOT | papermc()                 |
+| purpur-api      | org.purpurmc.purpur:purpur-api:$version          | 1.21.8-R0.1-SNAPSHOT | purpurmc()                |
+| bungeecord-api  | net.md-5:bungeecord-api:$version                 | 1.21-R0.4            | sonatype()                |
+| minecraftServer | org.spigotmc:minecraft-server:$version           | 1.21.8-SNAPSHOT      | mavenLocal(), BuildTools  |
+| bukkit          | org.bukkit:bukkit:$version                       | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| craftbukkit     | org.bukkit:craftbukkit:$version                  | 1.21.8-R0.1-SNAPSHOT | mavenLocal(), BuildTools  |
+| protocolLib     | net.dmulloy2:ProtocolLib:$version                | 5.4.0                | mavenCentral()            |
+| vault-api       | com.github.MilkBowl:VaultAPI:$version            | 1.7                  | jitpack()                 |
+| luckperms       | net.luckperms:api:$version                       | 5.5                  | mavenCentral()            |
+| worldedit       | com.sk89q.worldedit:worldedit-bukkit:$version    | 7.3.17               | enginehub()               |
+| worldguard      | com.sk89q.worldguard:worldguard-bukkit:$version  | 7.0.14               | enginehub()               |
+| essentialsX     | net.essentialsx:EssentialsX:$version             | 2.21.1               | essentialsX()             |
+| banManager      | me.confuser.banmanager:BanManagerBukkit:$version | 7.7.0-SNAPSHOT       | frostcast()               |
+| commandHelper   | com.sk89q:commandhelper:$version                 | 3.3.4-SNAPSHOT       | enginehub()               |
+| bStats          | org.bstats:bstats-bukkit:$version                | 3.0.2                | codemc()                  |
+| mockBukkit      | org.mockbukkit.mockbukkit:mockbukkit-v1.21:$ver  | 4.98.0               | mavenCentral()            |
+| nukkit          | cn.nukkit:nukkit:$version                        | 1.0-SNAPSHOT         | openCollabSnapshot()      |
 
 ### Groovy usage
 
 ```groovy
 dependencies {
-    compileOnly spigot("1.21.8") // or just spigot()
+    compileOnly spigots.spigot.api
 }
 ```
 
@@ -290,7 +290,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    compileOnly(spigot("1.21.8")) // or just spigot()
+    compileOnly(spigots.spigot.api)
 }
 ```
 
