@@ -43,7 +43,7 @@ The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the fo
 
 ## Requirements
 
-The plugin requires Gradle 8.0+, the latest version is recommended.
+The plugin requires Gradle 9.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 

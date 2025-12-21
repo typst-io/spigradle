@@ -258,12 +258,12 @@ Note on catalog plugins:
 ## Compatibility requirements
 
 Build environment:
-- Gradle: 9.2.1 wrapper (min 8.0+)
+- Gradle: 9.2.1 wrapper (min 9.0+)
 - Kotlin API/Language: 2.2 (stdlib 2.2.20)
 - JVM toolchain: Java 17
 
 Runtime (plugin users):
-- Gradle 8.0+
+- Gradle 9.0+
 - Java 17+
 
 Target platforms:

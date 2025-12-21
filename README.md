@@ -94,12 +94,12 @@ debugSpigot { // extension for debug${ProjectName} task
 
 ## Requirements
 
-All the plugins require Gradle 8.0+, the latest version is recommended.
+All the plugins require Gradle 9.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
 ```
-gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
+gradlew wrapper --gradle-version 9.2.1 --distribution-type all
 ```
 
 ## Main Class Detection

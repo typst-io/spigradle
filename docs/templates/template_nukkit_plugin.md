@@ -24,7 +24,7 @@ The [NukkitX](https://github.com/NukkitX/Nukkit#introduction) plugin allows you 
 
 ## Requirements
 
-The plugin requires Gradle 8.0+, the latest version is recommended.
+The plugin requires Gradle 9.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 

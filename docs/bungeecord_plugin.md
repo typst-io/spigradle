@@ -26,7 +26,7 @@ The [Bungeecord](https://www.spigotmc.org/wiki/about-bungeecord/) plugin allows 
 
 ## Requirements
 
-The plugin requires Gradle 8.0+, the latest version is recommended.
+The plugin requires Gradle 9.0+, the latest version is recommended.
 
 To update your gradle wrapper:
 
