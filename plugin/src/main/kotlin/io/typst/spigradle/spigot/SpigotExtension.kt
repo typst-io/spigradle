@@ -21,7 +21,6 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.SetProperty
 import javax.inject.Inject
 
 /**
@@ -142,8 +141,8 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      */
     abstract val load: Property<String>
     abstract val prefix: Property<String>
-    abstract val depend: SetProperty<String>
-    abstract val softDepend: SetProperty<String>
+    abstract val depend: ListProperty<String>
+    abstract val softDepend: ListProperty<String>
     abstract val loadBefore: ListProperty<String>
 
     /**
@@ -230,8 +229,8 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
             "api-version" to apiVersion.orNull,
             "load" to load.orNull,
             "prefix" to prefix.orNull,
-            "depend" to depend.orNull?.toList()?.ifEmpty { null },
-            "softdepend" to softDepend.orNull?.toList()?.ifEmpty { null },
+            "depend" to depend.orNull?.ifEmpty { null },
+            "softdepend" to softDepend.orNull?.ifEmpty { null },
             "loadbefore" to loadBefore.orNull?.ifEmpty { null },
             "libraries" to libraries.orNull?.ifEmpty { null },
             "commands" to commands.toList().associate {

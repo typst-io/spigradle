@@ -53,15 +53,16 @@ class PaperPlugin : Plugin<Project> {
         ): PaperDebugRegistrationContext {
             val extension = project.extensions.getByType(PaperExtension::class.java)
             val debugExtension = project.extensions.getByType(DebugExtension::class.java)
-            val jarTask = if (project.hasJavaPlugin) {
-                debugExtension.jarTask.convention(project.tasks.named("jar", Jar::class.java))
+            val jarFile = if (project.hasJavaPlugin) {
+                val jarFile = project.tasks.named("jar", Jar::class.java).flatMap { it.archiveFile }
+                debugExtension.jarFile.convention(jarFile)
             } else null
             val subCtx = DebugRegistrationContext(
                 PLATFORM_NAME,
                 extension.version,
                 "",
                 "plugins",
-                jarTask,
+                jarFile,
                 debugExtension.jvmArgs,
                 debugExtension.programArgs,
                 debugExtension.jvmDebugPort,

@@ -166,7 +166,6 @@ internal object DebugTask {
      * @return TaskProvider for the main debug task
      */
     internal fun register(project: Project, ctx: DebugRegistrationContext): TaskProvider<Task> {
-        val archiveFile = ctx.jarTask?.flatMap { it.archiveFile }
         val download = ctx.downloadTask ?: if (ctx.downloadURI.isNotEmpty()) {
             project.tasks.register(ctx.downloadTaskName, Download::class.java) {
                 group = ctx.taskGroupName
@@ -179,21 +178,21 @@ internal object DebugTask {
             project.tasks.register("copyArtifactJar", Copy::class.java) {
                 group = ctx.taskGroupName
 
-                if (ctx.jarTask != null) {
-                    dependsOn(ctx.jarTask)
+                if (ctx.jarFile != null) {
+                    from(ctx.jarFile)
                 }
-                if (archiveFile != null) {
-                    from(archiveFile)
-                }
+                dependsOn(project.tasks.named("assemble"))
+                val debugDir = ctx.getPlatformDebugDir(project)
+                outputs.file(debugDir.file("eula.txt"))
                 into(ctx.getDebugArtifactDir(project))
 
                 doFirst {
                     if (ctx.eula?.get() == false) {
                         throw GradleException("Please set 'eula.set(true)' in the debug extension!")
                     }
-                    val debugDir = ctx.getDebugDir(project).asFile
+                    val debugDirFile = debugDir.asFile
                     if (ctx.eula?.get() == true) {
-                        val eulaTxt = debugDir.resolve("eula.txt")
+                        val eulaTxt = debugDirFile.resolve("eula.txt")
                         eulaTxt.writeText("eula=true")
                     }
                 }
@@ -204,7 +203,7 @@ internal object DebugTask {
             group = ctx.taskGroupName
             description = "Clean the debug folder of the project: \$PROJECT_HOME/spigradle-debug/\$platform"
 
-            delete(ctx.getDebugDir(project))
+            delete(ctx.getPlatformDebugDir(project))
         }
         project.tasks.register("cleanCache${ctx.platformName.asCamelCase(true)}", Delete::class.java) {
             group = ctx.taskGroupName
@@ -217,7 +216,7 @@ internal object DebugTask {
                 project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
                     group = ctx.taskGroupName
 
-                    dir.set(ctx.getDebugDir(project))
+                    dir.set(ctx.getPlatformDebugDir(project))
                     javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
                     jvmArgs.set(ctx.jvmArgs)
                     programArgs.set(ctx.programArgs)
@@ -260,7 +259,7 @@ internal object DebugTask {
                                 "[Spigradle] IDEA run configuration `${runConfName}` is missing the required setting 'debugSpigot#version', so its `Path to JAR` field is not configured."
                             )
                         }
-                        workingDirectory = ctx.getDebugDir(project).asFile.absolutePath
+                        workingDirectory = ctx.getPlatformDebugDir(project).asFile.absolutePath
                         jvmArgs = ctx.jvmArgs.get().joinToString(" ")
                         programParameters = ctx.programArgs.get().joinToString(" ")
 //                        jrePath = ctx.javaExecutable.get().asFile.absolutePath
@@ -280,7 +279,7 @@ internal object DebugTask {
 
             doLast {
                 val os = System.getProperty("os.name").lowercase()
-                val debugDirPath = ctx.getDebugDir(project).asFile.absolutePath
+                val debugDirPath = ctx.getPlatformDebugDir(project).asFile.absolutePath
 
                 val cmds = if ("windows" in os) {
                     val scriptPath = File(debugDirPath, "starter.bat").absolutePath

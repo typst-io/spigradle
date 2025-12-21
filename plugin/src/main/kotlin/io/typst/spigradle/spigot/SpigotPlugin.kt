@@ -123,15 +123,16 @@ class SpigotPlugin : Plugin<Project> {
         ): PaperDebugRegistrationContext {
             val extension = project.extensions.getByType(SpigotExtension::class.java)
             val debugExtension = project.extensions.getByType(DebugExtension::class.java)
-            val jarTask = if (project.hasJavaPlugin) {
-                debugExtension.jarTask.convention(project.tasks.named("jar", Jar::class.java))
+            val jarFile = if (project.hasJavaPlugin) {
+                val jarFile = project.tasks.named("jar", Jar::class.java).flatMap { it.archiveFile }
+                debugExtension.jarFile.convention(jarFile)
             } else null
-            val subCtx = DebugRegistrationContext(
+            val ctx = DebugRegistrationContext(
                 PLATFORM_NAME,
                 extension.version,
                 "",
                 "plugins",
-                jarTask,
+                jarFile,
                 debugExtension.jvmArgs,
                 debugExtension.programArgs,
                 debugExtension.jvmDebugPort,
@@ -140,9 +141,9 @@ class SpigotPlugin : Plugin<Project> {
                 debugExtension.eula
             )
             return PaperDebugRegistrationContext(
-                subCtx,
-                extension.depend,
-                extension.softDepend
+                ctx,
+                extension.depend.map { it.toSet() },
+                extension.softDepend.map { it.toSet() }
             )
         }
     }

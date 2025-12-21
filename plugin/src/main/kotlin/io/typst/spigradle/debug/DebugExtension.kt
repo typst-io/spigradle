@@ -19,10 +19,10 @@ package io.typst.spigradle.debug
 import io.typst.spigradle.hasJavaBasePlugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.internal.DefaultJavaLanguageVersion
@@ -241,5 +241,5 @@ abstract class DebugExtension @Inject constructor(project: Project) {
             }
         })
 
-    abstract val jarTask: Property<Jar>
+    abstract val jarFile: RegularFileProperty
 }

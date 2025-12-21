@@ -493,6 +493,123 @@ tasks.test.dependsOn(copyPluginYaml)
 
 ## Migration Tips
 
+### 4.x <- 3.x
+
+#### Plugin ID Change
+
+The Spigot plugin ID has been renamed for consistency:
+
+```diff
+plugins {
+-   id("io.typst.spigradle") version "provider(?)"
++   id("io.typst.spigradle.spigot") version "provider(?)"
+}
+```
+
+#### Task Name Changes
+
+All platform tasks have been renamed for clarity:
+
+| Old (3.x)                   | New (4.x)                         |
+|-----------------------------|-----------------------------------|
+| `detectSpigotMain`          | `detectSpigotEntrypoints`         |
+| `detectBungeeMain`          | `detectBungeeEntrypoints`         |
+| `detectNukkitMain`          | `detectNukkitEntrypoints`         |
+| `generateSpigotDescription` | `generateSpigotPluginDescription` |
+| `generateBungeeDescription` | `generateBungeePluginDescription` |
+| `generateNukkitDescription` | `generateNukkitPluginDescription` |
+
+#### Extension Property Changes
+
+Property names changed from plural to singular:
+
+```diff
+spigot {
+-   depends = listOf("Vault", "ProtocolLib")
+-   softDepends = listOf("WorldEdit")
++   depend = listOf("Vault", "ProtocolLib")
++   softDepend = listOf("WorldEdit")
+}
+
+debugSpigot {
+-   downloadSoftDepends = true
++   downloadSoftDepend = true
+}
+```
+
+#### Load Property
+
+The `Load` enum has been removed. Use string literals instead:
+
+```diff
+-import io.typst.spigradle.spigot.Load
+
+spigot {
+-   load = Load.STARTUP      // or Load.POST_WORLD
++   load = "STARTUP"         // or "POSTWORLD"
+}
+```
+
+#### New Base Plugins
+
+New base plugins provide extension and repository DSL without YAML generation:
+
+- `io.typst.spigradle.spigot-base`
+- `io.typst.spigradle.bungee-base`
+- `io.typst.spigradle.nukkit-base`
+
+Use base plugins when you only need dependency shortcuts without automatic `plugin.yml` generation.
+
+#### New Feature: Version Catalogs
+
+Version Catalogs are now available for managing Spigradle plugins and dependencies:
+
+**settings.gradle.kts**
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("spigots") {
+            from("io.typst:spigot-catalog:provider(?)")
+        }
+        create("commons") {
+            from("io.typst:common-catalog:provider(?)")
+        }
+    }
+}
+```
+
+**build.gradle.kts**
+```kotlin
+plugins {
+    java
+    alias(spigots.plugins.spigot)
+    alias(commons.plugins.ideaExt) // optional, for debug Run Configurations
+}
+
+repositories {
+    mavenCentral()
+    spigotRepos {
+        papermc()
+        jitpack()
+    }
+}
+
+dependencies {
+    compileOnly(spigots.paper.api)
+    compileOnly(spigots.protocolLib)
+    compileOnly(spigots.vault.api)
+}
+```
+
+Available catalogs:
+- `io.typst:spigot-catalog` - Spigot/Paper dependencies and plugins
+- `io.typst:bungee-catalog` - BungeeCord dependencies and plugins
+- `io.typst:nukkit-catalog` - NukkitX dependencies and plugins
+- `io.typst:common-catalog` - Common dependencies (Lombok, idea-ext, etc.)
+
 ### 3.x <- 2.x
 
 - The groupId has been changed from `kr.entree.spigradle` to `io.typst.spigradle`.

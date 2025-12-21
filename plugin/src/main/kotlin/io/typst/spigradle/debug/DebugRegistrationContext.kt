@@ -25,7 +25,6 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.bundling.Jar
 import java.io.File
 
 internal data class DebugRegistrationContext(
@@ -33,7 +32,7 @@ internal data class DebugRegistrationContext(
     val platformVersion: Property<String>,
     val downloadURI: String,
     val debugArtifactRelativeDir: String,
-    val jarTask: Provider<Jar>?,
+    val jarFile: Provider<RegularFile>?,
     val jvmArgs: ListProperty<String>,
     val programArgs: ListProperty<String>,
     val jvmDebugPort: Property<Int>,
@@ -46,34 +45,34 @@ internal data class DebugRegistrationContext(
     val taskGroupName: String get() = "$platformName debug"
     val downloadTaskName: String get() = "download${platformName.asCamelCase(true)}"
 
-    fun getRunDebugTaskName(project: Project): String {
+    internal fun getRunDebugTaskName(project: Project): String {
         return "debug${project.name.asCamelCase(true)}"
     }
 
-    fun getDebugArtifactDir(project: Project): File {
-        return File(getDebugDir(project).asFile, debugArtifactRelativeDir)
+    internal fun getDebugArtifactDir(project: Project): File {
+        return File(getPlatformDebugDir(project).asFile, debugArtifactRelativeDir)
     }
 
-    fun getDebugDir(project: Project): Directory {
+    internal fun getPlatformDebugDir(project: Project): Directory {
         return project.layout.projectDirectory
             .dir(".gradle/spigradle-debug/${platformName}")
     }
 
-    fun getDownloadBaseDir(project: Project): File {
+    internal fun getDownloadBaseDir(project: Project): File {
         val userHome = project.gradle.gradleUserHomeDir
         return userHome.resolve("spigradle-debug-jars")
             .resolve(platformName)
     }
 
     // use global(user) dir
-    fun getDownloadOutputDir(project: Project): Provider<File> {
+    internal fun getDownloadOutputDir(project: Project): Provider<File> {
         return platformVersion.map { ver ->
             getDownloadBaseDir(project)
                 .resolve(ver)
         }
     }
 
-    fun getDownloadOutputFile(project: Project): Provider<RegularFile> {
+    internal fun getDownloadOutputFile(project: Project): Provider<RegularFile> {
         return project.layout.file(getDownloadOutputDir(project).map {
             it.resolve("${platformName}.jar")
         })
