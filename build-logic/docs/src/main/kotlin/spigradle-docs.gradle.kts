@@ -44,6 +44,10 @@ dokka {
 
 tasks {
     val spigradleVersion = project.providers.gradleProperty("spigradle.version")
+    val spigotCatalogVersion = project.providers.gradleProperty("catalog.spigot.version")
+    val bungeeCatalogVersion = project.providers.gradleProperty("catalog.bungee.version")
+    val nukkitCatalogVersion = project.providers.gradleProperty("catalog.nukkit.version")
+    val commonCatalogVersion = project.providers.gradleProperty("catalog.common.version")
     val updateTemplateDocs by registering {
         group = "spigradle build"
         val rootDir = project.rootDir
@@ -51,10 +55,14 @@ tasks {
         fun CopySpec.configure() {
             expand(
                 "GRADLE_VERSION" to gradle.gradleVersion,
-                "SPIGRADLE_VERSION" to spigradleVersion,
+                "SPIGRADLE_VERSION" to spigradleVersion.get(),
                 "KOTLIN_VERSION" to "2.2.20",
                 "SHADOW_JAR_VERSION" to "9.2.2",
                 "IDEA_EXT_VERSION" to "1.3",
+                "SPIGOT_CATALOG_VERSION" to spigotCatalogVersion.get(),
+                "BUNGEE_CATALOG_VERSION" to bungeeCatalogVersion.get(),
+                "NUKKIT_CATALOG_VERSION" to nukkitCatalogVersion.get(),
+                "COMMON_CATALOG_VERSION" to commonCatalogVersion.get(),
             )
             filter<ConcatFilter>(
                 mapOf(

@@ -3,13 +3,13 @@
 # Spigot plugin
 
 kdoc(
-javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
+javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
 
 The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the following features:
 
 - Generate 'plugin.yml' with the main detected automatically
 
-- Debug feature: task `debug$ProjectName`, idea Run Configuration `Debug$ProjectName`/`Run$ProjectName`
+- Debug feature: task `debugProjectName`, idea Run Configuration `DebugProjectName`/`RunProjectName`
 
 - Shortcuts for [dependency](../README.md#dependencies) and [repository](../README.md#repositories).
 
@@ -64,10 +64,10 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("spigots") {
-            from("io.typst:spigot-catalog:provider(?)")
+            from("io.typst:spigot-catalog:1.0.0")
         }
         create("commons") {
-            from("io.typst:common-catalog:provider(?)")
+            from("io.typst:common-catalog:1.0.0")
         }
     }
 }
@@ -103,10 +103,10 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('spigots') {
-            from('io.typst:spigot-catalog:provider(?)')
+            from('io.typst:spigot-catalog:1.0.0')
         }
         create('commons') {
-            from('io.typst:common-catalog:provider(?)')
+            from('io.typst:common-catalog:1.0.0')
         }
     }
 }
@@ -143,7 +143,7 @@ dependencies {
 **Groovy DSL**
 ```groovy
 plugins {
-    id 'io.typst.spigradle.spigot' version 'provider(?)'
+    id 'io.typst.spigradle.spigot' version '4.0.0'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.3' // optional
 }
 ```
@@ -151,7 +151,7 @@ plugins {
 **Kotlin DSL**
 ```kotlin
 plugins {
-    id("io.typst.spigradle.spigot") version "provider(?)"
+    id("io.typst.spigradle.spigot") version "4.0.0"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.3" // optional
 }
 ```
@@ -195,7 +195,7 @@ For more details, see the [Main Class Detection](../README.md#main-class-detecti
 
 ## Configuration
 
-### spigot extension - [SpigotExtension](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
+### spigot extension - [SpigotExtension](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
 
 The description of your plugin for a `plugin.yml`.
 
@@ -283,12 +283,12 @@ configure<SpigotExtension> {
 
 </details>
 
-### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
+### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
 
-> **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debug${ProjectName}` (
+> **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debugProjectName` (
 > e.g., `debugMyPlugin`).
 
-To see the platform defaults, see the dokka(javadoc) of [SpigotBasePlugin](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle.spigot/-spigot-base-plugin/index.html)
+To see the platform defaults, see the dokka(javadoc) of [SpigotBasePlugin](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle.spigot/-spigot-base-plugin/index.html)
 
 **Available properties:**
 
@@ -353,12 +353,12 @@ dependencies {
 All tasks
 supports [UP-TO-DATE check](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
 
-### detectSpigotEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle/-subclass-detection/index.html)
+### detectSpigotEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class
 extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
-### generateSpigotPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle/-yaml-generate/index.html)
+### generateSpigotPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectSpigotEntrypoints`*
 
@@ -393,11 +393,11 @@ Runs a local Paper server with your plugin for debugging. This task orchestrates
 Spigradle automatically creates two run configurations (NOTE: These are only generated if the plugin
 `org.jetbrains.gradle.plugin.idea-ext` is applied):
 
-1. **`Debug${ProjectName}` - Remote JVM Debug** ⭐ **Recommended**
+1. **`DebugProjectName` - Remote JVM Debug** ⭐ **Recommended**
   - **Type:** Remote JVM Debug configuration
   - **Purpose:** Attaches debugger to an already-running server process
   - **Recommended workflow:**
-    1. Run `debug${ProjectName}` task via IntelliJ's terminal or "Run Gradle Task"
+    1. Run `debugProjectName` task via IntelliJ's terminal or "Run Gradle Task"
     2. Server starts in a new terminal window with remote debugging enabled on port 5005
     3. Click the "🐞 Debug" button on this configuration to attach the debugger
   - **Advantages:**
@@ -406,7 +406,7 @@ Spigradle automatically creates two run configurations (NOTE: These are only gen
     - Better performance - IDE doesn't handle server I/O
   - **When to use:** Standard debugging workflow (recommended for regular use)
 
-2. **`Run${ProjectName}` - JarApplication**
+2. **`RunProjectName` - JarApplication**
   - **Type:** JarApplication run configuration
   - **Purpose:** All-in-one server launch directly from IntelliJ
   - **Usage:**
@@ -531,8 +531,8 @@ The Spigot plugin ID has been renamed for consistency:
 
 ```diff
 plugins {
--   id("io.typst.spigradle") version "provider(?)"
-+   id("io.typst.spigradle.spigot") version "provider(?)"
+-   id("io.typst.spigradle") version "4.0.0"
++   id("io.typst.spigradle.spigot") version "4.0.0"
 }
 ```
 
@@ -602,10 +602,10 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("spigots") {
-            from("io.typst:spigot-catalog:provider(?)")
+            from("io.typst:spigot-catalog:1.0.0")
         }
         create("commons") {
-            from("io.typst:common-catalog:provider(?)")
+            from("io.typst:common-catalog:1.0.0")
         }
     }
 }

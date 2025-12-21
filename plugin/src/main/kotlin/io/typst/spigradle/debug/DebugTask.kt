@@ -115,7 +115,7 @@ internal object DebugTask {
      *
      * - **`debug${ProjectName}`** - [Task]
      *   - Main debug task that orchestrates the debug workflow
-     *   - **Dependencies:** `parepare${ProjectName}`
+     *   - **Dependencies:** `prepare${ProjectName}`
      *
      * ## IntelliJ IDEA Run Configurations
      *

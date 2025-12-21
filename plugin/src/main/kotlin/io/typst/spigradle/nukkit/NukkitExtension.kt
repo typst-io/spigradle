@@ -89,7 +89,7 @@ import javax.inject.Inject
  * }
  * ```
  *
- * See: [https://github.com/NukkitX/ExamplePlugin/blob/master/src/main/resources/plugin.yml#L1]
+ * See: [NukkitX ExamplePlugin plugin.yml](https://github.com/NukkitX/ExamplePlugin/blob/master/src/main/resources/plugin.yml#L1)
  */
 abstract class NukkitExtension @Inject constructor(private val project: Project) {
     abstract val main: Property<String>

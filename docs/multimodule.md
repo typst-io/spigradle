@@ -44,7 +44,7 @@ Multi-module projects offer several benefits for Minecraft plugin development:
 ## Requirements
 
 - Gradle 9.0+ (the latest version is recommended)
-- Spigradle provider(?) or higher
+- Spigradle 4.0.0 or higher
 - Basic understanding of Gradle multi-module projects
 
 To update your gradle wrapper:
@@ -93,19 +93,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
-        // Centralized versions from gradle.properties
         // For Spigot modules
         create('spigots') {
-            from("io.typst:spigot-catalog:${property("catalog.spigot.version")}")
+            from("io.typst:spigot-catalog:1.0.0")
         }
         // For BungeeCord modules
         create('bungees') {
-            from("io.typst:bungee-catalog:${property("catalog.bungee.version")}")
+            from("io.typst:bungee-catalog:1.0.0")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create('commons') {
-            from("io.typst:common-catalog:${property("catalog.common.version")}")
+            from("io.typst:common-catalog:1.0.0")
         }
     }
 }
@@ -128,19 +127,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
-        // Centralized versions from gradle.properties
         // For Spigot modules
         create("papers") {
-            from("io.typst:spigot-catalog:${property("catalog.spigot.version")}")
+            from("io.typst:spigot-catalog:1.0.0")
         }
         // For BungeeCord modules
         create("bungees") {
-            from("io.typst:bungee-catalog:${property("catalog.bungee.version")}")
+            from("io.typst:bungee-catalog:1.0.0")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create("commons") {
-            from("io.typst:common-catalog:${property("catalog.common.version")}")
+            from("io.typst:common-catalog:1.0.0")
         }
     }
 }
@@ -752,19 +750,18 @@ my-plugin/
 rootProject.name = "build-logic"
 
 versionCatalogs {
-    // Centralized versions from gradle.properties
     // For Spigot modules
     create('spigots') {
-        from("io.typst:spigot-catalog:${property("catalog.spigot.version")}")
+        from("io.typst:spigot-catalog:1.0.0")
     }
     // For BungeeCord modules
     create('bungees') {
-        from("io.typst:bungee-catalog:${property("catalog.bungee.version")}")
+        from("io.typst:bungee-catalog:1.0.0")
     }
     // For common plugins/dependencies (idea-ext, lombok, etc.)
     // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
     create('commons') {
-        from("io.typst:common-catalog:${property("catalog.common.version")}")
+        from("io.typst:common-catalog:1.0.0")
     }
 }
 ```

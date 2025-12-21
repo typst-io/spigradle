@@ -44,8 +44,8 @@ import org.gradle.api.plugins.JavaPlugin
  * - spigotLibrariesClasspath: Resolvable view of compileOnlySpigot for generating plugin.yml libraries.
  *
  * Tasks:
- * - generateSpigotDescription([io.typst.spigradle.YamlGenerate]): task to generate `plugin.yml`.
- * - detectSpigotMain([io.typst.spigradle.SubclassDetection]): task to detect the main class.
+ * - generateSpigotPluginDescription([io.typst.spigradle.YamlGenerate]): task to generate `plugin.yml`.
+ * - detectSpigotEntrypoints([io.typst.spigradle.SubclassDetection]): task to detect the main class.
  *
  * Tasks for debugging:
  * - debugProjectName([Task][org.gradle.api.Task]): task to start the server in a new terminal window with the server platform (Paper). The debug directory is `$PROJECT_HOME/.gradle/spigradle-debug/${platform}`

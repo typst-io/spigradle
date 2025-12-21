@@ -13,7 +13,7 @@
 
 An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and NukkitX.
 
-[Migration Guide](docs/spigot_plugin.md#3x---2x) | [Chatbot Q&A](https://context7.com/typst-io/spigradle?tab=chat) | [Samples](https://github.com/spigradle/spigradle-sample)
+[Migration Guide](docs/spigot_plugin.md#migration-tips) | [Chatbot Q&A](https://context7.com/typst-io/spigradle?tab=chat) | [Samples](https://github.com/spigradle/spigradle-sample)
 
 ## Features
 
@@ -75,7 +75,7 @@ spigot {
     apiVersion = "1.21"
 }
 
-debugSpigot { // extension for debug${ProjectName} task
+debugSpigot { // extension for debugProjectName task
     version = "1.21.8"
     eula = true
 }
@@ -174,7 +174,7 @@ spigot {
 
 For a contributor, internal usage:
 
-- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/provider(?)/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
+- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
 - **Detection framework**: `io.typst.spigradle.detection` package
   - `ClassDefinition` - Represents class metadata
   - `DetectionContext` - Manages detection state and class graph

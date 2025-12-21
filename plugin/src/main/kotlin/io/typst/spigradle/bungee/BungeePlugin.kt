@@ -32,8 +32,8 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - io.typst.spigradle.bungee-base([BungeeBasePlugin])
  *
  * Tasks:
- * - generateBungeeDescription([io.typst.spigradle.YamlGenerate]) task for the 'bungee.yml' generation.
- * - detectBungeeMain([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
+ * - generateBungeePluginDescription([io.typst.spigradle.YamlGenerate]) task for the 'bungee.yml' generation.
+ * - detectBungeeEntrypoints([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
  */
 class BungeePlugin : Plugin<Project> {
     companion object {

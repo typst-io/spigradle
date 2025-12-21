@@ -32,8 +32,8 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - io.typst.spigradle.nukkit-base([NukkitBasePlugin])
  *
  * Tasks:
- * - generateNukkitDescription([io.typst.spigradle.YamlGenerate]) task for the 'plugin.yml' generation.
- * - detectNukkitMain([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
+ * - generateNukkitPluginDescription([io.typst.spigradle.YamlGenerate]) task for the 'plugin.yml' generation.
+ * - detectNukkitEntrypoints([io.typst.spigradle.SubclassDetection]) task for the main-class detection.
  */
 class NukkitPlugin : Plugin<Project> {
     companion object {

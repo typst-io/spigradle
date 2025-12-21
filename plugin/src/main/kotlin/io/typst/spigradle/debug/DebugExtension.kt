@@ -113,8 +113,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
     /**
      * Whether to download plugins listed in `softDepend` in addition to `depend`.
      *
-     * - When `true`: Downloads both `depend` and `softDepend` plugins
-     * - When `false`: Only downloads `depen` plugins
+     * - When `true`: Downloads both `depend` and `softDepend` plugins* - When `false`: Only downloads `depend` plugins
      *
      * **Default:** `false`
      *

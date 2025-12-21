@@ -90,10 +90,10 @@ import javax.inject.Inject
  *
  * See also: https://www.spigotmc.org/wiki/plugin-yml/
  *
- * @property main Defaults to main class detected by the `detectSpigotMain` task ([io.typst.spigradle.SubclassDetection])
+ * @property main Defaults to main class detected by the `detectSpigotEntrypoints` task ([io.typst.spigradle.SubclassDetection])
  * @property name Defaults to `project.name.caseKebabToPascal()`
  * @property version Defaults to `project.version`
- * @property description Defaults to `project.description
+ * @property description Defaults to `project.description`
  */
 abstract class SpigotExtension @Inject constructor(private val project: Project) {
 
@@ -102,7 +102,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      *
      * Defaults to the class that auto-detected by [io.typst.spigradle.SubclassDetection]
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val main: Property<String>
 
@@ -111,7 +111,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      *
      * Defaults to [Project.getName].
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val name: Property<String>
 
@@ -120,7 +120,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      *
      * Defaults to [Project.getVersion]
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val version: Property<String>
 
@@ -137,7 +137,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      * - POSTWORLD(default)
      * - STARTUP
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val load: Property<String>
     abstract val prefix: Property<String>
@@ -178,7 +178,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      * }
      * ```
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val commands: NamedDomainObjectContainer<Command>
 
@@ -205,7 +205,7 @@ abstract class SpigotExtension @Inject constructor(private val project: Project)
      * }
      * ```
      *
-     * See: [https://www.spigotmc.org/wiki/plugin-yml/]
+     * See: [Spigot plugin.yml Reference](https://www.spigotmc.org/wiki/plugin-yml/)
      */
     abstract val permissions: NamedDomainObjectContainer<Permission>
 

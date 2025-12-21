@@ -11,7 +11,7 @@
 
 An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and NukkitX.
 
-[Migration Guide](docs/spigot_plugin.md#3x---2x) | [Chatbot Q&A](https://context7.com/typst-io/spigradle?tab=chat) | [Samples](https://github.com/spigradle/spigradle-sample)
+[Migration Guide](docs/spigot_plugin.md#migration-tips) | [Chatbot Q&A](https://context7.com/typst-io/spigradle?tab=chat) | [Samples](https://github.com/spigradle/spigradle-sample)
 
 ## Features
 
@@ -30,13 +30,13 @@ dependencyResolutionManagement {
     versionCatalogs {
         // apply the version catalog to use the new dependency shortcut
         create("spigots") {
-            from("io.typst:spigot-catalog:1.0.0")
+            from("io.typst:spigot-catalog:$SPIGOT_CATALOG_VERSION")
             // if you need to override the version:
             // version("spigot-api", "1.21.10-R0.1-SNAPSHOT")
             // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
         }
         create("commons") {
-            from("io.typst:common-catalog:1.0.0")
+            from("io.typst:common-catalog:$COMMON_CATALOG_VERSION")
         }
     }
 }
@@ -73,7 +73,7 @@ spigot {
     apiVersion = "1.21"
 }
 
-debugSpigot { // extension for debug\${ProjectName} task
+debugSpigot { // extension for debugProjectName task
     version = "1.21.8"
     eula = true
 }

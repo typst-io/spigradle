@@ -8,7 +8,7 @@ plugins {
     id("io.typst.spigradle.central.publish") // build-logic/central-publish
 }
 
-version = property("catalog.paper.version")!!
+version = property("catalog.spigot.version")!!
 description = "Spigot version catalog for Gradle"
 
 spigradleCatalog {

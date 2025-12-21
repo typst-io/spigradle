@@ -42,7 +42,7 @@ import javax.inject.Inject
  * }
  * ```
  *
- * See: [https://www.spigotmc.org/wiki/create-your-first-bungeecord-plugin-proxy-spigotmc/#making-it-load]
+ * See: [BungeeCord Plugin Guide](https://www.spigotmc.org/wiki/create-your-first-bungeecord-plugin-proxy-spigotmc/#making-it-load)
  */
 abstract class BungeeExtension @Inject constructor(project: Project) {
     abstract val main: Property<String>
