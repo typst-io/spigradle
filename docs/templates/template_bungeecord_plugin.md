@@ -205,12 +205,12 @@ configure<BungeeExtension> {
 
 Repository shortcuts are available via `bungeeRepos {}` block inside `repositories {}`:
 
-| Shortcut | URL |
-|----------|-----|
-| `bungeecord()` | https://oss.sonatype.org/content/repositories/snapshots/ |
-| `sonatype()` | https://oss.sonatype.org/content/repositories/snapshots/ |
-| `minecraftLibraries()` | https://libraries.minecraft.net/ |
-| `jitpack()` | https://jitpack.io/ |
+| Shortcut               | URL                                                      |
+|------------------------|----------------------------------------------------------|
+| `bungeecord()`         | https://oss.sonatype.org/content/repositories/snapshots/ |
+| `sonatype()`           | https://oss.sonatype.org/content/repositories/snapshots/ |
+| `minecraftLibraries()` | https://libraries.minecraft.net/                         |
+| `jitpack()`            | https://jitpack.io/                                      |
 
 **Example:**
 

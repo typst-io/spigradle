@@ -205,10 +205,10 @@ Repository shortcuts are now available via platform-specific blocks: `spigotRepo
 
 #### Common repositories (via `Repositories`)
 
-| Name      | URL                                                      | Relations |
-|-----------|----------------------------------------------------------|-----------|
-| sonatype()| https://oss.sonatype.org/content/repositories/snapshots/ |           |
-| jitpack() | https://jitpack.io                                       | Vault     |
+| Name       | URL                                                      | Relations |
+|------------|----------------------------------------------------------|-----------|
+| sonatype() | https://oss.sonatype.org/content/repositories/snapshots/ |           |
+| jitpack()  | https://jitpack.io                                       | Vault     |
 
 ### Groovy usage
 
