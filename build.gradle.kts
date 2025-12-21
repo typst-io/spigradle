@@ -31,19 +31,23 @@ allprojects {
     }
 }
 
+val ossrhUsername = providers.gradleProperty("ossrh.username")
+val ossrhPassword = providers.gradleProperty("ossrh.password")
+
 project.tasks.register("publishCentralPortal") {
     group = "publishing"
-    val projectGroup = group
+    val projectGroup = project.group
     doLast {
         val url = URL("https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${projectGroup}")
         println(url)
         val con = url.openConnection() as java.net.HttpURLConnection
-        val username = project.findProperty("ossrhUsername")?.toString()
-        val password = project.findProperty("ossrhPassword")?.toString()
+        val username = ossrhUsername.get()
+        val password = ossrhPassword.get()
         val credential = Base64.getEncoder().encodeToString("$username:$password".toByteArray())
         val authValue = "Bearer $credential"
         con.requestMethod = "POST"
         con.setRequestProperty("Authorization", authValue)
         println(con.responseCode)
+        assert(con.responseCode == 200)
     }
 }

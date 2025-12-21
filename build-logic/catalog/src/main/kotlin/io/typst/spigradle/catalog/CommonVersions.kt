@@ -25,7 +25,7 @@ enum class CommonVersions(val version: Version) {
     JOOQ(Version("3.19.29", "jooq")),
     HIKARI_CP(Version("7.0.2", "hikariCP")),
     FLYWAY(Version("11.19.0", "flyway")),
-    BUKKIT_KOTLIN_SERIALIZATION(Version("4.0.2", "bukkitKotlinSerialization")),
+    BUKKIT_KOTLIN_SERIALIZATION(Version("4.0.3", "typst-bukkitKotlinSerialization")),
     KOTLINX_SERIALIZATION(Version("1.9.0", "kotlinxSerialization")),
     KAML(Version("0.104.0", "kaml")),
     JUNIT(Version("6.0.1", "junit")),
