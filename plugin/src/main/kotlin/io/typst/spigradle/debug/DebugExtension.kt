@@ -241,5 +241,28 @@ abstract class DebugExtension @Inject constructor(project: Project) {
             }
         })
 
+    /**
+     * The plugin JAR file to copy to the debug server's plugins folder.
+     *
+     * **Default:** The output of the project's `jar` task.
+     *
+     * Override this when using custom JAR tasks like `shadowJar` or `reobfJar` (paperweight-userdev).
+     *
+     * **Example with paperweight-userdev:**
+     * ```kotlin
+     * debugSpigot {
+     *     jarFile = tasks.reobfJar.flatMap { it.outputJar }
+     * }
+     * ```
+     *
+     * **Example with Shadow plugin:**
+     * ```kotlin
+     * debugSpigot {
+     *     jarFile = tasks.shadowJar.flatMap { it.archiveFile }
+     * }
+     * ```
+     *
+     * @see <a href="https://docs.papermc.io/paper/dev/userdev/">paperweight-userdev</a>
+     */
     abstract val jarFile: RegularFileProperty
 }
