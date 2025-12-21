@@ -30,6 +30,7 @@ dependencyResolutionManagement {
             from("io.typst:spigot-catalog:1.0.0")
             // if you need to override the version:
             // version("spigot-api", "1.21.10-R0.1-SNAPSHOT")
+            // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
         }
         create("commons") {
             from("io.typst:common-catalog:1.0.0")
@@ -40,11 +41,20 @@ dependencyResolutionManagement {
 // ...
 ```
 
+### build.gradle.kts
 ```kotlin
 plugins {
     java
     alias(spigots.plugins.spigot)
     alias(commons.plugins.ideaExt) // optional, allows Spigradle generates Run Configurations for debug
+}
+
+repositories {
+    mavenCentral()
+    spigotRepos {
+        spigotmc()
+        jitpack() // for vault
+    }
 }
 
 dependencies {
