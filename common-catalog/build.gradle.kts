@@ -25,6 +25,11 @@ spigradleCatalog {
             "com.gradleup.shadow",
             shadowJarVersion,
             "shadowJar"
+        ),
+        PluginDependency(
+            "org.jooq.jooq-codegen-gradle",
+            CommonVersions.JOOQ.version,
+            "jooq"
         )
     )
     val commonPluginLibs = commonPlugins.map {

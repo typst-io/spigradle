@@ -172,5 +172,13 @@ enum class CommonDependencies(
             "assertj-core",
         )
     ),
+    MYSQL_DRIVER(
+        Dependency(
+            "com.mysql",
+            "mysql-connector-j",
+            CommonVersions.MYSQL_DRIVER.version,
+            "mysql-driver"
+        )
+    ),
     ;
 }
