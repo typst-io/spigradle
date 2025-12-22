@@ -9,7 +9,7 @@ plugins {
     `maven-publish`
 }
 
-val spigradleVcsUrl = "https://github.com/spigradle/spigradle.git"
+val spigradleVcsUrl = "https://github.com/typst-io/spigradle.git"
 
 val spigradleDocsJar by tasks.registering(Jar::class) {
     group = "spigradle build"
@@ -37,10 +37,11 @@ publishing {
 }
 
 pluginBundle {
-    website = "https://github.com/spigradle/spigradle"
+    website = "https://github.com/typst-io/spigradle"
     vcsUrl = spigradleVcsUrl
+    description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle"
     tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
-    fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin.\nNOTE: This plugin deprecated and changed the plugin id to 'io.typst.spigradle.spigot', new repository is here:\nhttps://github.com/typst-io/spigradle"
+    fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin.\nNOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle"
     plugins {
         create("spigradle") {
             displayName = "Spigradle Base Plugin"
