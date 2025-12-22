@@ -22,7 +22,7 @@ An intelligent Gradle plugin used to develop plugins for Spigot, Bungeecord and 
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.4.6'
+    id 'kr.entree.spigradle' version '2.5.0'
 }
 
 group 'org.sample'
@@ -83,7 +83,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.4.6'
+    id 'kr.entree.spigradle' version '2.5.0'
 }
 
 dependencies {
@@ -111,7 +111,7 @@ import kr.entree.spigradle.kotlin.*
 
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("kr.entree.spigradle") version "2.4.6"
+    id("kr.entree.spigradle") version "2.5.0"
 }
 
 dependencies {
@@ -143,7 +143,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:2.4.6'
+        classpath 'kr.entree:spigradle:2.5.0'
     }
 }
 
@@ -161,7 +161,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:2.4.6")
+        classpath("kr.entree:spigradle:2.5.0")
     }
 }
 
@@ -187,7 +187,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle.bungee' version '2.4.6'
+    id 'kr.entree.spigradle.bungee' version '2.5.0'
 }
 
 dependencies {
@@ -201,7 +201,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("kr.entree.spigradle.bungee") version "2.4.6"
+    id("kr.entree.spigradle.bungee") version "2.5.0"
 }
 
 dependencies {
@@ -221,7 +221,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:2.4.6'
+        classpath 'kr.entree:spigradle:2.5.0'
     }
 }
 
@@ -239,7 +239,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:2.4.6")
+        classpath("kr.entree:spigradle:2.5.0")
     }
 }
 
@@ -266,7 +266,7 @@ Groovy DSL
 ```groovy
 plugins {
     id 'java'
-    id 'kr.entree.spigradle.nukkit' version '2.4.6'
+    id 'kr.entree.spigradle.nukkit' version '2.5.0'
 }
 
 dependencies {
@@ -280,7 +280,7 @@ dependencies {
 ```kotlin
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("kr.entree.spigradle.nukkit") version "2.4.6"
+    id("kr.entree.spigradle.nukkit") version "2.5.0"
 }
 
 dependencies {
@@ -300,7 +300,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'kr.entree:spigradle:2.4.6'
+        classpath 'kr.entree:spigradle:2.5.0'
     }
 }
 
@@ -318,7 +318,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("kr.entree:spigradle:2.4.6")
+        classpath("kr.entree:spigradle:2.5.0")
     }
 }
 
@@ -392,7 +392,7 @@ repositories {
 | bukkit()          | org.bukkit:bukkit:$version                       | 1.16.1-R0.1-SNAPSHOT     | mavenLocal(), BuildTools |
 | craftbukkit()     | org.bukkit:craftbukkit:$version                  | 1.16.1-R0.1-SNAPSHOT     | mavenLocal(), BuildTools |
 | lombok()          | org.projectlombok:lombok:$version                | 1.18.36                  | mavenCentral()           |
-| spigradle()       | kr.entree:spigradle:$version                     | 2.4.6       | mavenCentral()           |
+| spigradle()       | kr.entree:spigradle:$version                     | 2.5.0       | mavenCentral()           |
 | protocolLib()     | com.comphenix.protocol:ProtocolLib:$version      | 4.5.1                    | protocolLib()            |
 | vault()           | com.github.MilkBowl:VaultAPI:$version            | 1.7                      | jitpack()                |
 | vaultAll()        | com.github.MilkBowl:Vault:$version               | 1.7.3                    | jitpack()                |

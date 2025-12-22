@@ -32,6 +32,7 @@ import kr.entree.spigradle.module.common.createRunConfigurations
 import kr.entree.spigradle.module.common.registerDescGenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.gradle.ext.GradleTask

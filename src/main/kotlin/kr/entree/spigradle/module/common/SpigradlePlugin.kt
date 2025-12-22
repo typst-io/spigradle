@@ -27,6 +27,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.compile.JavaCompile
@@ -54,6 +55,10 @@ class SpigradlePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
+        project.logger.log(LogLevel.WARN,
+            """NOTE: This plugin deprecated and changed the plugin id to 'io.typst.spigradle.spigot', new repository is here:
+https://github.com/typst-io/spigradle"""
+        )
         with(project) {
             setupPlugins()
             setupDefaultDependencies()
