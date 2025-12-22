@@ -56,7 +56,9 @@ dependencies {
     implementation("de.undercouch:gradle-download-task:4.1.2")
     implementation("kr.entree:spigradle-annotations:2.2.0")
     kapt("com.google.auto.service:auto-service:1.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT") {
+        setTransitive(false)
+    }
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}")
