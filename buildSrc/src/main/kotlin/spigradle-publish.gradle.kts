@@ -39,13 +39,13 @@ publishing {
 pluginBundle {
     website = "https://github.com/typst-io/spigradle"
     vcsUrl = spigradleVcsUrl
-    description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle"
+    description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle\n"
     tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
-    fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin.\nNOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle"
+    fun formatDesc(name: String) = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradleAn intelligent Gradle plugin for developing $name plugin."
     plugins {
         create("spigradle") {
             displayName = "Spigradle Base Plugin"
-            description = "The base plugin of Spigradle"
+            description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle\nThe base plugin of Spigradle"
         }
         create("spigot") {
             displayName = "Spigradle Spigot Plugin"
