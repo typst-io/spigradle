@@ -102,6 +102,7 @@ class SpigotPlugin : Plugin<Project> {
     private val Project.spigot get() = extensions.getByName<SpigotExtension>(SPIGOT_TYPE.descExtension)
 
     override fun apply(project: Project) {
+        project.logger.warn("NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`")
         with(project) {
             applySpigradlePlugin()
             // TODO: auto libraries

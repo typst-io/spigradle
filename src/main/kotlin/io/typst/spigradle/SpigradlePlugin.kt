@@ -43,6 +43,7 @@ fun Project.getPluginMainPathFile(type: String) =
  */
 class SpigradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        project.logger.warn("NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot-base`")
         with(project) {
             pluginManager.apply("java") // TODO: bad practice? https://docs.gradle.org/current/userguide/implementing_gradle_plugins_binary.html#reacting_to_plugins
             setupGroovyExtensions()

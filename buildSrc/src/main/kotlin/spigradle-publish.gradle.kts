@@ -29,13 +29,14 @@ publishing {
 gradlePlugin {
     website = "https://github.com/typst-io/spigradle"
     vcsUrl = spigradleVcsUrl
-    fun formatDesc(name: String) = "An intelligent Gradle plugin for developing $name plugin."
+    description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle\n"
+    fun formatDesc(name: String) = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle\nAn intelligent Gradle plugin for developing $name plugin."
 //
     plugins {
         create("spigradle") {
             id = "io.typst.spigradle.base"
             displayName = "Spigradle Base Plugin"
-            description = "The base plugin of Spigradle"
+            description = "NOTE: This plugin deprecated and changed the plugin id to `io.typst.spigradle.spigot`, new repository is here:\nhttps://github.com/typst-io/spigradle\nThe base plugin of Spigradle"
             tags = listOf("minecraft", "paper", "spigot", "bukkit", "bungeecord", "nukkit", "nukkitX")
             implementationClass = "io.typst.spigradle.SpigradlePlugin"
         }
