@@ -104,7 +104,7 @@ dependencyResolutionManagement {
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create('commons') {
-            from("io.typst:common-catalog:1.0.1")
+            from("io.typst:common-catalog:1.1.0")
         }
     }
 }
@@ -138,7 +138,7 @@ dependencyResolutionManagement {
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
         create("commons") {
-            from("io.typst:common-catalog:1.0.1")
+            from("io.typst:common-catalog:1.1.0")
         }
     }
 }
@@ -761,7 +761,7 @@ versionCatalogs {
     // For common plugins/dependencies (idea-ext, lombok, etc.)
     // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
     create('commons') {
-        from("io.typst:common-catalog:1.0.1")
+        from("io.typst:common-catalog:1.1.0")
     }
 }
 ```

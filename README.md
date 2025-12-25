@@ -13,7 +13,7 @@
 
 An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and NukkitX.
 
-[Migration Guide](docs/migration.md) | [Chatbot Q&A](https://context7.com/typst-io/spigradle?tab=chat) | [Samples](https://github.com/spigradle/spigradle-sample)
+[Migration Guide](docs/migration.md) | [Chatbot Q&A](https://codewiki.google/github.com/typst-io/spigradle) | [Samples](https://github.com/spigradle/spigradle-sample)
 
 ## Features
 
@@ -38,7 +38,7 @@ dependencyResolutionManagement {
             // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
         }
         create("commons") {
-            from("io.typst:common-catalog:1.0.1")
+            from("io.typst:common-catalog:1.1.0")
         }
     }
 }
