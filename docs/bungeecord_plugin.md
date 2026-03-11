@@ -119,14 +119,14 @@ dependencies {
 **Groovy DSL**
 ```groovy
 plugins {
-    id 'io.typst.spigradle.bungee' version '4.0.0'
+    id 'io.typst.spigradle.bungee' version '4.0.1'
 }
 ```
 
 **Kotlin DSL**
 ```kotlin
 plugins {
-    id("io.typst.spigradle.bungee") version "4.0.0"
+    id("io.typst.spigradle.bungee") version "4.0.1"
 }
 ```
 
@@ -161,7 +161,7 @@ For more details, see the [Main Class Detection](../README.md#main-class-detecti
 
 ## Configuration
 
-### bungee - [BungeeExtension](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle.bungee/-bungee-extension/index.html)
+### bungee - [BungeeExtension](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle.bungee/-bungee-extension/index.html)
 
 The description of your plugin for a 'bungee.yml'.
 
@@ -244,11 +244,11 @@ All tasks support [UP-TO-DATE checks](https://docs.gradle.org/current/userguide/
 
 **Note:** Debug tasks (server download and run) are currently **Spigot-only**. For BungeeCord, you'll need to set up your own development server.
 
-### detectBungeeEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-subclass-detection/index.html)
+### detectBungeeEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class that extends [net.md_5.bungee.api.plugin.Plugin](https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/net/md_5/bungee/api/plugin/Plugin.html).
 
-### generateBungeePluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.0.0/spigradle/io.typst.spigradle/-yaml-generate/index.html)
+### generateBungeePluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectBungeeEntrypoints`*
 
