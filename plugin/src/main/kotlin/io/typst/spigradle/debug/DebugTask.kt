@@ -255,7 +255,10 @@ internal object DebugTask {
                         workingDirectory = ctx.getPlatformDebugDir(project).asFile.absolutePath
                         jvmArgs = ctx.jvmArgs.get().joinToString(" ")
                         programParameters = ctx.programArgs.get().joinToString(" ")
-//                        jrePath = ctx.javaExecutable.get().asFile.absolutePath
+                        val altJrePath = ctx.javaExecutable.get().asFile.parentFile?.parentFile?.absolutePath
+                        if (altJrePath != null) {
+                            alternativeJrePath = altJrePath
+                        }
                         beforeRun {
                             register(prepareTask.name, GradleTask::class.java) {
                                 this.task = prepareTask.get()

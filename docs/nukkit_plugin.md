@@ -119,14 +119,14 @@ dependencies {
 **Groovy DSL**
 ```groovy
 plugins {
-    id 'io.typst.spigradle.nukkit' version '4.0.1'
+    id 'io.typst.spigradle.nukkit' version '4.0.2'
 }
 ```
 
 **Kotlin DSL**
 ```kotlin
 plugins {
-    id("io.typst.spigradle.nukkit") version "4.0.1"
+    id("io.typst.spigradle.nukkit") version "4.0.2"
 }
 ```
 
@@ -161,7 +161,7 @@ For more details, see the [Main Class Detection](../README.md#main-class-detecti
 
 ## Configuration
 
-### nukkit - [NukkitExtension](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle.nukkit/-nukkit-extension/index.html)
+### nukkit - [NukkitExtension](https://docs.typst.io/spigradle/4.0.2/spigradle/io.typst.spigradle.nukkit/-nukkit-extension/index.html)
 
 The description of your plugin for a 'plugin.yml'.
 
@@ -250,11 +250,11 @@ All tasks support [UP-TO-DATE check](https://docs.gradle.org/current/userguide/m
 
 **Note:** Debug tasks (server download and run) are currently **Spigot-only**. For NukkitX, you'll need to set up your own development server.
 
-### detectNukkitEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle/-subclass-detection/index.html)
+### detectNukkitEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.0.2/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class that extends [cn.nukkit.plugin.PluginBase](https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/javadoc/index.html?overview-summary.html).
 
-### generateNukkitPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.0.1/spigradle/io.typst.spigradle/-yaml-generate/index.html)
+### generateNukkitPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.0.2/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectNukkitEntrypoints`*
 

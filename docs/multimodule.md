@@ -44,7 +44,7 @@ Multi-module projects offer several benefits for Minecraft plugin development:
 ## Requirements
 
 - Gradle 9.0+ (the latest version is recommended)
-- Spigradle 4.0.1 or higher
+- Spigradle 4.0.2 or higher
 - Basic understanding of Gradle multi-module projects
 
 To update your gradle wrapper:
