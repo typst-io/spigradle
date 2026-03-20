@@ -11,7 +11,7 @@
 
 An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and NukkitX.
 
-[Migration Guide](docs/migration.md) | [Chatbot Q&A](https://codewiki.google/github.com/typst-io/spigradle) | [Samples](https://github.com/spigradle/spigradle-sample)
+[Migration Guide](docs/migration.md) | [Google Code Wiki](https://codewiki.google/github.com/typst-io/spigradle) | [Samples](https://github.com/spigradle/spigradle-sample)
 
 ## Features
 
@@ -21,7 +21,7 @@ An intelligent Gradle plugin for developing plugins for Spigot, BungeeCord, and 
 
 ## Quick Start
 
-### settings.gradle.kts
+### settings.gradle.kts (to apply [Gradle Version Catalog](https://docs.gradle.org/current/userguide/version_catalogs.html))
 ```kotlin
 dependencyResolutionManagement {
     repositories {
@@ -83,7 +83,6 @@ debugSpigot { // extension for debugProjectName task
 
 - [Plugins](#plugins)
 - [Requirements](#requirements)
-- [Main Class Detection](#main-class-detection)
 - [Repositories](#repositories)
 - [Dependencies](#dependencies)
 - [All docs](#all-docs)
@@ -104,80 +103,6 @@ To update your gradle wrapper:
 ```
 gradlew wrapper --gradle-version $GRADLE_VERSION --distribution-type all
 ```
-
-## Main Class Detection
-
-Spigradle automatically detects your plugin's main class using bytecode analysis with ASM (a Java bytecode manipulation framework). This eliminates the need to manually specify the main class in your build configuration.
-
-### How it works
-
-The detection process follows these steps:
-
-1. **Bytecode Scanning**: Scans all compiled `.class` files using ASM's ClassReader
-  - Uses optimized flags (`SKIP_CODE`, `SKIP_DEBUG`, `SKIP_FRAMES`) for faster processing
-  - Only extracts class metadata (name, superclass, access modifiers)
-
-2. **Class Hierarchy Building**: For each class file, extracts:
-  - Class name (e.g., `com/example/MyPlugin`)
-  - Superclass name (e.g., `org/bukkit/plugin/java/JavaPlugin`)
-  - Access modifiers (public, abstract, final, etc.)
-
-3. **Detection Context**: All discovered classes are registered in a directed graph structure
-  - Maintains class inheritance relationships
-  - Enables efficient traversal of the class hierarchy
-
-4. **Main Class Resolution**: Traverses the inheritance graph to find a valid main class:
-  - Must be a **non-abstract, public** class
-  - Must directly or indirectly extend/implement the platform-specific base class
-  - Prefers direct subclasses over deeper inheritance levels
-
-5. **Result Integration**: The detected class name is automatically set as the `main` property in:
-  - `plugin.yml` for Spigot/Nukkit
-  - `bungee.yml` for BungeeCord
-
-### Platform-specific detection targets
-
-| Platform   | Detected Base Class                         | Task Name                  |
-|------------|---------------------------------------------|----------------------------|
-| Spigot     | `org.bukkit.plugin.java.JavaPlugin`         | `detectSpigotEntrypoints`  |
-| BungeeCord | `net.md_5.bungee.api.plugin.Plugin`         | `detectBungeeEntrypoints`  |
-| NukkitX    | `cn.nukkit.plugin.PluginBase`               | `detectNukkitEntrypoints`  |
-
-### Key features
-
-- **Automatic**: No manual configuration required in most cases
-- **Incremental**: Only scans changed `.class` files for faster builds
-- **Gradle-native**: Fully integrated with Gradle's incremental compilation
-- **Smart**: Understands complex inheritance hierarchies
-
-### Manual override
-
-If you need to manually specify the main class (e.g., multiple valid candidates), you can override the detection:
-
-**Groovy:**
-```groovy
-spigot {
-    main = 'com.example.MyCustomMain'
-}
-```
-
-**Kotlin:**
-```kotlin
-spigot {
-    main = "com.example.MyCustomMain"
-}
-```
-
-### Technical details
-
-For a contributor, internal usage:
-
-- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/$SPIGRADLE_VERSION/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
-- **Detection framework**: `io.typst.spigradle.detection` package
-  - `ClassDefinition` - Represents class metadata
-  - `DetectionContext` - Manages detection state and class graph
-  - `DirectedGraph` - Graph utilities for class hierarchy traversal
-- **Bytecode library**: ASM
 
 ## Repositories
 
@@ -303,6 +228,7 @@ dependencies {
 - [Bungeecord Plugin](docs/bungeecord_plugin.md)
 - [Nukkit Plugin](docs/nukkit_plugin.md)
 - [Multi-Module Projects Guide](docs/multimodule.md)
+- [Concepts](docs/concepts.md)
 
 # Supporters
 
