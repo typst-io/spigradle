@@ -19,8 +19,8 @@ package io.typst.spigradle.catalog
 enum class CommonVersions(val version: Version) {
     LOMBOK(Version("1.18.38", "lombok")),
     AHOCORASICK(Version("0.6.3", "ahocorasick")),
-    TYPST_VIEW(Version("10.1.1", "typst-view")),
-    TYPST_COMMAND(Version("3.1.7", "typst-command")),
+    TYPST_VIEW(Version("11.0.0", "typst-view")),
+    TYPST_COMMAND(Version("3.2.0", "typst-command")),
     TYPST_INVENTORY(Version("2.7.6", "typst-inventory")),
     JOOQ(Version("3.19.29", "jooq")),
     HIKARI_CP(Version("7.0.2", "hikariCP")),
