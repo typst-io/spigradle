@@ -405,12 +405,12 @@ class GradleFunctionalTest {
             
             ${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties.get()["main"] == "Main"
+                    assert readProperties()["main"] == "Main"
                 }
             }
             ${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties.get()["main"] == "MainB"
+                    assert readProperties()["main"] == "MainB"
                 }
             }
         """.trimIndent()
