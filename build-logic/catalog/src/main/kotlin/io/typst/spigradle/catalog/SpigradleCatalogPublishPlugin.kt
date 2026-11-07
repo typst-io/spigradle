@@ -40,7 +40,7 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
                 if (theVersion == null) {
                     versionMap[ver.label] = ver
                 } else {
-                    throw GradleException("Duplicated the version label '${ver.label}' between '${ver.version}' and '${ver.version}'!")
+                    throw GradleException("Duplicated the version label '${ver.label}' between '${theVersion.version}' and '${ver.version}'!")
                 }
             }
             for (dep in spigradleCatalog.plugins.get()) {
@@ -54,7 +54,7 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
             for (dep in spigradleCatalog.libraries.get()) {
                 val theLibrary = libraryMap[dep.label]
                 if (theLibrary == null) {
-                    pluginMap[dep.label]
+                    libraryMap[dep.label] = dep
                 } else {
                     throw GradleException("Duplicated the library label '${dep.label}' between '${theLibrary.toGA()}' and '${dep.toGA()}'!")
                 }

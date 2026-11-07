@@ -16,7 +16,6 @@
 
 package io.typst.spigradle
 
-import io.typst.spigradle.paper.PaperBasePlugin.Companion.PLATFORM_NAME
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
@@ -42,7 +41,7 @@ internal data class PlatformPluginSpec(
             }
         }
         return ModuleRegistrationContext(
-            PLATFORM_NAME,
+            platformName,
             pluginDescriptionFileName,
             descriptionProvider,
             pluginDescriptionProperties.sequence(project),
