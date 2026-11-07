@@ -25,6 +25,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
 import org.snakeyaml.engine.v2.api.Dump
@@ -77,6 +78,20 @@ abstract class YamlGenerate : DefaultTask() {
     @get:Input
     abstract val properties: MapProperty<String, Any>
 
+    @get:Input
+    abstract val mandatoryProperties: SetProperty<String>
+
+    /**
+     * The property name to file map, the file content is used when the property is absent.
+     */
+    @get:Internal
+    abstract val fallbackFiles: MapProperty<String, RegularFile>
+
+    // a map can't be @InputFiles, so track the files separately
+    @get:InputFiles
+    val fallbackFileInputs: Provider<Collection<RegularFile>>
+        get() = fallbackFiles.map { it.values }
+
     /**
      * The encoding of the file.
      */
@@ -89,8 +104,31 @@ abstract class YamlGenerate : DefaultTask() {
     @get:OutputFiles
     abstract val outputFiles: ConfigurableFileCollection
 
+    fun readProperties(): Map<String, Any> {
+        val ret = mutableMapOf<String, Any>()
+        ret.putAll(properties.get())
+        for ((key, file) in fallbackFiles.get()) {
+            if (ret[key] != null) continue
+            val fileText = runCatching {
+                file.asFile.readText()
+            }.getOrNull()
+            if (fileText != null) {
+                ret[key] = fileText
+            }
+        }
+        return ret
+    }
+
     @TaskAction
     fun generate() {
+        val properties = readProperties()
+        // validate
+        for (key in mandatoryProperties.get()) {
+            if (properties[key] == null) {
+                throw GradleException("The mandatory '${key}' property is not presented!")
+            }
+        }
+
         val dumpSettings = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.PLAIN)
             .setDefaultFlowStyle(FlowStyle.BLOCK)
@@ -99,8 +137,9 @@ abstract class YamlGenerate : DefaultTask() {
             .setDereferenceAliases(true)
             .build()
         val dump = Dump(dumpSettings)
-        val yaml = dump.dumpToString(properties.get())
+        val yaml = dump.dumpToString(properties)
         outputFiles.forEach { file ->
+            file.parentFile?.mkdirs()
             file.bufferedWriter(Charset.forName(encoding.get())).use {
                 it.write(yaml)
             }
@@ -108,29 +147,18 @@ abstract class YamlGenerate : DefaultTask() {
     }
 }
 
-internal fun Project.getFallbackProperties(
-    mapProperty: Provider<Map<String, Any?>>,
-    fallbackPropertiesF: Provider<Map<String, RegularFile>>,
-): Provider<Map<String, Any>> {
-    return fallbackPropertiesF.map { fallbackProperties ->
-        val map = mapProperty.get()
-        val ret = map.toMutableMap()
-        for ((key, file) in fallbackProperties) {
-            if (map[key] != null) continue
-            val fileText = runCatching {
-                file.asFile.readText()
-            }.getOrNull()
-            if (fileText != null) {
-                ret[key] = fileText
-            }
-        }
-        // remove nulls
-        ret.flatMap { (k, v) ->
-            if (v != null) {
-                listOf(k to v)
+internal fun YamlGenerate.setDescriptionProperties(ctx: ModuleRegistrationContext) {
+    properties.set(ctx.descriptionProperties.map { props ->
+        props.flatMap {
+            if (it.value != null) {
+                listOf(it.key to it.value as Any)
             } else emptyList()
         }.toMap()
-    }
+    })
+    mandatoryProperties.set(ctx.pluginDescriptionProperties.map { props ->
+        props.filter { it.mandatory }.map { it.name }
+    })
+    fallbackFiles.set(ctx.getFileFallbackProperties())
 }
 
 internal fun registerDescGenTask(
@@ -145,24 +173,9 @@ internal fun registerDescGenTask(
     val generationTask = project.tasks.register(ctx.generateDescriptionTaskName, YamlGenerate::class) {
         group = ctx.platformName
         inputs.files(ctx.getDetectionOutputFiles())
-        properties.set(
-            project.getFallbackProperties(
-                ctx.descriptionProperties,
-                ctx.getFileFallbackProperties()
-            )
-        )
+        setDescriptionProperties(ctx)
         outputFiles.from(temporaryDir.resolve(ctx.descFileName))
         outputFiles.from(findResourceDirs(project, ctx.descFileName))
-
-        doLast {
-            val properties = properties.get()
-            for (property in ctx.pluginDescriptionProperties.get()) {
-                if (!property.mandatory) continue
-                if (property.name !in properties) {
-                    throw GradleException("The mandatory '${property.name}' property is not presented!")
-                }
-            }
-        }
     }
     /*
     NOTE: Task ordering part

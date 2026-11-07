@@ -157,7 +157,7 @@ abstract class SubclassDetection : DefaultTask() {
                     ClassReader(it).accept(SubclassDetector(contextR), options)
                 }
             } catch (ex: Exception) {
-                project.logger.log(
+                logger.log(
                     LogLevel.WARN,
                     "[Spigradle] Error while reading class '${file.name}' bytecode",
                     ex
@@ -170,7 +170,7 @@ abstract class SubclassDetection : DefaultTask() {
             }
         }
         if (error) {
-            project.logger.log(
+            logger.log(
                 LogLevel.LIFECYCLE,
                 "[Spigradle] Some errors has occurred while reading class bytecode using ASM. Please update Spigradle. You can append `--debug` option in the $name task to see logs."
             )

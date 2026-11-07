@@ -54,8 +54,11 @@ internal object PaperDebugTask {
                 inputs.property("javaVersion", paperDebugExt.version)
 
                 project.pluginManager.withPlugin("java") {
-                    resolvableConfigurations.convention(
-                        project.configurations.named("compileClasspath").map(::setOf)
+                    val artifacts = project.configurations.named("compileClasspath").map {
+                        it.incoming.artifactView { isLenient = true }.artifacts
+                    }
+                    localPluginFiles.from(
+                        PluginDependencyPrepareTask.localJarFiles(artifacts.flatMap { it.resolvedArtifacts })
                     )
                 }
 

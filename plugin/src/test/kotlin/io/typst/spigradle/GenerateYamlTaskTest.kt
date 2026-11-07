@@ -40,12 +40,7 @@ class GenerateYamlTaskTest {
         }
         val ctx = SpigotPlugin.createModuleRegistrationContext(project)
         yamlTask.apply {
-            properties.set(
-                project.getFallbackProperties(
-                    ctx.descriptionProperties,
-                    ctx.getFileFallbackProperties()
-                )
-            )
+            setDescriptionProperties(ctx)
             outputFiles.from(file)
             generate()
         }
@@ -100,12 +95,7 @@ class GenerateYamlTaskTest {
         val ctx = SpigotPlugin.createModuleRegistrationContext(project)
         yamlTask.apply {
             outputFiles.from(file)
-            properties.set(
-                project.getFallbackProperties(
-                    ctx.descriptionProperties,
-                    ctx.getFileFallbackProperties()
-                )
-            )
+            setDescriptionProperties(ctx)
             generate()
         }
         val expected =

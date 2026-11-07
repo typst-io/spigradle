@@ -176,6 +176,9 @@ internal object DebugTask {
             }
         } else null
         val copyArtifact = javaPlugin.flatMap {
+            project.tasks.named("copyArtifactJar")
+        }
+        project.pluginManager.withPlugin("java") {
             project.tasks.register("copyArtifactJar", Copy::class.java) {
                 group = ctx.taskGroupName
 
@@ -185,12 +188,14 @@ internal object DebugTask {
                 outputs.file(debugDir.file("eula.txt"))
                 into(ctx.getDebugArtifactDir(project))
 
+                // don't capture ctx, it holds task references that can't be stored in the configuration cache
+                val eula = ctx.eula
                 doFirst {
-                    if (ctx.eula?.get() == false) {
+                    if (eula?.get() == false) {
                         throw GradleException("Please set 'eula.set(true)' in the debug extension!")
                     }
                     val debugDirFile = debugDir.asFile
-                    if (ctx.eula?.get() == true) {
+                    if (eula?.get() == true) {
                         val eulaTxt = debugDirFile.resolve("eula.txt")
                         eulaTxt.writeText("eula=true")
                     }
@@ -270,18 +275,18 @@ internal object DebugTask {
         }
         return project.tasks.register(ctx.getRunDebugTaskName(project)) {
             group = ctx.taskGroupName
-
+            val projectName = project.name
+            val debugDirPath = ctx.getPlatformDebugDir(project).asFile.absolutePath
             dependsOn(prepareTask)
 
             doLast {
                 val os = System.getProperty("os.name").lowercase()
-                val debugDirPath = ctx.getPlatformDebugDir(project).asFile.absolutePath
 
                 val cmds = if ("windows" in os) {
                     val scriptPath = File(debugDirPath, "starter.bat").absolutePath
                     listOf(
                         "cmd", "/c",
-                        "start", "\"${project.name}\"",
+                        "start", "\"${projectName}\"",
                         "/D", debugDirPath,
                         scriptPath
                     )
