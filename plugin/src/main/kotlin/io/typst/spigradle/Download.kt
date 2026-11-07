@@ -67,7 +67,8 @@ open class Download : DefaultTask() {
     init {
         group = "spigradle"
         description = "Download a file into the given path from the given uri"
-        onlyIf { !overwrite.get() || !outputFile.get().asFile.isFile }
+        onlyIf { overwrite.get() || !outputFile.get().asFile.isFile }
+        outputs.upToDateWhen { !overwrite.get() }
     }
 
     /**
