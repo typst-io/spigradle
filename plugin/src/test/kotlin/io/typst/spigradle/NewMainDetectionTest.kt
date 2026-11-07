@@ -20,8 +20,31 @@ import io.typst.spigradle.detection.ClassDefinition
 import io.typst.spigradle.detection.DetectionContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class NewMainDetectionTest {
+    @Test
+    fun `ignores non public concrete subclasses`() {
+        val hidden = ClassDefinition(false, false, "hidden", "parent")
+        val ctx = DetectionContext().addClassDef(hidden)
+
+        assertNull(ctx.findMainClass("parent"))
+    }
+
+    @Test
+    fun `detects implementation through inherited interfaces`() {
+        val intermediate = ClassDefinition(true, true, "intermediate", interfaces = setOf("target"))
+        val implementation = ClassDefinition(true, false, "implementation", interfaces = setOf("intermediate"))
+        val unrelated = ClassDefinition(true, false, "unrelated", "other")
+        val ctx = DetectionContext()
+            .addClassDef(implementation)
+            .addClassDef(unrelated)
+            .addClassDef(intermediate)
+
+        assertEquals(implementation, ctx.findMainClass("target"))
+        assertNull(ctx.findMainClass("missing"))
+    }
+
     @Test
     fun `single detection`() {
         val parentName = "parent"

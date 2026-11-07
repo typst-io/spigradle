@@ -144,7 +144,7 @@ abstract class SubclassDetection : DefaultTask() {
     @TaskAction
     fun inspect() {
         val contextR = AtomicReference(DetectionContext())
-        val options = ClassReader.SKIP_CODE and ClassReader.SKIP_DEBUG and ClassReader.SKIP_FRAMES
+        val options = ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
 
         val outputFileBySuperclass = outputFileBySuperclass.get()
         var error = false
