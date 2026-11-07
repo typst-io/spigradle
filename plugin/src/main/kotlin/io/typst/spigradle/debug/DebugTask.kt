@@ -210,18 +210,18 @@ internal object DebugTask {
 
             delete(ctx.getDownloadBaseDir(project))
         }
-        val createJavaDebugScriptTask =
-            javaPlugin.flatMap {
-                project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
-                    group = ctx.taskGroupName
+        project.pluginManager.withPlugin("java") {
+            project.tasks.register("createJavaDebugScript", CreateJavaDebugScriptTask::class.java) {
+                group = ctx.taskGroupName
 
-                    dir.set(ctx.getPlatformDebugDir(project))
-                    javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
-                    jvmArgs.set(ctx.jvmArgs)
-                    programArgs.set(ctx.programArgs)
-                    jarFile.set(jar.map { it.asFile.absolutePath })
-                }
+                dir.set(ctx.getPlatformDebugDir(project))
+                javaPath.set(ctx.javaExecutable.map { it.asFile.absolutePath })
+                jvmArgs.set(ctx.jvmArgs)
+                programArgs.set(ctx.programArgs)
+                jarFile.set(jar.map { it.asFile.absolutePath })
             }
+        }
+        val createJavaDebugScriptTask = javaPlugin.flatMap { project.tasks.named("createJavaDebugScript") }
         val debugTasks = mutableListOf<Provider<out Task>>()
         if (download != null) {
             debugTasks += download
