@@ -92,21 +92,27 @@ class SpigotPlugin : Plugin<Project> {
 
         internal fun getMinecraftMinimumJavaVersion(semVer: String): Int {
             val versions = semVer.split(".")
+            val tails = versions.getOrNull(2)?.split("-")
+            val major = versions[0].toInt()
             val minor = versions[1].toInt()
-            val fix = versions.getOrNull(2)?.toInt() ?: 0
+            val fix = tails?.get(0)?.toInt() ?: 0
             // NOTE: required consistent maintenance
-            return if (minor <= 16) {
-                // https://www.minecraftforum.net/forums/minecraft-java-edition/discussion/3041524-help-will-this-laptop-play-java
-                8
-            } else if (minor <= 17) {
-                // https://www.minecraft.net/en-us/article/minecraft-snapshot-21w19a
-                16
-            } else if (minor <= 20 && fix <= 4) {
-                // https://www.minecraft.net/en-us/article/minecraft-1-18-pre-release-2
-                17
+            return if (major == 1) {
+                if (minor <= 16) {
+                    // https://www.minecraftforum.net/forums/minecraft-java-edition/discussion/3041524-help-will-this-laptop-play-java
+                    8
+                } else if (minor <= 17) {
+                    // https://www.minecraft.net/en-us/article/minecraft-snapshot-21w19a
+                    16
+                } else if (minor <= 20 && fix <= 4) {
+                    // https://www.minecraft.net/en-us/article/minecraft-1-18-pre-release-2
+                    17
+                } else {
+                    // https://www.minecraft.net/en-us/article/minecraft-snapshot-24w14a
+                    21
+                }
             } else {
-                // https://www.minecraft.net/en-us/article/minecraft-snapshot-24w14a
-                21
+                25
             }
         }
 
