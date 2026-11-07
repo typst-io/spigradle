@@ -1,0 +1,8 @@
+site_name: Spigradle
+nav:
+  - Home: index.md
+  - Introduce: README.md
+  - Concepts: concepts.md
+  - Spigot: spigot_plugin.md
+  - Bungee: bungee_plugin.md
+  - NukkitX: nukkit_plugin.md
