@@ -37,9 +37,9 @@ import java.net.URI
  *
  * Groovy Example:
  * ```groovy
- * import io.typst.spigradle.DownloadTask
+ * import io.typst.spigradle.Download
  *
- * task downloadFile(type: DownloadTask) {
+ * task downloadFile(type: Download) {
  *   uri = URI.create('https://example.com/file.jar')
  *   outputFile = file('build/downloads/file.jar')
  *   overwrite = false
@@ -48,11 +48,11 @@ import java.net.URI
  *
  * Kotlin Example:
  * ```kotlin
- * import io.typst.spigradle.DownloadTask
+ * import io.typst.spigradle.Download
  * import java.net.URI
  *
  * tasks {
- *   val downloadFile by registering(DownloadTask::class) {
+ *   val downloadFile by registering(Download::class) {
  *     uri.set(URI.create("https://example.com/file.jar"))
  *     outputFile.set(file("build/downloads/file.jar"))
  *     overwrite.set(false)
@@ -62,10 +62,11 @@ import java.net.URI
  *
  * @since 1.3.0
  */
-open class Download : DefaultTask() {
+abstract class Download : DefaultTask() {
     init {
         group = "spigradle"
         description = "Download a file into the given path from the given uri"
+        overwrite.convention(false)
         onlyIf { overwrite.get() || !outputFile.get().asFile.isFile }
         outputs.upToDateWhen { !overwrite.get() }
     }
@@ -75,8 +76,8 @@ open class Download : DefaultTask() {
      *
      * This should be a valid HTTP or HTTPS URL pointing to the file to download.
      */
-    @Input
-    val uri: Property<URI> = project.objects.property(URI::class.java)
+    @get:Input
+    abstract val uri: Property<URI>
 
     /**
      * Whether to overwrite an existing file.
@@ -86,14 +87,14 @@ open class Download : DefaultTask() {
      *
      * Defaults to `false`.
      */
-    @Input
-    val overwrite: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    @get:Input
+    abstract val overwrite: Property<Boolean>
 
     /**
      * The output file location where the downloaded content will be saved.
      */
-    @OutputFile
-    val outputFile: RegularFileProperty = project.objects.fileProperty()
+    @get:OutputFile
+    abstract val outputFile: RegularFileProperty
 
     @TaskAction
     fun download() {

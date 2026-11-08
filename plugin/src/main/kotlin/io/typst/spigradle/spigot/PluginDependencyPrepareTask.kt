@@ -80,6 +80,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
     init {
         group = "spigradle debug"
         description = "Prepare plugin dependencies"
+        downloadSoftDepend.convention(false)
     }
 
     /**
@@ -93,8 +94,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
     abstract val pluginNames: SetProperty<String>
 
     @get:Input
-    val downloadSoftDepend: Property<Boolean> = project.objects.property(Boolean::class.java)
-        .convention(false)
+    abstract val downloadSoftDepend: Property<Boolean>
 
     /**
      * Local file dependency JARs (neither from a repository nor a project) to look up plugins from.
@@ -230,13 +230,9 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
             )
             val downloadFetchResult = runCatching { fetchHttpGetAsByteArray(downloadUri) }.getOrNull()
             val bytes = downloadFetchResult?.body()
-
-            val yaml = if (bytes != null) {
-                readPluginYaml(ByteArrayInputStream(bytes))
-            } else null
-            val dependency = if (bytes != null && yaml != null) {
-                parsePluginDependency(yaml, ContentSource.Memory(bytes, downloadUri))
-            } else null
+            val dependency = bytes?.let {
+                parsePluginDependency(ByteArrayInputStream(it), ContentSource.Memory(it, downloadUri))
+            }
 
             if (dependency?.name == name) {
                 return dependency
@@ -259,16 +255,8 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
         input: InputStream,
         source: ContentSource,
         charset: Charset = StandardCharsets.UTF_8,
-    ): SpigotPluginDependency? {
-        return JarInputStream(input).use { jin ->
-            generateSequence { jin.nextJarEntry }
-                .firstOrNull { !it.isDirectory && it.name == "plugin.yml" }
-                ?: return null
-
-            val text = jin.bufferedReader(charset).readText()
-            parsePluginDependency(text, source)
-        }
-    }
+    ): SpigotPluginDependency? =
+        readPluginYaml(input, charset)?.let { parsePluginDependency(it, source) }
 
     // NOTE: file optional for convenience
     internal fun parsePluginDependency(

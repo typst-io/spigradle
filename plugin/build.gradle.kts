@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.ideaExt.plugin)
     implementation(libs.commons.lang3)
     implementation(libs.commons.text)
+    implementation(libs.kotlinx.collections.immutable)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.kotlin.test.junit5)
@@ -38,19 +39,26 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
         }
-        // publish catalogs for test
-        val catalogPublishTasks = rootProject.subprojects.filter {
-            it.name.endsWith("-catalog")
-        }.map {
-            it.tasks.publishToMavenLocal
+        // the test projects resolve the catalogs from this repository, published by `SpigradleCatalogPublishPlugin`
+        val testRepo = isolated.rootProject.projectDirectory.dir("build/spigradle-test-repo")
+        dependsOn(listOf("spigot", "bungee", "nukkit", "common").map {
+            ":$it-catalog:publishAllPublicationsToSpigradleTestRepository"
+        })
+        systemProperty("spigradle.test.repo", testRepo.asFile.toURI().toString())
+    }
+
+    val writeVersionFile by registering {
+        val versionText = version.toString()
+        val output = isolated.rootProject.projectDirectory.file("version.txt")
+        inputs.property("version", versionText)
+        outputs.file(output)
+        doLast {
+            output.asFile.writeText(versionText)
         }
-        dependsOn(catalogPublishTasks)
     }
 
     assemble {
-        doLast {
-            project.rootDir.resolve("version.txt").writeText(version.toString())
-        }
+        dependsOn(writeVersionFile)
     }
 
     dokka {

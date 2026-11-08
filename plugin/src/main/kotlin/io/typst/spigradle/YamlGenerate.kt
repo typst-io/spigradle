@@ -28,7 +28,6 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.register
 import org.snakeyaml.engine.v2.api.Dump
 import org.snakeyaml.engine.v2.api.DumpSettings
@@ -72,6 +71,7 @@ abstract class YamlGenerate : DefaultTask() {
     init {
         group = "spigradle"
         description = "Generate the yaml file"
+        encoding.convention("UTF-8")
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class YamlGenerate : DefaultTask() {
      * The encoding of the file.
      */
     @get:Input
-    val encoding: Property<String> = project.objects.property<String>().convention("UTF-8")
+    abstract val encoding: Property<String>
 
     /**
      * The files that will be output.

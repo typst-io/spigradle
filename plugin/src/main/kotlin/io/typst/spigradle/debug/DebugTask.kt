@@ -33,47 +33,84 @@ import org.jetbrains.gradle.ext.*
 import java.io.File
 import java.net.URI
 
-private fun escb(xs: String): String =
-    "\"${xs}\""
+/**
+ * Quotes [xs] as a single word of a POSIX shell.
+ *
+ * Nothing is special inside single quotes except the single quote itself, which is written as `'\''`:
+ * close the quote, an escaped quote, and reopen the quote.
+ */
+internal fun shellQuote(xs: String): String =
+    "'" + xs.replace("'", "'\\''") + "'"
 
-private fun escs(xs: String): String =
-    xs.replace("'", "'\\''")
+/**
+ * Quotes [xs] as an AppleScript string literal, where only the backslash and the double quote are special.
+ */
+internal fun appleScriptQuote(xs: String): String =
+    "\"" + xs.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
+/**
+ * The shell command running [scriptPath] in [workDir].
+ */
+private fun runScriptCommand(workDir: String, scriptPath: String): String =
+    "cd ${shellQuote(workDir)} && ${shellQuote(scriptPath)}"
 
 internal object DebugTask {
-    internal fun findAvailableTerminal(workDir: String, scriptPath: String): List<String>? {
-        if (isCommandAvailable("gnome-terminal")) {
+    internal fun findAvailableTerminal(
+        workDir: String,
+        scriptPath: String,
+        isAvailable: (String) -> Boolean = ::isCommandAvailable,
+    ): List<String>? {
+        val command = runScriptCommand(workDir, scriptPath)
+        if (isAvailable("gnome-terminal")) {
             return listOf(
                 "gnome-terminal", "--", "bash", "-c",
-                "cd \"$workDir\" && \"$scriptPath\"; exec bash"
+                "$command; exec bash"
             )
         }
-        if (isCommandAvailable("konsole")) {
+        if (isAvailable("konsole")) {
             return listOf(
                 "konsole", "--hold", "-e", "bash", "-c",
-                "cd \"$workDir\" && \"$scriptPath\""
+                command
             )
         }
-        if (isCommandAvailable("xfce4-terminal")) {
+        if (isAvailable("xfce4-terminal")) {
+            // '-e' takes a single command line, which xfce4-terminal splits with the shell quoting rules
             return listOf(
                 "xfce4-terminal", "--hold", "-e",
-                "bash -c 'cd \"$workDir\" && \"$scriptPath\"'"
+                "bash -c ${shellQuote(command)}"
             )
         }
-        if (isCommandAvailable("xterm")) {
+        if (isAvailable("xterm")) {
             return listOf(
                 "xterm", "-hold", "-e", "bash", "-c",
-                "cd \"$workDir\" && \"$scriptPath\""
+                command
             )
         }
-        if (isCommandAvailable("x-terminal-emulator")) {
+        if (isAvailable("x-terminal-emulator")) {
             return listOf(
                 "x-terminal-emulator", "-e", "bash", "-c",
-                "cd \"$workDir\" && \"$scriptPath\"; exec bash"
+                "$command; exec bash"
             )
         }
 
         return null
     }
+
+    internal fun macTerminalCommand(workDir: String, scriptPath: String): List<String> {
+        val appleScript = """
+            tell application "Terminal"
+                do script ${appleScriptQuote(runScriptCommand(workDir, scriptPath))}
+                activate
+            end tell
+        """.trimIndent()
+        return listOf("osascript", "-e", appleScript)
+    }
+
+    internal fun backgroundCommand(workDir: String, scriptPath: String): List<String> =
+        listOf(
+            "/bin/sh", "-c",
+            "cd ${shellQuote(workDir)} && nohup setsid ${shellQuote(scriptPath)} > /dev/null 2>&1 &"
+        )
 
     internal fun isCommandAvailable(command: String): Boolean {
         return try {
@@ -292,16 +329,7 @@ internal object DebugTask {
                     )
                 } else if ("mac" in os) {
                     val scriptPath = File(debugDirPath, "starter").absolutePath
-                    // single quote 사용, single quote 자체는 이스케이프
-                    val escapedDir = debugDirPath.replace("'", "'\\''")
-                    val escapedScript = scriptPath.replace("'", "'\\''")
-                    val appleScript = """
-                    tell application "Terminal"
-                        do script "cd '$escapedDir' && '$escapedScript'"
-                        activate
-                    end tell
-                """.trimIndent()
-                    listOf("osascript", "-e", appleScript)
+                    macTerminalCommand(debugDirPath, scriptPath)
                 } else {
                     emptyList()
                 }
@@ -315,10 +343,7 @@ internal object DebugTask {
                         theCmds = terminalCmd
                     } else {
                         // nohup + setsid
-                        theCmds = listOf(
-                            "/bin/sh", "-c",
-                            "cd \"$debugDirPath\" && nohup setsid \"$scriptPath\" > /dev/null 2>&1 &"
-                        )
+                        theCmds = backgroundCommand(debugDirPath, scriptPath)
                         logger.log(
                             LogLevel.LIFECYCLE,
                             "No terminal emulator found. Server started in background. You could also use the IDEA run configuration `Run\$ProjectName`."

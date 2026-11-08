@@ -4,7 +4,8 @@ plugins {
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
+        // the catalogs published by the plugin build, see `spigradleTest` repository in build-logic
+        maven(providers.gradleProperty("spigradle.test.repo").get())
         mavenCentral()
     }
     versionCatalogs {

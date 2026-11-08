@@ -26,13 +26,6 @@ internal data class ClassDefinition(
     val interfaces: Set<String> = emptySet(),
 ) {
     companion object {
-        val empty: ClassDefinition = ClassDefinition(
-            true,
-            false,
-            "",
-            null
-        )
-
         fun fromASM(access: Int, name: String, superName: String?, interfaces: Set<String>): ClassDefinition {
             return ClassDefinition(
                 checkPublic(access),

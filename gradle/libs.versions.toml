@@ -3,9 +3,10 @@
 # NOTE: https://blog.gradle.org/best-practices-naming-version-catalog-entries#catalog-entry-naming-conventions
 # matched with the version of kotlin-dsl `embeddedKotlinVersion`
 kotlin = "2.2.20"
+kotlinx-collections-immutable = "0.5.2"
 dokka = "2.1.0"
 # NOTE: required consistent maintenance
-asm = "9.9"
+asm = "9.11.1"
 ideaExt = "1.4.1"
 junit = "6.0.1"
 publishPlugin = "2.0.0"
@@ -17,6 +18,7 @@ spigot = "1.21.10-R0.1-SNAPSHOT"
 [libraries]
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable"}
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 snakeyamlEngine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyamlEngine" }

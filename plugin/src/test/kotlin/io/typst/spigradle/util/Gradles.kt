@@ -13,7 +13,7 @@ fun Any.testGradleTaskWithResource(path: String, resultTaskName: String, taskNam
     val result = GradleRunner.create()
         .withProjectDir(projectDir)
         .withPluginClasspath()
-        .withArguments(taskName, "--stacktrace")
+        .withArguments(taskName, "--stacktrace", "-Pspigradle.test.repo=${System.getProperty("spigradle.test.repo")}")
         .withGradleVersion("9.0.0")
         .build()
     println(result.output)

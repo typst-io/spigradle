@@ -31,7 +31,6 @@ import org.gradle.kotlin.dsl.register
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
-import java.util.concurrent.atomic.AtomicReference
 
 internal fun Project.getSubclassDetectionOutputFile(platformName: String, propertyName: String): Provider<RegularFile> =
     layout.buildDirectory.file("spigradle/${platformName}_${propertyName}_fallback")
@@ -68,19 +67,20 @@ internal fun Project.getSubclassDetectionFallbackProperty(
  * 3. **Detection Context**: All discovered classes are registered in [DetectionContext],
  *    which maintains a directed graph of class inheritance relationships
  *
- * 4. **Main Class Resolution**: Uses `DetectionContext.findMainClass(parentName)` to find
- *    a valid subclass by traversing the inheritance graph:
+ * 4. **Main Class Resolution**: Uses `DetectionContext.findMainClassCandidates(parentName)` to find
+ *    every candidate by traversing the inheritance graph:
  *    - Must be a non-abstract, public class
- *    - Must directly or indirectly extend/implement [superClassName]
- *    - Prefers direct subclasses over deeper inheritance
+ *    - Must directly or indirectly extend/implement the superclass
  *
- * 5. **Result Writing**: The fully-qualified class name (in dot notation, e.g.,
- *    `com.example.MyPlugin`) is written to [outputFile]
+ * 5. **Result Writing**: When there is exactly one candidate, its fully-qualified class name (in dot notation,
+ *    e.g., `com.example.MyPlugin`) is written to the output file of the superclass in [outputFileBySuperclass].
+ *    Otherwise, the output file is deleted and a warning is logged, listing the candidates if there are many,
+ *    so the main class has to be set explicitly.
  *
- * ## Incremental Processing
+ * ## Up-to-date checks
  *
- * This task supports Gradle's incremental build feature. It processes only changed
- * `.class` files and stops scanning early once a valid main class is found.
+ * Gradle skips this task while the class files are unchanged. When it runs, it reads the header of every
+ * class file; it doesn't process only the changed files.
  *
  * ## Usage in Spigradle
  *
@@ -99,9 +99,8 @@ internal fun Project.getSubclassDetectionFallbackProperty(
  * import io.typst.spigradle.SubclassDetection
  *
  * task findSubclass(type: SubclassDetection) {
- *   superClassName = 'com.my.sample.SuperType'
  *   classDirectories.from sourceSets.main.output.classesDirs
- *   outputFile = file('result.txt')
+ *   outputFileBySuperclass.put('com/my/sample/SuperType', layout.buildDirectory.file('result.txt'))
  * }
  * ```
  *
@@ -112,9 +111,8 @@ internal fun Project.getSubclassDetectionFallbackProperty(
  *
  * tasks {
  *   val findSubclass by registering(SubclassDetection::class) {
- *     superClassName.set("com.my.sample.SuperType")
  *     classDirectories.from(sourceSets["main"].output.classesDirs)
- *     outputFile.set(file("result.txt"))
+ *     outputFileBySuperclass.put("com/my/sample/SuperType", layout.buildDirectory.file("result.txt"))
  *   }
  * }
  * ```
@@ -127,8 +125,8 @@ abstract class SubclassDetection : DefaultTask() {
     }
 
     /**
-     *  The map, superclass's full qualified class name to OutputFile.
-     *  The output file will be written a plain text, the subclass's FQCN.
+     * The map, the internal name of a superclass (e.g. `org/bukkit/plugin/java/JavaPlugin`) to its output file.
+     * The output file will be written a plain text, the FQCN of the detected subclass.
      */
     @get:OutputFiles
     abstract val outputFileBySuperclass: MapProperty<String, RegularFile>
@@ -142,7 +140,7 @@ abstract class SubclassDetection : DefaultTask() {
 
     @TaskAction
     fun inspect() {
-        val contextR = AtomicReference(DetectionContext())
+        var ctx = DetectionContext()
         val options = ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
 
         val outputFileBySuperclass = outputFileBySuperclass.get()
@@ -153,7 +151,7 @@ abstract class SubclassDetection : DefaultTask() {
             logger.log(LogLevel.DEBUG, "visit class: ${file.name}")
             try {
                 file.inputStream().buffered().use {
-                    ClassReader(it).accept(SubclassDetector(contextR), options)
+                    ClassReader(it).accept(SubclassDetector { classDef -> ctx = ctx.addClassDef(classDef) }, options)
                 }
             } catch (ex: Exception) {
                 logger.log(
@@ -163,10 +161,6 @@ abstract class SubclassDetection : DefaultTask() {
                 )
                 error = true
             }
-            val ctx = contextR.get()
-            if (outputFileBySuperclass.keys.all { ctx.findMainClass(it) != null }) {
-                break
-            }
         }
         if (error) {
             logger.log(
@@ -175,19 +169,26 @@ abstract class SubclassDetection : DefaultTask() {
             )
         }
 
-        val ctx = contextR.get()
         for ((superclassName, outputFile) in outputFileBySuperclass) {
-            val subclassDef = ctx.findMainClass(superclassName)
-            if (subclassDef != null) {
-                outputFile.asFile.apply {
+            val candidates = ctx.findMainClassCandidates(superclassName)
+            val file = outputFile.asFile
+            if (candidates.size == 1) {
+                file.apply {
                     parentFile.mkdirs()
-                }.writeText(subclassDef.name.replace("/", "."))
+                }.writeText(candidates[0].name.replace("/", "."))
+                continue
+            }
+            runCatching {
+                file.delete()
+            }
+            if (candidates.size >= 2) {
+                logger.warn(
+                    "[Spigradle] Found multiple candidates of the main class extending $superclassName: " +
+                            "${candidates.joinToString { it.name.replace('/', '.') }}. " +
+                            "Set the `main` property explicitly."
+                )
             } else {
-                runCatching {
-                    outputFile.asFile.delete()
-                }
-                logger.log(LogLevel.WARN, "Couldn't find a subclass extends $superclassName")
-                logger.log(LogLevel.WARN, ctx.toString())
+                logger.warn("[Spigradle] Couldn't find a public concrete class extending $superclassName")
             }
         }
     }
@@ -217,7 +218,7 @@ abstract class SubclassDetection : DefaultTask() {
 }
 
 internal class SubclassDetector(
-    private val contextR: AtomicReference<DetectionContext>,
+    private val onClass: (ClassDefinition) -> Unit,
 ) : ClassVisitor(Opcodes.ASM9) {
     override fun visit(
         version: Int,
@@ -227,9 +228,6 @@ internal class SubclassDetector(
         superName: String?,
         interfaces: Array<String>?,
     ) {
-        val classDef = ClassDefinition.fromASM(access, name, superName, interfaces?.toSet() ?: emptySet())
-        contextR.updateAndGet { ctx ->
-            ctx.addClassDef(classDef)
-        }
+        onClass(ClassDefinition.fromASM(access, name, superName, interfaces?.toSet() ?: emptySet()))
     }
 }
