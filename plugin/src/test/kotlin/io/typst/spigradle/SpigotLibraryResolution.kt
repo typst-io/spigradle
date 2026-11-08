@@ -51,7 +51,7 @@ class SpigotLibraryResolution {
             }
         """.trimIndent()
         )
-        val ymlFile = dir.resolve("build").resolve("tmp").resolve(SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
+        val ymlFile = dir.resolve("build").resolve(YamlGenerate.getGeneratedResourceDir("spigot"))
             .resolve("plugin.yml")
         val settings = LoadSettings.builder()
             .build()
@@ -86,7 +86,7 @@ class SpigotLibraryResolution {
             }
         """.trimIndent()
         )
-        val ymlFile = dir.resolve("build").resolve("tmp").resolve(SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME)
+        val ymlFile = dir.resolve("build").resolve(YamlGenerate.getGeneratedResourceDir("spigot"))
             .resolve("plugin.yml")
         val load = Load(LoadSettings.builder().build())
         val yaml = load.loadFromString(ymlFile.readText()) as Map<String, Any>

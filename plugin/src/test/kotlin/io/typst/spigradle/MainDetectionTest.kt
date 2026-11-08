@@ -48,19 +48,19 @@ class MainDetectionTest {
             .addClassDef(subClass)
             .addClassDef(superClass)
         assertEquals(
-            subClass,
-            ctx.findMainClass(superName)
+            listOf(subClass),
+            ctx.findMainClassCandidates(superName)
         )
     }
 
     @Test
     fun `when received a wanted but a abstract`() {
         assertEquals(
-            null,
+            emptyList(),
             DetectionContext()
                 .addClassDef(superClass)
                 .addClassDef(middleClass)
-                .findMainClass(middleClass.name)
+                .findMainClassCandidates(middleClass.name)
         )
     }
 
@@ -72,8 +72,8 @@ class MainDetectionTest {
             .addClassDef(middleClass)
             .addClassDef(subClass)
         assertEquals(
-            subClass,
-            ctx.findMainClass(superName)
+            listOf(subClass),
+            ctx.findMainClassCandidates(superName)
         )
     }
 }

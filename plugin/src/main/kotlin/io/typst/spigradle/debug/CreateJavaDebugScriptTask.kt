@@ -27,6 +27,34 @@ import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
 
 /**
+ * Quotes [xs] as a single argument of a Windows batch file.
+ *
+ * The argument is parsed twice: `cmd` expands `%` in a batch file, so it's written as `%%`, and the program
+ * splits its command line with the Microsoft C runtime rules, where a backslash is literal unless it precedes
+ * a double quote: `\"` is a literal quote and backslashes before a quote are doubled.
+ */
+internal fun batchQuote(xs: String): String {
+    val quoted = StringBuilder("\"")
+    var backslashes = 0
+    for (c in xs) {
+        if (c == '\\') {
+            backslashes++
+            continue
+        }
+        if (c == '"') {
+            quoted.append("\\".repeat(backslashes * 2 + 1))
+        } else {
+            quoted.append("\\".repeat(backslashes))
+        }
+        quoted.append(c)
+        backslashes = 0
+    }
+    // the closing quote follows, so the trailing backslashes have to be doubled
+    quoted.append("\\".repeat(backslashes * 2)).append('"')
+    return quoted.toString().replace("%", "%%")
+}
+
+/**
  * Generates platform-specific starter scripts for running the debug server.
  *
  * This task creates two script files to launch the Paper/Spigot server JAR:
@@ -43,8 +71,9 @@ import java.nio.file.attribute.PosixFilePermission
  *
  * **Script format:**
  * ```
- * "{javaPath}" {jvmArgs} -jar "{jarFile}" {programArgs}
+ * {javaPath} {jvmArgs} -jar {jarFile} {programArgs}
  * ```
+ * Each of them is quoted as a single argument, so it may contain spaces or quotes.
  *
  * This task is part of the debug system and is typically invoked by the main debug task.
  *
@@ -102,24 +131,23 @@ abstract class CreateJavaDebugScriptTask : DefaultTask() {
     @TaskAction
     fun create() {
         val dir = dir.get().asFile
+        val command = listOf(javaPath.get()) + jvmArgs.get() + listOf("-jar", jarFile.get()) + programArgs.get()
+
         val batFile = dir.resolve("starter.bat")
-        val javaFilePath = javaPath.get()
-        val jvmArgsStr = jvmArgs.get().joinToString(" ")
-        val jarFilePath = jarFile.get()
-        val programArgsStr = programArgs.get().joinToString(" ")
+        // cmd reads a batch file with CRLF reliably
         batFile.writeText(
-            """
-                            @echo off
-                            "$javaFilePath" $jvmArgsStr -jar "$jarFilePath" $programArgsStr
-                            pause:
-                        """.trimIndent()
+            listOf(
+                "@echo off",
+                command.joinToString(" ") { batchQuote(it) },
+                "pause",
+            ).joinToString("\r\n", postfix = "\r\n")
         )
         val shFile = dir.resolve("starter")
         shFile.writeText(
-            """
-                            #!/usr/bin/env bash
-                            "$javaFilePath" $jvmArgsStr -jar "$jarFilePath" $programArgsStr
-                        """.trimIndent()
+            listOf(
+                "#!/usr/bin/env bash",
+                command.joinToString(" ") { shellQuote(it) },
+            ).joinToString("\n", postfix = "\n")
         )
         try {
             Files.setPosixFilePermissions(
@@ -134,8 +162,8 @@ abstract class CreateJavaDebugScriptTask : DefaultTask() {
                     PosixFilePermission.OTHERS_READ,
                 )
             )
-        } catch (th: Throwable) {
-            // ignore
+        } catch (_: UnsupportedOperationException) {
+            // the file system doesn't support POSIX permissions, e.g. Windows, which doesn't need the executable bit
         }
     }
 }

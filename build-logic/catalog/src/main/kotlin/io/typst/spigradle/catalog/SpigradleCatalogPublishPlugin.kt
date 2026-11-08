@@ -20,6 +20,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.catalog.CatalogPluginExtension
+import org.gradle.api.publish.PublishingExtension
 
 // used from `*-catalog` modules
 class SpigradleCatalogPublishPlugin : Plugin<Project> {
@@ -28,6 +29,13 @@ class SpigradleCatalogPublishPlugin : Plugin<Project> {
         project.pluginManager.apply("version-catalog")
         project.pluginManager.apply("maven-publish")
         val ext = project.extensions.getByName("catalog") as CatalogPluginExtension
+        // the plugin tests resolve the catalogs from here instead of polluting ~/.m2
+        project.extensions.configure(PublishingExtension::class.java) {
+            repositories.maven {
+                name = "spigradleTest"
+                url = project.isolated.rootProject.projectDirectory.dir("build/spigradle-test-repo").asFile.toURI()
+            }
+        }
 
         // configure after the user's configuration, because there's no lazy property in versionCatalog
         project.afterEvaluate {

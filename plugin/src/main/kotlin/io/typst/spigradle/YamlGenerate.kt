@@ -19,14 +19,16 @@ package io.typst.spigradle
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.register
 import org.snakeyaml.engine.v2.api.Dump
 import org.snakeyaml.engine.v2.api.DumpSettings
 import org.snakeyaml.engine.v2.common.FlowStyle
@@ -69,19 +71,35 @@ abstract class YamlGenerate : DefaultTask() {
     init {
         group = "spigradle"
         description = "Generate the yaml file"
+        encoding.convention("UTF-8")
     }
 
     /**
-     * The property map of yaml.
+     * The properties explicitly configured for the YAML, excluding values from [fallbackFiles].
+     * Use [readProperties] to get the properties merged with the fallbacks.
      */
     @get:Input
     abstract val properties: MapProperty<String, Any>
+
+    @get:Input
+    abstract val mandatoryProperties: SetProperty<String>
+
+    /**
+     * The property name to file map, the file content is used when the property is absent.
+     */
+    @get:Internal
+    abstract val fallbackFiles: MapProperty<String, RegularFile>
+
+    // a map can't be @InputFiles, so track the files separately
+    @get:InputFiles
+    val fallbackFileInputs: Provider<Collection<RegularFile>>
+        get() = fallbackFiles.map { it.values }
 
     /**
      * The encoding of the file.
      */
     @get:Input
-    val encoding: Property<String> = project.objects.property<String>().convention("UTF-8")
+    abstract val encoding: Property<String>
 
     /**
      * The files that will be output.
@@ -89,8 +107,31 @@ abstract class YamlGenerate : DefaultTask() {
     @get:OutputFiles
     abstract val outputFiles: ConfigurableFileCollection
 
+    fun readProperties(): Map<String, Any> {
+        val ret = mutableMapOf<String, Any>()
+        ret.putAll(properties.get())
+        for ((key, file) in fallbackFiles.get()) {
+            if (ret[key] != null) continue
+            val fileText = runCatching {
+                file.asFile.readText()
+            }.getOrNull()
+            if (fileText != null) {
+                ret[key] = fileText
+            }
+        }
+        return ret
+    }
+
     @TaskAction
     fun generate() {
+        val properties = readProperties()
+        // validate
+        for (key in mandatoryProperties.get()) {
+            if (properties[key] == null) {
+                throw GradleException("The mandatory '${key}' property is not presented!")
+            }
+        }
+
         val dumpSettings = DumpSettings.builder()
             .setDefaultScalarStyle(ScalarStyle.PLAIN)
             .setDefaultFlowStyle(FlowStyle.BLOCK)
@@ -99,38 +140,33 @@ abstract class YamlGenerate : DefaultTask() {
             .setDereferenceAliases(true)
             .build()
         val dump = Dump(dumpSettings)
-        val yaml = dump.dumpToString(properties.get())
+        val yaml = dump.dumpToString(properties)
         outputFiles.forEach { file ->
+            file.parentFile?.mkdirs()
             file.bufferedWriter(Charset.forName(encoding.get())).use {
                 it.write(yaml)
             }
         }
     }
+
+    companion object {
+        fun getGeneratedResourceDir(platformName: String): String =
+            "generated/spigradle/${platformName}/resources"
+    }
 }
 
-internal fun Project.getFallbackProperties(
-    mapProperty: Provider<Map<String, Any?>>,
-    fallbackPropertiesF: Provider<Map<String, RegularFile>>,
-): Provider<Map<String, Any>> {
-    return fallbackPropertiesF.map { fallbackProperties ->
-        val map = mapProperty.get()
-        val ret = map.toMutableMap()
-        for ((key, file) in fallbackProperties) {
-            if (map[key] != null) continue
-            val fileText = runCatching {
-                file.asFile.readText()
-            }.getOrNull()
-            if (fileText != null) {
-                ret[key] = fileText
-            }
-        }
-        // remove nulls
-        ret.flatMap { (k, v) ->
-            if (v != null) {
-                listOf(k to v)
+internal fun YamlGenerate.setDescriptionProperties(ctx: ModuleRegistrationContext) {
+    properties.set(ctx.descriptionProperties.map { props ->
+        props.flatMap {
+            if (it.value != null) {
+                listOf(it.key to it.value as Any)
             } else emptyList()
         }.toMap()
-    }
+    })
+    mandatoryProperties.set(ctx.pluginDescriptionProperties.map { props ->
+        props.filter { it.mandatory }.map { it.name }
+    })
+    fallbackFiles.set(ctx.getFileFallbackProperties())
 }
 
 internal fun registerDescGenTask(
@@ -142,50 +178,20 @@ internal fun registerDescGenTask(
     detectionTask.configure {
         group = ctx.platformName
     }
+    val generatedResourceDir = project.layout.buildDirectory.dir(YamlGenerate.getGeneratedResourceDir(ctx.platformName))
     val generationTask = project.tasks.register(ctx.generateDescriptionTaskName, YamlGenerate::class) {
         group = ctx.platformName
         inputs.files(ctx.getDetectionOutputFiles())
-        properties.set(
-            project.getFallbackProperties(
-                ctx.descriptionProperties,
-                ctx.getFileFallbackProperties()
-            )
-        )
-        outputFiles.from(temporaryDir.resolve(ctx.descFileName))
-        outputFiles.from(findResourceDirs(project, ctx.descFileName))
-
-        doLast {
-            val properties = properties.get()
-            for (property in ctx.pluginDescriptionProperties.get()) {
-                if (!property.mandatory) continue
-                if (property.name !in properties) {
-                    throw GradleException("The mandatory '${property.name}' property is not presented!")
-                }
-            }
-        }
+        setDescriptionProperties(ctx)
+        outputFiles.from(generatedResourceDir.map { it.file(ctx.descFileName) })
     }
-    /*
-    NOTE: Task ordering part
-    https://docs.gradle.org/current/userguide/java_plugin.html
-
-    compileJava       dependsOn: all tasks which contribute to the compilation classpath
-    processResources
-    *classes          dependsOn: compileJava, processResources
-    jar               dependsOn: classes
-    *assemble         dependsOn: jar
-    *build            dependsOn: assemble
-
-    detectionTask     dependsOn: classes
-    generateTask      dependsOn: detectionTask
-    *assemble         dependsOn: +generateTask
-
-    Our generate task is part of compilation, thus depends by `classes` which describes compilation.
-    Expected ordering: compileJava, ... -> detectionTask -> generateTask -> classes
-     */
+    // Task ordering part, YamlGenerate `depends` on detection, the resource dir `builtBy` generationTask
     generationTask.configure { dependsOn(detectionTask) }
     project.pluginManager.withPlugin("java") {
-        val classes: Task by project.tasks
-        classes.dependsOn(generationTask)
+        val sourcesSets = project.extensions.getByType(SourceSetContainer::class)
+        sourcesSets.named("main") {
+            resources.srcDir(project.files(generatedResourceDir).builtBy(generationTask))
+        }
     }
     return detectionTask to generationTask
 }

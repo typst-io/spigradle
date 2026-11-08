@@ -43,7 +43,7 @@ internal fun File.writeGroovy(@Language("Groovy") contents: String): File = appl
 @ExperimentalStdlibApi
 class GradleFunctionalTest {
     @TempDir
-    lateinit var dir: File
+    lateinit var projectDir: File
     lateinit var buildFile: File
     lateinit var buildFileKt: File
     lateinit var settingsFile: File
@@ -57,27 +57,27 @@ class GradleFunctionalTest {
     lateinit var subJavaFile: File
 
     private fun createGradleRunner() = GradleRunner.create()
-        .withProjectDir(dir)
+        .withProjectDir(projectDir)
         .withPluginClasspath()
 
     @BeforeTest
     fun setup() {
-        buildFile = dir.resolve("build.gradle").createDirectories()
-        buildFileKt = dir.resolve("build.gradle.kts")
-        settingsFile = dir.resolve("settings.gradle").createDirectories().writeGroovy(
+        buildFile = this@GradleFunctionalTest.projectDir.resolve("build.gradle").createDirectories()
+        buildFileKt = projectDir.resolve("build.gradle.kts")
+        settingsFile = projectDir.resolve("settings.gradle").createDirectories().writeGroovy(
             """
             rootProject.name = 'main'
             include('sub')
         """.trimIndent()
         )
-        settingsFileKt = dir.resolve("settings.gradle.kts")
-        subBuildFile = dir.resolve("sub/build.gradle").createDirectories()
-        subSettingsFile = dir.resolve("sub/settings.gradle").createDirectories()
-        javaFile = dir.resolve("src/main/java/Main.java").createDirectories()
-        javaFileB = dir.resolve("src/main/java/MainB.java").createDirectories()
-        javaFileC = dir.resolve("src/main/java/MainC.java").createDirectories()
-        kotlinFile = dir.resolve("src/main/kotlin/Main.kt").createDirectories()
-        subJavaFile = dir.resolve("sub/src/main/java/Main.java").createDirectories()
+        settingsFileKt = projectDir.resolve("settings.gradle.kts")
+        subBuildFile = projectDir.resolve("sub/build.gradle").createDirectories()
+        subSettingsFile = projectDir.resolve("sub/settings.gradle").createDirectories()
+        javaFile = projectDir.resolve("src/main/java/Main.java").createDirectories()
+        javaFileB = projectDir.resolve("src/main/java/MainB.java").createDirectories()
+        javaFileC = projectDir.resolve("src/main/java/MainC.java").createDirectories()
+        kotlinFile = projectDir.resolve("src/main/kotlin/Main.kt").createDirectories()
+        subJavaFile = projectDir.resolve("sub/src/main/java/Main.java").createDirectories()
     }
 
     @Test
@@ -323,7 +323,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `serialize bungee description`() {
-        val bungeeDescFile = dir.resolve("build/tmp/${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}/bungee.yml")
+        val bungeeDescFile = projectDir.resolve("build/${YamlGenerate.getGeneratedResourceDir("bungee")}/bungee.yml")
         buildFile.writeGroovy(
             """
             plugins {
@@ -351,7 +351,7 @@ class GradleFunctionalTest {
 
     @Test
     fun `serialize nukkit description`() {
-        val nukkitDescFile = dir.resolve("build/tmp/${NukkitPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME}/plugin.yml")
+        val nukkitDescFile = projectDir.resolve("build/${YamlGenerate.getGeneratedResourceDir("nukkit")}/plugin.yml")
         buildFile.writeGroovy(
             """
             plugins {
@@ -405,12 +405,12 @@ class GradleFunctionalTest {
             
             ${SpigotPlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties.get()["main"] == "Main"
+                    assert readProperties()["main"] == "Main"
                 }
             }
             ${BungeePlugin.GENERATE_PLUGIN_DESCRIPTION_TASK_NAME} {
                 doLast {
-                    assert properties.get()["main"] == "MainB"
+                    assert readProperties()["main"] == "MainB"
                 }
             }
         """.trimIndent()

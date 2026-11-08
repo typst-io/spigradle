@@ -9,14 +9,15 @@ import io.typst.spigradle.catalog.NukkitDependencies
 import io.typst.spigradle.catalog.PaperDependencies
 import io.typst.spigradle.nukkit.NukkitPlugin
 import io.typst.spigradle.nukkit.NukkitRepositories
-import io.typst.spigradle.spigot.SpigotPlugin
 import io.typst.spigradle.spigot.PaperRepositories
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.testfixtures.ProjectBuilder
+import java.io.File
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -26,7 +27,9 @@ class DependencyResolutionTest {
 
     @BeforeTest
     fun setup() {
+        // ProjectBuilder uses an empty Gradle user home by default, which downloads every dependency again
         testProject = ProjectBuilder.builder()
+            .withGradleUserHomeDir(File(System.getProperty("java.io.tmpdir"), "spigradle-test-gradle-home"))
             .build()
     }
 

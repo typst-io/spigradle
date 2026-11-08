@@ -16,24 +16,30 @@
 
 package io.typst.spigradle.detection
 
-internal fun <A> emptyDirectedGraph(): DirectedGraph<A> = DirectedGraph(emptyMap())
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.persistentSetOf
 
-internal data class DirectedGraph<A>(val map: Map<A, Set<A>> = emptyMap()) {
+internal fun <A> emptyDirectedGraph(): DirectedGraph<A> = DirectedGraph(persistentMapOf())
+
+internal data class DirectedGraph<A>(val map: PersistentMap<A, PersistentSet<A>> = persistentMapOf()) {
     fun addNode(a: A): DirectedGraph<A> {
-        val set = map[a] ?: emptySet()
-        return copy(map = map + (a to set))
+        if (a in map) return this
+        val set = map[a] ?: persistentSetOf()
+        return copy(map = map.putting(a, set))
     }
 
     fun addEdge(parent: A, child: A): DirectedGraph<A> {
-        val childSet = (map[child] ?: emptySet())
-        val parentSet = (map[parent] ?: emptySet()) + child
+        val childSet = (map[child] ?: persistentSetOf())
+        val parentSet = (map[parent] ?: persistentSetOf()).adding(child)
         return copy(
-            map = map + (child to childSet) + (parent to parentSet)
+            map = map.putting(child, childSet).putting(parent, parentSet)
         )
     }
 
     fun getChildren(a: A): Set<A> {
-        return map[a] ?: emptySet()
+        return map[a] ?: persistentSetOf()
     }
 
     fun getAllChildren(a: A): Set<A> {

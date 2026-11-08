@@ -16,12 +16,15 @@
 
 package io.typst.spigradle.detection
 
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
+
 internal data class DetectionContext(
-    val map: Map<String, ClassDefinition> = emptyMap(),
+    val map: PersistentMap<String, ClassDefinition> = persistentMapOf(),
     val graph: DirectedGraph<String> = emptyDirectedGraph(),
 ) {
     fun addClassDef(x: ClassDefinition): DetectionContext {
-        val newMap = map + (x.name to x)
+        val newMap = map.putting(x.name, x)
         var newGraph = if (x.parentName != null) {
             graph.addEdge(x.parentName, x.name)
         } else graph.addNode(x.name)
@@ -34,12 +37,13 @@ internal data class DetectionContext(
         )
     }
 
-    fun findMainClass(parentName: String): ClassDefinition? {
-        val children = graph.getAllChildren(parentName)
-        return children
+    /**
+     * Returns every public concrete class extending [parentName] directly or indirectly, sorted by the name,
+     * so the result doesn't depend on the order the classes were added.
+     */
+    fun findMainClassCandidates(parentName: String): List<ClassDefinition> =
+        graph.getAllChildren(parentName)
             .mapNotNull(map::get)
-            .find {
-                it.publicClass && !it.abstractClass
-            }
-    }
+            .filter { it.publicClass && !it.abstractClass }
+            .sortedBy { it.name }
 }

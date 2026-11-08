@@ -16,6 +16,7 @@
 
 package io.typst.spigradle
 
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -30,5 +31,22 @@ class CaseUtilTest {
         assertEquals("MyAppProject", "myAppProject".asCapitalized())
         assertEquals("MyAppProject", "my-app-project".asCamelCase(true))
         assertEquals("Main", "main".asCamelCase(true))
+    }
+
+    // https://github.com/typst-io/spigradle/issues/118
+    @Test
+    fun `capitalization does not depend on the default locale`() {
+        val defaultLocale = Locale.getDefault()
+        try {
+            // Turkish title-cases 'i' to dotted 'İ' (U+0130)
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"))
+
+            assertEquals("Item", "item".asCapitalized())
+            assertEquals("Item", "item".asCamelCase(true))
+            assertEquals("ItemShop", "item-shop".asCamelCase(true))
+            assertEquals("debugItem", "debug${"item".asCamelCase(true)}")
+        } finally {
+            Locale.setDefault(defaultLocale)
+        }
     }
 }

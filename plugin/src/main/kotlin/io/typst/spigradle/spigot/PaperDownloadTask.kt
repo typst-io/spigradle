@@ -17,8 +17,8 @@
 package io.typst.spigradle.spigot
 
 import io.typst.spigradle.YamlValue
-import io.typst.spigradle.fetchHttpGetAsByteArray
 import io.typst.spigradle.fetchHttpGetAsString
+import io.typst.spigradle.fetchHttpGetToFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -26,7 +26,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.net.URI
-import java.nio.file.Files
 
 /**
  * Downloads a Paper (or Spigot) server JAR from PaperMC's download API.
@@ -75,15 +74,36 @@ abstract class PaperDownloadTask : DefaultTask() {
     fun download() {
         // get url
         val buildJsonURI = URI("https://fill.papermc.io/v3/projects/paper/versions/${version.get()}/builds")
-        val getUrlResponse = fetchHttpGetAsString(buildJsonURI)
-        val yamlStr = getUrlResponse.body()
-        val yaml = YamlValue.parse(yamlStr).asList() ?: emptyList()
-        val firstYaml = yaml.firstOrNull()?.asMap() ?: emptyMap()
-        val url = firstYaml["downloads"]?.get("server:default")?.get("url")?.value?.toString()
-            ?: throw IllegalStateException("Unknown json schema: $yamlStr")
+        val build = findLatestBuild(fetchHttpGetAsString(buildJsonURI).body(), version.get())
+        logger.lifecycle("Downloading Paper ${version.get()} build #${build.id}")
+        fetchHttpGetToFile(build.url, outputFile.get().asFile.toPath(), build.sha256)
+    }
 
-        // read file
-        val downloadResponse = fetchHttpGetAsByteArray(URI(url))
-        Files.write(outputFile.get().asFile.toPath(), downloadResponse.body())
+    companion object {
+        internal fun findLatestBuild(buildsJson: String, version: String): PaperBuild {
+            val builds = YamlValue.parse(buildsJson).asList()?.mapNotNull { it.asMap() }
+                ?: throw IllegalStateException("Unknown json shcema: $buildsJson")
+            val latest = builds.filter {
+                it["channel"]?.value?.toString().equals("STABLE", ignoreCase = true)
+            }.maxByOrNull {
+                (it["id"]?.value as? Number)?.toInt() ?: -1
+            }
+            if (latest == null) {
+                val channels = builds.mapNotNull { it["channel"]?.value?.toString() }.toSortedSet()
+                throw IllegalStateException(
+                    "No STABLE build of Paper $version, available channels: $channels"
+                )
+            }
+            val download = latest["downloads"]?.get("server:default")
+            val id = (latest["id"]?.value as? Number)?.toInt()
+            val url = download?.get("url")?.value?.toString()
+            val sha256 = download?.get("checksums")?.get("sha256")?.value?.toString()
+            if (id == null || url == null || sha256 == null) {
+                throw IllegalStateException("Unknown json schema: $buildsJson")
+            }
+            return PaperBuild(id, URI(url), sha256)
+        }
     }
 }
+
+internal data class PaperBuild(val id: Int, val url: URI, val sha256: String)

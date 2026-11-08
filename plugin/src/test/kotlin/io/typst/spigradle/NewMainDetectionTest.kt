@@ -20,7 +20,6 @@ import io.typst.spigradle.detection.ClassDefinition
 import io.typst.spigradle.detection.DetectionContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class NewMainDetectionTest {
     @Test
@@ -28,7 +27,7 @@ class NewMainDetectionTest {
         val hidden = ClassDefinition(false, false, "hidden", "parent")
         val ctx = DetectionContext().addClassDef(hidden)
 
-        assertNull(ctx.findMainClass("parent"))
+        assertEquals(emptyList(), ctx.findMainClassCandidates("parent"))
     }
 
     @Test
@@ -41,8 +40,8 @@ class NewMainDetectionTest {
             .addClassDef(unrelated)
             .addClassDef(intermediate)
 
-        assertEquals(implementation, ctx.findMainClass("target"))
-        assertNull(ctx.findMainClass("missing"))
+        assertEquals(listOf(implementation), ctx.findMainClassCandidates("target"))
+        assertEquals(emptyList(), ctx.findMainClassCandidates("missing"))
     }
 
     @Test
@@ -65,8 +64,8 @@ class NewMainDetectionTest {
             .addClassDef(childClass)
             .addClassDef(parentClass)
         assertEquals(
-            childClass,
-            ctxA.findMainClass(parentName)
+            listOf(childClass),
+            ctxA.findMainClassCandidates(parentName)
         )
 
         for (isPublic in listOf(true, false)) {
@@ -74,8 +73,8 @@ class NewMainDetectionTest {
                 .addClassDef(parentClass)
                 .addClassDef(childClass.copy(publicClass = isPublic, abstractClass = true))
             assertEquals(
-                null,
-                ctx.findMainClass(parentName)
+                emptyList(),
+                ctx.findMainClassCandidates(parentName)
             )
         }
     }
@@ -107,15 +106,15 @@ class NewMainDetectionTest {
                         publicClass = i == 0
                     )
                 )
-            val mainA = ctxA.findMainClass(high.name)
+            val mainA = ctxA.findMainClassCandidates(high.name)
             assertEquals(
-                null,
+                emptyList(),
                 mainA
             )
             val ctxB = ctxA.addClassDef(low)
             assertEquals(
-                low,
-                ctxB.findMainClass(high.name)
+                listOf(low),
+                ctxB.findMainClassCandidates(high.name)
             )
         }
     }
@@ -146,13 +145,27 @@ class NewMainDetectionTest {
             .addClassDef(highClass)
             .addClassDef(lowClass)
         assertEquals(
-            null,
-            ctxA.findMainClass(high)
+            emptyList(),
+            ctxA.findMainClassCandidates(high)
         )
         val ctxB = ctxA.addClassDef(middleClass)
         assertEquals(
-            lowClass,
-            ctxB.findMainClass(high)
+            listOf(lowClass),
+            ctxB.findMainClassCandidates(high)
         )
+    }
+
+    // https://github.com/typst-io/spigradle/issues/128
+    @Test
+    fun `returns every concrete candidate sorted by name regardless of the order added`() {
+        val base = ClassDefinition(true, false, "b/Base", "plugin")
+        val derived = ClassDefinition(true, false, "a/Derived", "b/Base")
+        val other = ClassDefinition(true, false, "c/Other", "plugin")
+
+        for (order in listOf(listOf(base, derived, other), listOf(other, derived, base))) {
+            val ctx = order.fold(DetectionContext()) { ctx, classDef -> ctx.addClassDef(classDef) }
+
+            assertEquals(listOf(derived, base, other), ctx.findMainClassCandidates("plugin"))
+        }
     }
 }

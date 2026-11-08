@@ -17,7 +17,7 @@
 package io.typst.spigradle.debug
 
 import org.gradle.api.Project
-import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
@@ -88,7 +88,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      *
      * See: [Minecraft EULA](https://www.minecraft.net/en-us/eula)
      */
-    val eula: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    abstract val eula: Property<Boolean>
 
     /**
      * The port for remote JVM debugging.
@@ -108,7 +108,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      * -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${jvmDebugPort}
      * ```
      */
-    val jvmDebugPort: Property<Int> = project.objects.property(Int::class.java).convention(5005)
+    abstract val jvmDebugPort: Property<Int>
 
     /**
      * Whether to download plugins listed in `softDepend` in addition to `depend`.
@@ -124,7 +124,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      *
      * @see io.typst.spigradle.spigot.PluginDependencyPrepareTask
      */
-    val downloadSoftDepend: Property<Boolean> = project.objects.property(Boolean::class.java).convention(false)
+    abstract val downloadSoftDepend: Property<Boolean>
 
     /**
      * JVM arguments to pass to the server process.
@@ -198,16 +198,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      *
      * @see javaHome
      */
-    val javaVersion: Property<JavaLanguageVersion> = project.objects.property(JavaLanguageVersion::class.java)
-        .convention(project.provider {
-            if (project.pluginManager.hasPlugin("java")) {
-                val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
-                val toolchainSpec = javaExt.toolchain
-                val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
-                val launcherProvider = javaToolchains.launcherFor(toolchainSpec)
-                launcherProvider.get().metadata.languageVersion
-            } else DefaultJavaLanguageVersion.fromFullVersion(System.getProperty("java.version"))
-        })
+    abstract val javaVersion: Property<JavaLanguageVersion>
 
     /**
      * The Java installation home directory to use for running the debug server.
@@ -229,15 +220,7 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      *
      * @see javaVersion
      */
-    val javaHome: Property<Directory> = project.objects.directoryProperty()
-        .convention(javaVersion.flatMap { javaVersion ->
-            val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
-            toolchains.launcherFor {
-                languageVersion.set(javaVersion)
-            }.map {
-                it.metadata.installationPath
-            }
-        })
+    abstract val javaHome: DirectoryProperty
 
     /**
      * The plugin JAR file to copy to the debug server's plugins folder.
@@ -263,4 +246,27 @@ abstract class DebugExtension @Inject constructor(project: Project) {
      * @see <a href="https://docs.papermc.io/paper/dev/userdev/">paperweight-userdev</a>
      */
     abstract val jarFile: RegularFileProperty
+
+    init {
+        eula.convention(false)
+        jvmDebugPort.convention(5005)
+        downloadSoftDepend.convention(false)
+        javaVersion.convention(project.provider {
+            if (project.pluginManager.hasPlugin("java")) {
+                val javaExt = project.extensions.getByType(JavaPluginExtension::class.java)
+                val toolchainSpec = javaExt.toolchain
+                val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
+                val launcherProvider = javaToolchains.launcherFor(toolchainSpec)
+                launcherProvider.get().metadata.languageVersion
+            } else DefaultJavaLanguageVersion.fromFullVersion(System.getProperty("java.version"))
+        })
+        javaHome.convention(javaVersion.flatMap { javaVersion ->
+            val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
+            toolchains.launcherFor {
+                languageVersion.set(javaVersion)
+            }.map {
+                it.metadata.installationPath
+            }
+        })
+    }
 }
