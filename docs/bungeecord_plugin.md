@@ -48,7 +48,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("bungees") {
-            from("io.typst:bungee-catalog:1.0.0")
+            from("io.typst:bungee-catalog:1.1.0")
         }
     }
 }
@@ -83,7 +83,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('bungees') {
-            from('io.typst:bungee-catalog:1.0.0')
+            from('io.typst:bungee-catalog:1.1.0')
         }
     }
 }

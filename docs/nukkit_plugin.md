@@ -48,7 +48,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("nukkits") {
-            from("io.typst:nukkit-catalog:1.0.0")
+            from("io.typst:nukkit-catalog:1.1.0")
         }
     }
 }
@@ -83,7 +83,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('nukkits') {
-            from('io.typst:nukkit-catalog:1.0.0')
+            from('io.typst:nukkit-catalog:1.1.0')
         }
     }
 }

@@ -32,7 +32,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         // apply the version catalog to use the new dependency shortcut
         create("spigots") {
-            from("io.typst:spigot-catalog:1.0.0")
+            from("io.typst:spigot-catalog:1.1.0")
             // if you need to override the version:
             // version("spigot-api", "1.21.10-R0.1-SNAPSHOT")
             // to see the catalog declaration, double tab shift in IDE, search spigot-catalog
