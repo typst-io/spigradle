@@ -73,7 +73,8 @@ abstract class YamlGenerate : DefaultTask() {
     }
 
     /**
-     * The property map of yaml.
+     * The properties explicitly configured for the YAML, excluding values from [fallbackFiles].
+     * Use [readProperties] to get the properties merged with the fallbacks.
      */
     @get:Input
     abstract val properties: MapProperty<String, Any>
