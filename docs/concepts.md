@@ -69,7 +69,7 @@ spigot {
 
 For a contributor, internal usage:
 
-- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/4.0.3/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
+- **Implementation**: [`SubclassDetection`](https://docs.typst.io/spigradle/4.1.0/spigradle/io.typst.spigradle/-subclass-detection/index.html) task
 - **Detection framework**: `io.typst.spigradle.detection` package
   - `ClassDefinition` - Represents class metadata
   - `DetectionContext` - Manages detection state and class graph
