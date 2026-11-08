@@ -201,14 +201,36 @@ class PluginDependencyPrepareTaskTest {
         val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
 
         assertNull(dependency)
-        assertTrue(
-            downloadedIds.size <= MAX_EXPECTED_CANDIDATES,
-            "downloaded every search result: $downloadedIds"
-        )
+        assertEquals((1..PluginDependencyPrepareTask.MAX_SPIGET_CANDIDATES).toList(), downloadedIds)
     }
 
-    private companion object {
-        // the most popular results are the likely ones; the rest are mostly forks or unrelated resources
-        const val MAX_EXPECTED_CANDIDATES = 3
+    @Test
+    fun `downloads the only search result`() = withSpiget(
+        searchResultIds = listOf(1),
+        pluginNameById = mapOf(1 to "Vault"),
+    ) { spigetApi, _ ->
+        val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
+
+        assertEquals(spigetApi.resolve("resources/1/download"), dependency?.downloadUri())
+    }
+
+    @Test
+    fun `finds the plugin at the last candidate`() = withSpiget(
+        searchResultIds = listOf(1, 2, 3, 4),
+        pluginNameById = mapOf(1 to "VaultChat", 2 to "VaultUnlocked", 3 to "Vault", 4 to "Vault"),
+    ) { spigetApi, downloadedIds ->
+        val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
+
+        assertEquals(spigetApi.resolve("resources/3/download"), dependency?.downloadUri())
+        assertEquals(listOf(1, 2, 3), downloadedIds)
+    }
+
+    @Test
+    fun `returns nothing when there is no search result`() = withSpiget(
+        searchResultIds = emptyList(),
+        pluginNameById = emptyMap(),
+    ) { spigetApi, downloadedIds ->
+        assertNull(prepareTask().downloadPluginDependency("Vault", spigetApi))
+        assertEquals(emptyList(), downloadedIds)
     }
 }

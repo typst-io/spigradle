@@ -213,7 +213,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
     internal fun downloadPluginDependency(name: String, spigetApi: URI = SPIGET_API): SpigotPluginDependency? {
         val uri = spigetSearchUri(name, spigetApi)
         val results = try {
-            YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()?.subList(0, 2)
+            YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()?.take(MAX_SPIGET_CANDIDATES)
         } catch (ex: Exception) {
             logger.log(LogLevel.WARN, "Couldn't download the dependency: $name", ex)
             emptyList()
@@ -286,6 +286,12 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
             }
 
         internal val SPIGET_API: URI = URI("https://api.spiget.org/v2/")
+
+        /**
+         * The number of the most downloaded search results to download, until one has the plugin name.
+         * The rest are mostly forks or unrelated resources.
+         */
+        internal const val MAX_SPIGET_CANDIDATES = 3
 
         internal fun spigetSearchUri(name: String, spigetApi: URI = SPIGET_API): URI =
             spigetApi.resolve("search/resources/${URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20")}?field=name&sort=-downloads")
