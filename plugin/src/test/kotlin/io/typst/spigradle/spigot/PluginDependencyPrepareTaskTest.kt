@@ -16,11 +16,17 @@
 
 package io.typst.spigradle.spigot
 
+import com.sun.net.httpserver.HttpServer
+import io.typst.spigradle.ContentSource
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testfixtures.internal.ProjectBuilderImpl
 import org.junit.jupiter.api.io.TempDir
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.net.InetSocketAddress
+import java.net.URI
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
 import kotlin.test.*
@@ -108,5 +114,101 @@ class PluginDependencyPrepareTaskTest {
 
         assertEquals("/v2/search/resources/A%2FB%3FC%23D", uri.rawPath)
         assertEquals("field=name&sort=-downloads", uri.rawQuery)
+    }
+
+    private fun jarBytes(pluginName: String): ByteArray = ByteArrayOutputStream().also { out ->
+        JarOutputStream(out).use { jar ->
+            jar.putNextEntry(JarEntry("plugin.yml"))
+            jar.write("name: $pluginName\n".toByteArray())
+            jar.closeEntry()
+        }
+    }.toByteArray()
+
+    /**
+     * Runs [test] against a fake Spiget API, which answers every search with [searchResultIds] and serves a jar
+     * named by [pluginNameById], or 404 if absent. The ids downloaded are collected in order.
+     */
+    private fun withSpiget(
+        searchResultIds: List<Int>,
+        pluginNameById: Map<Int, String>,
+        test: (spigetApi: URI, downloadedIds: List<Int>) -> Unit,
+    ) {
+        val downloadedIds = CopyOnWriteArrayList<Int>()
+        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
+        server.createContext("/v2/search/resources/") { exchange ->
+            exchange.use {
+                val body = searchResultIds.joinToString(",", "[", "]") { id -> """{"id": $id}""" }.toByteArray()
+                it.sendResponseHeaders(200, body.size.toLong())
+                it.responseBody.write(body)
+            }
+        }
+        // /v2/resources/{id}/download
+        server.createContext("/v2/resources/") { exchange ->
+            exchange.use {
+                val id = it.requestURI.path.split("/")[3].toInt()
+                downloadedIds += id
+                val pluginName = pluginNameById[id]
+                if (pluginName == null) {
+                    it.sendResponseHeaders(404, -1)
+                } else {
+                    val body = jarBytes(pluginName)
+                    it.sendResponseHeaders(200, body.size.toLong())
+                    it.responseBody.write(body)
+                }
+            }
+        }
+        server.start()
+        try {
+            test(URI("http://127.0.0.1:${server.address.port}/v2/"), downloadedIds)
+        } finally {
+            server.stop(0)
+        }
+    }
+
+    private fun SpigotPluginDependency.downloadUri(): URI = (contentSource as ContentSource.Memory).uri
+
+    // https://github.com/typst-io/spigradle/issues/124
+    @Test
+    fun `stops downloading at the first candidate with the matching plugin name`() = withSpiget(
+        searchResultIds = listOf(1, 2, 3),
+        pluginNameById = mapOf(1 to "VaultChat", 2 to "Vault", 3 to "Vault"),
+    ) { spigetApi, downloadedIds ->
+        val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
+
+        assertEquals("Vault", dependency?.name)
+        // the resolved resource id is kept to report where the jar came from
+        assertEquals(spigetApi.resolve("resources/2/download"), dependency?.downloadUri())
+        assertEquals(listOf(1, 2), downloadedIds)
+    }
+
+    // https://github.com/typst-io/spigradle/issues/124
+    @Test
+    fun `skips candidates failing to download`() = withSpiget(
+        searchResultIds = listOf(1, 2),
+        pluginNameById = mapOf(2 to "Vault"),
+    ) { spigetApi, _ ->
+        val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
+
+        assertEquals(spigetApi.resolve("resources/2/download"), dependency?.downloadUri())
+    }
+
+    // https://github.com/typst-io/spigradle/issues/124
+    @Test
+    fun `downloads a limited number of candidates when nothing matches`() = withSpiget(
+        searchResultIds = (1..10).toList(),
+        pluginNameById = (1..10).associateWith { "Other$it" },
+    ) { spigetApi, downloadedIds ->
+        val dependency = prepareTask().downloadPluginDependency("Vault", spigetApi)
+
+        assertNull(dependency)
+        assertTrue(
+            downloadedIds.size <= MAX_EXPECTED_CANDIDATES,
+            "downloaded every search result: $downloadedIds"
+        )
+    }
+
+    private companion object {
+        // the most popular results are the likely ones; the rest are mostly forks or unrelated resources
+        const val MAX_EXPECTED_CANDIDATES = 3
     }
 }

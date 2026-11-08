@@ -210,10 +210,10 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
         }
     }
 
-    internal fun downloadPluginDependency(name: String): SpigotPluginDependency? {
-        val uri = spigetSearchUri(name)
+    internal fun downloadPluginDependency(name: String, spigetApi: URI = SPIGET_API): SpigotPluginDependency? {
+        val uri = spigetSearchUri(name, spigetApi)
         val results = try {
-            YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()
+            YamlValue.parse(fetchHttpGetAsString(uri).body()).asList()?.subList(0, 2)
         } catch (ex: Exception) {
             logger.log(LogLevel.WARN, "Couldn't download the dependency: $name", ex)
             emptyList()
@@ -224,7 +224,7 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
                 LogLevel.DEBUG, "Spiget query result: $resultYaml"
             )
             val idValue = resultYaml.get("id").value?.toString() ?: continue
-            val downloadUri = URI("https://api.spiget.org/v2/resources/$idValue/download")
+            val downloadUri = spigetApi.resolve("resources/$idValue/download")
             logger.log(
                 LogLevel.LIFECYCLE, "Downloading $name from SpigotMC, uri=${downloadUri}"
             )
@@ -297,8 +297,10 @@ abstract class PluginDependencyPrepareTask : DefaultTask() {
                 }.map { it.file }
             }
 
-        internal fun spigetSearchUri(name: String): URI =
-            URI("https://api.spiget.org/v2/search/resources/${URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20")}?field=name&sort=-downloads")
+        internal val SPIGET_API: URI = URI("https://api.spiget.org/v2/")
+
+        internal fun spigetSearchUri(name: String, spigetApi: URI = SPIGET_API): URI =
+            spigetApi.resolve("search/resources/${URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20")}?field=name&sort=-downloads")
 
         internal fun readPluginYaml(input: InputStream, charset: Charset = StandardCharsets.UTF_8): String? {
             return JarInputStream(input).use { jin ->
