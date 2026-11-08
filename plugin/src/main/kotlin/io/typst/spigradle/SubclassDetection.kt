@@ -32,7 +32,6 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.math.log
 
 internal fun Project.getSubclassDetectionOutputFile(platformName: String, propertyName: String): Provider<RegularFile> =
     layout.buildDirectory.file("spigradle/${platformName}_${propertyName}_fallback")

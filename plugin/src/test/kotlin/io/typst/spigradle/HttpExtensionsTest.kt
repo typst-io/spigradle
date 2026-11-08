@@ -17,16 +17,24 @@
 package io.typst.spigradle
 
 import com.sun.net.httpserver.HttpServer
+import org.junit.jupiter.api.io.TempDir
+import java.io.File
 import java.net.InetSocketAddress
 import java.net.URI
+import java.net.http.HttpResponse
+import java.net.http.HttpTimeoutException
+import java.security.MessageDigest
+import java.time.Duration
+import java.util.HexFormat
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class HttpExtensionsTest {
+    @TempDir
+    lateinit var dir: File
+
     private fun withServer(test: (HttpServer, URI) -> Unit) {
         val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
         server.start()
@@ -83,5 +91,84 @@ class HttpExtensionsTest {
 
         assertTrue(exception.message.orEmpty().contains("404"))
         assertTrue(exception.message.orEmpty().contains(uri.toString()))
+    }
+
+    private fun HttpServer.serveJar(body: ByteArray) {
+        createContext("/server.jar") { exchange ->
+            exchange.use {
+                it.sendResponseHeaders(200, body.size.toLong())
+                it.responseBody.write(body)
+            }
+        }
+    }
+
+    private fun sha256(bytes: ByteArray): String =
+        HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes))
+
+    // https://github.com/typst-io/spigradle/issues/122
+    @Test
+    fun `downloads into the file when the checksum matches`() = withServer { server, baseUri ->
+        val body = "paper server".toByteArray()
+        server.serveJar(body)
+        val target = dir.resolve("server.jar").apply { writeText("cached server") }
+
+        // the checksum comparison is case-insensitive
+        fetchHttpGetToFile(baseUri.resolve("/server.jar"), target.toPath(), sha256(body).uppercase())
+
+        assertContentEquals(body, target.readBytes())
+    }
+
+    // https://github.com/typst-io/spigradle/issues/122
+    @Test
+    fun `keeps the existing file when the checksum mismatches`() = withServer { server, baseUri ->
+        server.serveJar("tampered server".toByteArray())
+        val target = dir.resolve("server.jar").apply { writeText("cached server") }
+        val expected = sha256("paper server".toByteArray())
+
+        val exception = assertFailsWith<IllegalStateException> {
+            fetchHttpGetToFile(baseUri.resolve("/server.jar"), target.toPath(), expected)
+        }
+
+        assertContains(exception.message.orEmpty(), expected)
+        assertEquals("cached server", target.readText())
+        assertEquals(emptyList(), dir.list()!!.filter { it.endsWith(".part") }, "temporary files are left")
+    }
+
+    // https://github.com/typst-io/spigradle/issues/123
+    @Test
+    fun `fails when the server doesn't respond within the timeout`() = withServer { server, baseUri ->
+        val release = CountDownLatch(1)
+        server.createContext("/hang") { exchange ->
+            exchange.use {
+                release.await(10, TimeUnit.SECONDS)
+                it.sendResponseHeaders(204, -1)
+            }
+        }
+        try {
+            assertFailsWith<HttpTimeoutException> {
+                fetchHttpGet(baseUri.resolve("/hang"), HttpResponse.BodyHandlers.ofString(), Duration.ofMillis(500))
+            }
+        } finally {
+            release.countDown()
+        }
+    }
+
+    // https://github.com/typst-io/spigradle/issues/123
+    @Test
+    fun `does not time out while receiving a body slower than the timeout`() = withServer { server, baseUri ->
+        server.createContext("/slow") { exchange ->
+            exchange.use {
+                it.sendResponseHeaders(200, 4)
+                repeat(4) { _ ->
+                    it.responseBody.write('a'.code)
+                    it.responseBody.flush()
+                    Thread.sleep(400)
+                }
+            }
+        }
+
+        val response = fetchHttpGet(baseUri.resolve("/slow"), HttpResponse.BodyHandlers.ofString(), Duration.ofMillis(500))
+
+        assertEquals("aaaa", response.body())
     }
 }

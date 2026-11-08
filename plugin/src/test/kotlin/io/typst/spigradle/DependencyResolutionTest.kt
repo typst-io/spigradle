@@ -9,8 +9,8 @@ import io.typst.spigradle.catalog.NukkitDependencies
 import io.typst.spigradle.catalog.PaperDependencies
 import io.typst.spigradle.nukkit.NukkitPlugin
 import io.typst.spigradle.nukkit.NukkitRepositories
-import io.typst.spigradle.spigot.SpigotPlugin
 import io.typst.spigradle.spigot.PaperRepositories
+import io.typst.spigradle.spigot.SpigotPlugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.result.ResolvedDependencyResult

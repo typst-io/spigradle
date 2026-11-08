@@ -23,7 +23,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.net.URI
-import java.nio.file.Files
 
 /**
  * Downloads a file from a given URI and saves it to a specified location.
@@ -98,8 +97,6 @@ open class Download : DefaultTask() {
 
     @TaskAction
     fun download() {
-        val target = outputFile.get().asFile.toPath()
-        val bytes = fetchHttpGetAsByteArray(uri.get())
-        Files.write(target, bytes.body())
+        fetchHttpGetToFile(uri.get(), outputFile.get().asFile.toPath())
     }
 }

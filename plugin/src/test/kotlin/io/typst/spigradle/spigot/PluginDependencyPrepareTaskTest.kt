@@ -23,11 +23,7 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
-import kotlin.test.AfterTest
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.*
 
 class PluginDependencyPrepareTaskTest {
     @TempDir

@@ -16,7 +16,7 @@
 
 package io.typst.spigradle
 
-import java.util.Locale
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

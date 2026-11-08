@@ -16,12 +16,13 @@
 
 package io.typst.spigradle
 
+import com.sun.net.httpserver.HttpServer
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import java.net.InetSocketAddress
+import java.net.URI
+import kotlin.test.*
 
 class DownloadTest {
     @TempDir
@@ -63,5 +64,54 @@ class DownloadTest {
         val task = downloadTask(overwrite = true, existingFile = true)
 
         assertTrue(task.onlyIf.isSatisfiedBy(task))
+    }
+
+    private fun withServer(test: (HttpServer, URI) -> Unit) {
+        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
+        server.start()
+        try {
+            test(server, URI("http://127.0.0.1:${server.address.port}/server.jar"))
+        } finally {
+            server.stop(0)
+        }
+    }
+
+    private fun assertExistingFilePreserved() {
+        assertEquals("cached server", dir.resolve("server.jar").readText())
+        assertEquals(emptyList(), dir.list()!!.filter { it.endsWith(".part") }, "temporary files are left")
+    }
+
+    // https://github.com/typst-io/spigradle/issues/121
+    @Test
+    fun `keeps existing file when the server responds an error`() = withServer { server, uri ->
+        server.createContext("/server.jar") { exchange ->
+            exchange.use {
+                val body = "error page".toByteArray()
+                it.sendResponseHeaders(500, body.size.toLong())
+                it.responseBody.write(body)
+            }
+        }
+        val task = downloadTask(overwrite = true, existingFile = true).apply { this.uri.set(uri) }
+
+        assertFails { task.download() }
+
+        assertExistingFilePreserved()
+    }
+
+    // https://github.com/typst-io/spigradle/issues/121
+    @Test
+    fun `keeps existing file when the connection is lost while downloading`() = withServer { server, uri ->
+        server.createContext("/server.jar") { exchange ->
+            // promise 1000 bytes but send only a part of them, then drop the connection
+            exchange.sendResponseHeaders(200, 1000)
+            exchange.responseBody.write(ByteArray(100))
+            exchange.responseBody.flush()
+            runCatching { exchange.close() }
+        }
+        val task = downloadTask(overwrite = true, existingFile = true).apply { this.uri.set(uri) }
+
+        assertFails { task.download() }
+
+        assertExistingFilePreserved()
     }
 }
