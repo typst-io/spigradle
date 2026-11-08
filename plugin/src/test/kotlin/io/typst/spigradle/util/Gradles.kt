@@ -9,10 +9,9 @@ import kotlin.test.assertNotEquals
 
 fun Any.testGradleTaskWithResource(path: String, resultTaskName: String, taskName: String = "build") {
     val projectDir = File(javaClass.getResource(path)!!.file)
-    val testKitHome = projectDir.resolve("test-kit-home").apply { mkdirs() }
+    // use the shared default TestKit dir so that all runners reuse the same daemons and dependency cache
     val result = GradleRunner.create()
         .withProjectDir(projectDir)
-        .withTestKitDir(testKitHome)
         .withPluginClasspath()
         .withArguments(taskName, "--stacktrace")
         .withGradleVersion("9.0.0")

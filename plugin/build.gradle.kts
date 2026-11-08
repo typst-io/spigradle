@@ -33,7 +33,8 @@ configurations {
 tasks {
     test {
         useJUnitPlatform()
-        maxParallelForks = 8
+        // Each fork starts its own TestKit daemons; more forks than ~1/3 of the cores slows down by contention
+        maxParallelForks = (Runtime.getRuntime().availableProcessors() / 3).coerceAtLeast(1)
         testLogging {
             events("passed", "skipped", "failed")
         }

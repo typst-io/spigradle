@@ -146,6 +146,11 @@ abstract class YamlGenerate : DefaultTask() {
             }
         }
     }
+
+    companion object {
+        fun getGeneratedResourceDir(platformName: String): String =
+            "generated/spigradle/${platformName}/resources"
+    }
 }
 
 internal fun YamlGenerate.setDescriptionProperties(ctx: ModuleRegistrationContext) {
@@ -171,35 +176,20 @@ internal fun registerDescGenTask(
     detectionTask.configure {
         group = ctx.platformName
     }
+    val generatedResourceDir = project.layout.buildDirectory.dir(YamlGenerate.getGeneratedResourceDir(ctx.platformName))
     val generationTask = project.tasks.register(ctx.generateDescriptionTaskName, YamlGenerate::class) {
         group = ctx.platformName
         inputs.files(ctx.getDetectionOutputFiles())
         setDescriptionProperties(ctx)
-        outputFiles.from(temporaryDir.resolve(ctx.descFileName))
-        outputFiles.from(findResourceDirs(project, ctx.descFileName))
+        outputFiles.from(generatedResourceDir.map { it.file(ctx.descFileName) })
     }
-    /*
-    NOTE: Task ordering part
-    https://docs.gradle.org/current/userguide/java_plugin.html
-
-    compileJava       dependsOn: all tasks which contribute to the compilation classpath
-    processResources
-    *classes          dependsOn: compileJava, processResources
-    jar               dependsOn: classes
-    *assemble         dependsOn: jar
-    *build            dependsOn: assemble
-
-    detectionTask     dependsOn: classes
-    generateTask      dependsOn: detectionTask
-    *assemble         dependsOn: +generateTask
-
-    Our generate task is part of compilation, thus depends by `classes` which describes compilation.
-    Expected ordering: compileJava, ... -> detectionTask -> generateTask -> classes
-     */
+    // Task ordering part, YamlGenerate `depends` on detection, the resource dir `builtBy` generationTask
     generationTask.configure { dependsOn(detectionTask) }
     project.pluginManager.withPlugin("java") {
-        val classes: Task by project.tasks
-        classes.dependsOn(generationTask)
+        val sourcesSets = project.extensions.getByType(SourceSetContainer::class)
+        sourcesSets.named("main") {
+            resources.srcDir(project.files(generatedResourceDir).builtBy(generationTask))
+        }
     }
     return detectionTask to generationTask
 }
