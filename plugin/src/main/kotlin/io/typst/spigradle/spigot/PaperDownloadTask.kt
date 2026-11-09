@@ -19,13 +19,18 @@ package io.typst.spigradle.spigot
 import io.typst.spigradle.YamlValue
 import io.typst.spigradle.fetchHttpGetAsString
 import io.typst.spigradle.fetchHttpGetToFile
+import io.typst.spigradle.sha256Of
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Downloads a Paper (or Spigot) server JAR from PaperMC's download API.
@@ -35,9 +40,12 @@ import java.net.URI
  *
  * 1. Queries the PaperMC API at `https://fill.papermc.io/v3/projects/paper/versions/{version}/builds`
  *    to get the list of available builds for the specified version
- * 2. Selects the first (latest stable) build from the response
- * 3. Extracts the download URL for the server JAR
- * 4. Downloads the JAR file and writes it to the configured output location
+ * 2. Selects the latest build from the response, regardless of its channel (ALPHA, BETA, STABLE)
+ * 3. Skips the download if the cached JAR already matches the checksum of that build
+ * 4. Otherwise downloads the JAR file and writes it to the configured output location
+ *
+ * The task always runs, because a newer build can be published while the version stays the same.
+ * When offline, or when the API can't be reached, an already cached JAR is used as is.
  *
  * The downloaded JAR is cached in the global Spigradle cache directory
  * (`$GRADLE_USER_HOME/spigradle-debug-jars/`) and used by the debug system to run
@@ -49,7 +57,9 @@ import java.net.URI
 abstract class PaperDownloadTask : DefaultTask() {
     init {
         group = "spigradle debug"
-        description = "Download a paper stable jar"
+        description = "Download the latest paper jar"
+        offline.convention(false)
+        outputs.upToDateWhen { false }
     }
 
     /**
@@ -69,31 +79,52 @@ abstract class PaperDownloadTask : DefaultTask() {
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
 
-    @Suppress("UNCHECKED_CAST")
+    /**
+     * Whether Gradle runs with `--offline`; if so, the cached JAR is used without querying the API.
+     */
+    @get:Internal
+    abstract val offline: Property<Boolean>
+
     @TaskAction
     fun download() {
-        // get url
-        val buildJsonURI = URI("https://fill.papermc.io/v3/projects/paper/versions/${version.get()}/builds")
-        val build = findLatestBuild(fetchHttpGetAsString(buildJsonURI).body(), version.get())
-        logger.lifecycle("Downloading Paper ${version.get()} build #${build.id}")
-        fetchHttpGetToFile(build.url, outputFile.get().asFile.toPath(), build.sha256)
+        val version = version.get()
+        val target = outputFile.get().asFile.toPath()
+        val cached = Files.isRegularFile(target)
+        if (offline.get()) {
+            if (!cached) {
+                throw GradleException("Paper $version isn't downloaded yet, run without --offline")
+            }
+            didWork = false
+            return
+        }
+        val build = try {
+            val buildJsonURI = URI("https://fill.papermc.io/v3/projects/paper/versions/$version/builds")
+            findLatestBuild(fetchHttpGetAsString(buildJsonURI).body(), version)
+        } catch (e: Exception) {
+            if (!cached) throw e
+            logger.warn("Couldn't check the latest build of Paper $version, using the cached jar: ${e.message}")
+            didWork = false
+            return
+        }
+        if (isDownloaded(target, build)) {
+            logger.info("Paper $version build #${build.id} is up to date")
+            didWork = false
+            return
+        }
+        logger.lifecycle("Downloading Paper $version build #${build.id}")
+        fetchHttpGetToFile(build.url, target, build.sha256)
     }
 
     companion object {
+        internal fun isDownloaded(target: Path, build: PaperBuild): Boolean =
+            Files.isRegularFile(target) && sha256Of(target).equals(build.sha256, ignoreCase = true)
+
         internal fun findLatestBuild(buildsJson: String, version: String): PaperBuild {
             val builds = YamlValue.parse(buildsJson).asList()?.mapNotNull { it.asMap() }
                 ?: throw IllegalStateException("Unknown json shcema: $buildsJson")
-            val latest = builds.filter {
-                it["channel"]?.value?.toString().equals("STABLE", ignoreCase = true)
-            }.maxByOrNull {
+            val latest = builds.maxByOrNull {
                 (it["id"]?.value as? Number)?.toInt() ?: -1
-            }
-            if (latest == null) {
-                val channels = builds.mapNotNull { it["channel"]?.value?.toString() }.toSortedSet()
-                throw IllegalStateException(
-                    "No STABLE build of Paper $version, available channels: $channels"
-                )
-            }
+            } ?: throw IllegalStateException("No build of Paper $version")
             val download = latest["downloads"]?.get("server:default")
             val id = (latest["id"]?.value as? Number)?.toInt()
             val url = download?.get("url")?.value?.toString()

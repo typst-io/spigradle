@@ -38,6 +38,7 @@ internal object PaperDebugTask {
 
             version.set(paperDebugExt.version)
             outputFile.set(ctx.getDownloadOutputFile(project))
+            offline.set(project.gradle.startParameter.isOffline)
         }
         val preparePluginDependencies =
             project.tasks.register("preparePluginDependencies", PluginDependencyPrepareTask::class.java) {

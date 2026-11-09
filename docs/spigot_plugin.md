@@ -3,7 +3,7 @@
 # Spigot plugin
 
 kdoc(
-javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
+javadoc): [SpigotPlugin.kt](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle.spigot/-spigot-plugin/index.html)
 
 The [Spigot](https://www.spigotmc.org/wiki/about-spigot/) plugin provides the following features:
 
@@ -60,7 +60,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("spigots") {
-            from("io.typst:spigot-catalog:1.1.0")
+            from("io.typst:spigot-catalog:1.1.1")
         }
         create("commons") {
             from("io.typst:common-catalog:1.1.0")
@@ -99,7 +99,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create('spigots') {
-            from('io.typst:spigot-catalog:1.1.0')
+            from('io.typst:spigot-catalog:1.1.1')
         }
         create('commons') {
             from('io.typst:common-catalog:1.1.0')
@@ -139,7 +139,7 @@ dependencies {
 **Groovy DSL**
 ```groovy
 plugins {
-    id 'io.typst.spigradle.spigot' version '4.1.1'
+    id 'io.typst.spigradle.spigot' version '4.1.2'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.3' // optional
 }
 ```
@@ -147,7 +147,7 @@ plugins {
 **Kotlin DSL**
 ```kotlin
 plugins {
-    id("io.typst.spigradle.spigot") version "4.1.1"
+    id("io.typst.spigradle.spigot") version "4.1.2"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.3" // optional
 }
 ```
@@ -191,7 +191,7 @@ For more details, see the [Main Class Detection](../README.md#main-class-detecti
 
 ## Configuration
 
-### spigot extension - [SpigotExtension](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
+### spigot extension - [SpigotExtension](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle.spigot/-spigot-extension/index.html)
 
 The description of your plugin for a `plugin.yml`.
 
@@ -279,12 +279,12 @@ configure<SpigotExtension> {
 
 </details>
 
-### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
+### debugSpigot extension - [DebugExtension](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle.debug/-debug-extension/index.html)
 
 > **Note:** `debugSpigot` is a configuration extension, NOT a task. The actual task is named `debugProjectName` (
 > e.g., `debugMyPlugin`).
 
-To see the platform defaults, see the dokka(javadoc) of [SpigotBasePlugin](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle.spigot/-spigot-base-plugin/index.html)
+To see the platform defaults, see the dokka(javadoc) of [SpigotBasePlugin](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle.spigot/-spigot-base-plugin/index.html)
 
 **Available properties:**
 
@@ -349,12 +349,12 @@ dependencies {
 All tasks
 supports [UP-TO-DATE check](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks).
 
-### detectSpigotEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle/-subclass-detection/index.html)
+### detectSpigotEntrypoints - [SubclassDetection](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle/-subclass-detection/index.html)
 
 Finds the main class
 extends [org.bukkit.plugin.java.JavaPlugin](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/plugin/java/JavaPlugin.html).
 
-### generateSpigotPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.1.1/spigradle/io.typst.spigradle/-yaml-generate/index.html)
+### generateSpigotPluginDescription - [YamlGenerate](https://docs.typst.io/spigradle/4.1.2/spigradle/io.typst.spigradle/-yaml-generate/index.html)
 
 *Depends on: `detectSpigotEntrypoints`*
 
@@ -368,8 +368,8 @@ Runs a local Paper server with your plugin for debugging. This task orchestrates
 
 **What it does:**
 
-1. **Downloads Paper server** (via `downloadPaper`) - Fetches the specified Paper version from PaperMC API if not
-   already cached
+1. **Downloads Paper server** (via `downloadPaper`) - Fetches the latest build of the specified Paper version from
+   PaperMC API, including experimental builds, unless the cached jar is already that build
 2. **Prepares plugin dependencies** (via `preparePluginDependencies`) - Resolves plugins listed in `depends`/
    `softDepends`:
 

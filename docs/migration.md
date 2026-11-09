@@ -11,7 +11,7 @@ The Spigot plugin ID has been renamed for consistency:
 ```diff
 plugins {
 -   id("io.typst.spigradle") version "3.7.3"
-+   id("io.typst.spigradle.spigot") version "4.1.1"
++   id("io.typst.spigradle.spigot") version "4.1.2"
 }
 ```
 
@@ -81,7 +81,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("spigots") {
-            from("io.typst:spigot-catalog:1.1.0")
+            from("io.typst:spigot-catalog:1.1.1")
         }
         create("commons") {
             from("io.typst:common-catalog:1.1.0")

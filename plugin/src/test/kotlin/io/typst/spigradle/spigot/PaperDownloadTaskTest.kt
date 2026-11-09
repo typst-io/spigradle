@@ -17,11 +17,16 @@
 package io.typst.spigradle.spigot
 
 import io.typst.spigradle.spigot.PaperDownloadTask.Companion.findLatestBuild
+import io.typst.spigradle.spigot.PaperDownloadTask.Companion.isDownloaded
+import io.typst.spigradle.sha256Of
 import java.net.URI
+import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 // https://github.com/typst-io/spigradle/issues/122
 class PaperDownloadTaskTest {
@@ -46,32 +51,29 @@ class PaperDownloadTaskTest {
     private fun builds(vararg builds: String) = builds.joinToString(",", "[", "]")
 
     @Test
-    fun `selects the latest stable build skipping newer experimental builds`() {
+    fun `selects the latest build regardless of channel`() {
         val json = builds(
-            build(131, "ALPHA"),
-            build(130, "BETA"),
             build(128, "STABLE"),
+            build(131, "ALPHA"),
             build(129, "STABLE"),
+            build(130, "BETA"),
         )
 
         assertEquals(
             PaperBuild(
-                129,
-                URI("https://fill-data.papermc.io/v1/objects/sha-129/paper-1.21.10-129.jar"),
-                "sha-129"
+                131,
+                URI("https://fill-data.papermc.io/v1/objects/sha-131/paper-1.21.10-131.jar"),
+                "sha-131"
             ),
             findLatestBuild(json, "1.21.10")
         )
     }
 
     @Test
-    fun `fails with the available channels when there is no stable build`() {
-        val json = builds(build(2, "BETA"), build(1, "ALPHA"))
-
-        val exception = assertFailsWith<IllegalStateException> { findLatestBuild(json, "1.22") }
+    fun `fails when there is no build`() {
+        val exception = assertFailsWith<IllegalStateException> { findLatestBuild(builds(), "1.22") }
 
         assertContains(exception.message.orEmpty(), "1.22")
-        assertContains(exception.message.orEmpty(), "[ALPHA, BETA]")
     }
 
     @Test
@@ -84,5 +86,22 @@ class PaperDownloadTaskTest {
     @Test
     fun `fails on an unknown response`() {
         assertFailsWith<IllegalStateException> { findLatestBuild("""{"error": "version not found"}""", "0.0") }
+    }
+
+    @Test
+    fun `downloads again only when the cached jar isn't the latest build`() {
+        val jar = Files.createTempFile("paper", ".jar")
+        try {
+            Files.writeString(jar, "paper build 130")
+            val cachedSha = sha256Of(jar)
+            val url = URI("https://example.com/paper.jar")
+
+            assertTrue(isDownloaded(jar, PaperBuild(130, url, cachedSha.uppercase())))
+            assertFalse(isDownloaded(jar, PaperBuild(131, url, "sha-131")))
+            Files.delete(jar)
+            assertFalse(isDownloaded(jar, PaperBuild(130, url, cachedSha)))
+        } finally {
+            Files.deleteIfExists(jar)
+        }
     }
 }

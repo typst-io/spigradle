@@ -366,8 +366,8 @@ Runs a local Paper server with your plugin for debugging. This task orchestrates
 
 **What it does:**
 
-1. **Downloads Paper server** (via `downloadPaper`) - Fetches the specified Paper version from PaperMC API if not
-   already cached
+1. **Downloads Paper server** (via `downloadPaper`) - Fetches the latest build of the specified Paper version from
+   PaperMC API, including experimental builds, unless the cached jar is already that build
 2. **Prepares plugin dependencies** (via `preparePluginDependencies`) - Resolves plugins listed in `depends`/
    `softDepends`:
 

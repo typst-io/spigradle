@@ -44,7 +44,7 @@ Multi-module projects offer several benefits for Minecraft plugin development:
 ## Requirements
 
 - Gradle 9.0+ (the latest version is recommended)
-- Spigradle 4.1.1 or higher
+- Spigradle 4.1.2 or higher
 - Basic understanding of Gradle multi-module projects
 
 To update your gradle wrapper:
@@ -95,11 +95,11 @@ dependencyResolutionManagement {
     versionCatalogs {
         // For Spigot modules
         create('spigots') {
-            from("io.typst:spigot-catalog:1.1.0")
+            from("io.typst:spigot-catalog:1.1.1")
         }
         // For BungeeCord modules
         create('bungees') {
-            from("io.typst:bungee-catalog:1.1.0")
+            from("io.typst:bungee-catalog:1.1.1")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
@@ -129,11 +129,11 @@ dependencyResolutionManagement {
     versionCatalogs {
         // For Spigot modules
         create("papers") {
-            from("io.typst:spigot-catalog:1.1.0")
+            from("io.typst:spigot-catalog:1.1.1")
         }
         // For BungeeCord modules
         create("bungees") {
-            from("io.typst:bungee-catalog:1.1.0")
+            from("io.typst:bungee-catalog:1.1.1")
         }
         // For common plugins/dependencies (idea-ext, lombok, etc.)
         // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
@@ -752,11 +752,11 @@ rootProject.name = "build-logic"
 versionCatalogs {
     // For Spigot modules
     create('spigots') {
-        from("io.typst:spigot-catalog:1.1.0")
+        from("io.typst:spigot-catalog:1.1.1")
     }
     // For BungeeCord modules
     create('bungees') {
-        from("io.typst:bungee-catalog:1.1.0")
+        from("io.typst:bungee-catalog:1.1.1")
     }
     // For common plugins/dependencies (idea-ext, lombok, etc.)
     // NOTE: commons catalog = idea-ext, lombok (bStats is NOT here)
